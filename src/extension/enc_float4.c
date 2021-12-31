@@ -473,16 +473,12 @@ PG_FUNCTION_INFO_V1(pg_enc_float4_add);
 Datum
     pg_enc_float4_add(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
-    char* pDst = (char*)palloc((FLOAT4_LENGTH) * sizeof(char));
-    float a, b;
-    bytearray2float(c1, &a, FLOAT4_LENGTH);
-    bytearray2float(c2, &b, FLOAT4_LENGTH);
+    float *c1 = PG_GETARG_CSTRING(0);
+    float *c2 = PG_GETARG_CSTRING(1);
+    float* pDst = (float*)palloc((FLOAT4_LENGTH) * sizeof(char));
 
-    float result = a + b;
+    *pDst = *c1 + *c2;
     
-    float2bytearray(result, pDst, FLOAT4_LENGTH);
     PG_RETURN_POINTER(pDst);
 }
 
@@ -587,14 +583,13 @@ PG_FUNCTION_INFO_V1(pg_enc_float4_eq);
 Datum
     pg_enc_float4_eq(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
-    bool cmp = false;
+    float* c1 = PG_GETARG_CSTRING(0);
+    float* c2 = PG_GETARG_CSTRING(1);
+    int ans = 0;
     float a, b;
-    bytearray2float(c1, &a, FLOAT4_LENGTH);
-    bytearray2float(c2, &b, FLOAT4_LENGTH);
+    a = *c1, b=*c2;
 
-    cmp = (a == b) ? true : false;
+    int cmp = (a == b) ? true : false;
 
     PG_RETURN_BOOL(cmp);
 }
@@ -610,14 +605,13 @@ PG_FUNCTION_INFO_V1(pg_enc_float4_ne);
 Datum
     pg_enc_float4_ne(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
-    bool cmp = false;
+    float* c1 = PG_GETARG_CSTRING(0);
+    float* c2 = PG_GETARG_CSTRING(1);
+    int ans = 0;
     float a, b;
-    bytearray2float(c1, &a, FLOAT4_LENGTH);
-    bytearray2float(c2, &b, FLOAT4_LENGTH);
+    a = *c1, b=*c2;
 
-    cmp = (a != b) ? true : false;
+    int cmp = (a != b) ? true : false;
 
     PG_RETURN_BOOL(cmp);
 }
@@ -633,14 +627,12 @@ PG_FUNCTION_INFO_V1(pg_enc_float4_lt);
 Datum
     pg_enc_float4_lt(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
-    bool cmp = false;
+    float* c1 = PG_GETARG_CSTRING(0);
+    float* c2 = PG_GETARG_CSTRING(1);
+    int ans = 0;
     float a, b;
-    bytearray2float(c1, &a, FLOAT4_LENGTH);
-    bytearray2float(c2, &b, FLOAT4_LENGTH);
-
-    cmp = (a < b) ? true : false;
+    a = *c1, b=*c2;
+    int cmp = (a < b) ? true : false;
 
     PG_RETURN_BOOL(cmp);
 }
@@ -656,14 +648,12 @@ PG_FUNCTION_INFO_V1(pg_enc_float4_le);
 Datum
     pg_enc_float4_le(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
-    bool cmp = false;
+    float* c1 = PG_GETARG_CSTRING(0);
+    float* c2 = PG_GETARG_CSTRING(1);
+    int ans = 0;
     float a, b;
-    bytearray2float(c1, &a, FLOAT4_LENGTH);
-    bytearray2float(c2, &b, FLOAT4_LENGTH);
-
-    cmp = (a <= b) ? true : false;
+    a = *c1, b=*c2;
+    int cmp = (a <= b) ? true : false;
 
     PG_RETURN_BOOL(cmp);
 }
@@ -679,14 +669,12 @@ PG_FUNCTION_INFO_V1(pg_enc_float4_gt);
 Datum
     pg_enc_float4_gt(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
-    bool cmp = false;
+    float* c1 = PG_GETARG_CSTRING(0);
+    float* c2 = PG_GETARG_CSTRING(1);
+    int ans = 0;
     float a, b;
-    bytearray2float(c1, &a, FLOAT4_LENGTH);
-    bytearray2float(c2, &b, FLOAT4_LENGTH);
-
-    cmp = (a > b) ? true : false;
+    a = *c1, b=*c2;
+    int cmp = (a > b) ? true : false;
 
     PG_RETURN_BOOL(cmp);
 }
@@ -702,14 +690,13 @@ PG_FUNCTION_INFO_V1(pg_enc_float4_ge);
 Datum
     pg_enc_float4_ge(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
-    bool cmp = false;
+    float* c1 = PG_GETARG_CSTRING(0);
+    float* c2 = PG_GETARG_CSTRING(1);
+    int ans = 0;
     float a, b;
-    bytearray2float(c1, &a, FLOAT4_LENGTH);
-    bytearray2float(c2, &b, FLOAT4_LENGTH);
-
-    cmp = (a >= b) ? true : false;
+    a = *c1, b=*c2;
+    
+    int cmp = (a >= b) ? true : false;
 
     PG_RETURN_BOOL(cmp);
 }
@@ -723,13 +710,11 @@ PG_FUNCTION_INFO_V1(pg_enc_float4_cmp);
 Datum
     pg_enc_float4_cmp(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
+    float* c1 = PG_GETARG_CSTRING(0);
+    float* c2 = PG_GETARG_CSTRING(1);
     int ans = 0;
     float a, b;
-    bytearray2float(c1, &a, FLOAT4_LENGTH);
-    bytearray2float(c2, &b, FLOAT4_LENGTH);
-
+    a = *c1, b=*c2;
     ans = (a == b) ? 0 
         : (a < b) ? -1 : 1;
 

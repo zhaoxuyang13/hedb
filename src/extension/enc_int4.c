@@ -5,16 +5,14 @@
 
 #define PRINT_ALL_FUNC 0
 
-int int2bytearray(int src, uint8_t* pDst, size_t dstLen)
+static inline void int2bytearray(int src, uint8_t* pDst, size_t dstLen)
 {
     memcpy(pDst, &src, INT32_LENGTH);
-    return 0;
 }
 
-int bytearray2int(uint8_t* pSrc, int* dst, size_t srcLen)
+static inline void bytearray2int(uint8_t* pSrc, int* dst, size_t srcLen)
 {
     memcpy(dst, pSrc, INT32_LENGTH);
-    return 0;
 }
 
 /*
@@ -83,17 +81,12 @@ Datum
         printed2 = true;
     }
 #endif
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
-    char* pDst = (char*)palloc((INT32_LENGTH) * sizeof(char));
+    int* c1 = PG_GETARG_CSTRING(0);
+    int* c2 = PG_GETARG_CSTRING(1);
+    int* pDst = (int*)palloc(sizeof(int));
 
-    int32_t a, b, sum;
-    bytearray2int(c1, &a, INT32_LENGTH);
-    bytearray2int(c2, &b, INT32_LENGTH);
+    *pDst = *c1 + *c2; 
 
-    sum = a + b;
-
-    int2bytearray((int32_t)sum, pDst, INT32_LENGTH);
     PG_RETURN_POINTER(pDst);
 }
 
@@ -265,14 +258,11 @@ Datum
         printed4 = true;
     }
 #endif
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
+    int* c1 = PG_GETARG_CSTRING(0);
+    int* c2 = PG_GETARG_CSTRING(1);
 
     int ans = 0;
-
-    int32_t a, b;
-    bytearray2int(c1, &a, INT32_LENGTH);
-    bytearray2int(c2, &b, INT32_LENGTH);
+    int a = *c1, b= *c2;
 
     ans = (a == b) ? 0 
         : (a < b) ? -1 : 1;

@@ -799,18 +799,18 @@ AS
 
 CREATE AGGREGATE sum (enc_float4)
 (
-   sfunc = array_append,
-   stype = enc_float4[],
-  finalfunc = pg_enc_float4_sum_bulk,
-  PARALLEL = SAFE,
-  COMBINEFUNC = array_cat 
+   sfunc = pg_enc_float4_add,
+   stype = enc_float4,
+   PARALLEL = SAFE,
+   COMBINEFUNC = pg_enc_float4_add 
 );
 
 CREATE AGGREGATE sum_simple (enc_float4)
 (
-   sfunc = array_append,
-   stype = enc_float4[],
-  finalfunc = pg_enc_float4_addfinal
+   sfunc = pg_enc_float4_add,
+   stype = enc_float4,
+   PARALLEL = SAFE,
+   COMBINEFUNC = pg_enc_float4_add  
 );
 
 CREATE AGGREGATE avg (enc_float4)
