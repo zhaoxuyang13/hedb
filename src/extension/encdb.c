@@ -3,16 +3,11 @@
 
 PG_MODULE_MAGIC;
 
-void print_info(const char * str){
-    ereport(INFO,(errmsg("%s", str)));
-}
 
-void print_error(const char * str){
-    ereport(ERROR,(errmsg("%s", str)));
-}
 bool debugMode = true;
 
 
+PG_FUNCTION_INFO_V1(launch);
 Datum
     launch(PG_FUNCTION_ARGS)
 {

@@ -41,6 +41,23 @@ static char* SubText(char *str, int from, int to)
     return result;
 }
 
+/*
+ * cstring_to_text_with_len
+ *
+ * Same as cstring_to_text except the caller specifies the string length;
+ * the string need not be null_terminated.
+ */
+text *
+cstring_to_text_with_len(const char *s, int len)
+{
+	text	   *result = (text *) palloc(len + VARHDRSZ);
+
+	SET_VARSIZE(result, len + VARHDRSZ);
+	memcpy(VARDATA(result), s, len);
+
+	return result;
+}
+
 // The input function converts a string to an enc_text element.
 // @input: string
 // @return: pointer to a structure describing enc_text element.
@@ -48,16 +65,10 @@ PG_FUNCTION_INFO_V1(pg_enc_text_in);
 Datum
     pg_enc_text_in(PG_FUNCTION_ARGS)
 {
-    // ereport(INFO, (errmsg("pg_enc_text_in here!")));
-    char* pSrc = PG_GETARG_CSTRING(0);
-    int srcLen = strlen(pSrc);
-
-    if (srcLen > STRING_LENGTH)
-    {
-        ereport(ERROR, (errmsg("Error: the length of the element is more than maximum")));
-        PG_RETURN_CSTRING("");
-    }
-    PG_RETURN_CSTRING(pSrc);
+    char* s = PG_GETARG_CSTRING(0);
+    EncText *result;
+    result = (EncText *) cstring_to_text_with_len(s, strlen(s));
+    PG_RETURN_POINTER(result);
 }
 
 // The output function converts an enc_text element to a string.
@@ -68,8 +79,9 @@ Datum
     pg_enc_text_out(PG_FUNCTION_ARGS)
 {
     // ereport(INFO, (errmsg("pg_enc_text_out here!")));
-    char* pSrc = PG_GETARG_CSTRING(0);
-    PG_RETURN_CSTRING(pSrc);
+    EncText* s = PG_GETARG_DATUM(0);
+
+    PG_RETURN_CSTRING(TextDatumGetCString(s));
 }
 
 // @input: two strings
@@ -79,8 +91,10 @@ PG_FUNCTION_INFO_V1(pg_enc_text_eq);
 Datum
     pg_enc_text_eq(PG_FUNCTION_ARGS)
 {
-    char* str1 = PG_GETARG_CSTRING(0);
-    char* str2 = PG_GETARG_CSTRING(1);
+    EncText* s1 = PG_GETARG_TEXT_PP(0);   
+    EncText* s2 = PG_GETARG_TEXT_PP(1);
+    char* str1 = VARDATA_ANY(s1);
+    char* str2 = VARDATA_ANY(s2);
     bool cmp = false;
     int ans = 0;
     ans = strcmp(str1, str2);
@@ -98,8 +112,10 @@ PG_FUNCTION_INFO_V1(pg_enc_text_ne);
 Datum
     pg_enc_text_ne(PG_FUNCTION_ARGS)
 {
-    char* str1 = PG_GETARG_CSTRING(0);
-    char* str2 = PG_GETARG_CSTRING(1);
+    EncText* s1 = PG_GETARG_TEXT_PP(0);   
+    EncText* s2 = PG_GETARG_TEXT_PP(1);
+    char* str1 = VARDATA_ANY(s1);
+    char* str2 = VARDATA_ANY(s2);
     bool cmp = false;
     int ans = 0;
     ans = strcmp(str1, str2);
@@ -117,8 +133,10 @@ PG_FUNCTION_INFO_V1(pg_enc_text_le);
 Datum
     pg_enc_text_le(PG_FUNCTION_ARGS)
 {
-    char* str1 = PG_GETARG_CSTRING(0);
-    char* str2 = PG_GETARG_CSTRING(1);
+    EncText* s1 = PG_GETARG_TEXT_PP(0);   
+    EncText* s2 = PG_GETARG_TEXT_PP(1);
+    char* str1 = VARDATA_ANY(s1);
+    char* str2 = VARDATA_ANY(s2);
     bool cmp = false;
     int ans = 0;
     ans = strcmp(str1, str2);
@@ -136,8 +154,10 @@ PG_FUNCTION_INFO_V1(pg_enc_text_lt);
 Datum
     pg_enc_text_lt(PG_FUNCTION_ARGS)
 {
-    char* str1 = PG_GETARG_CSTRING(0);
-    char* str2 = PG_GETARG_CSTRING(1);
+    EncText* s1 = PG_GETARG_TEXT_PP(0);   
+    EncText* s2 = PG_GETARG_TEXT_PP(1);
+    char* str1 = VARDATA_ANY(s1);
+    char* str2 = VARDATA_ANY(s2);
     bool cmp = false;
     int ans = 0;
     ans = strcmp(str1, str2);
@@ -155,8 +175,10 @@ PG_FUNCTION_INFO_V1(pg_enc_text_ge);
 Datum
     pg_enc_text_ge(PG_FUNCTION_ARGS)
 {
-    char* str1 = PG_GETARG_CSTRING(0);
-    char* str2 = PG_GETARG_CSTRING(1);
+    EncText* s1 = PG_GETARG_TEXT_PP(0);   
+    EncText* s2 = PG_GETARG_TEXT_PP(1);
+    char* str1 = VARDATA_ANY(s1);
+    char* str2 = VARDATA_ANY(s2);
     bool cmp = false;
     int ans = 0;
     ans = strcmp(str1, str2);
@@ -174,8 +196,10 @@ PG_FUNCTION_INFO_V1(pg_enc_text_gt);
 Datum
     pg_enc_text_gt(PG_FUNCTION_ARGS)
 {
-    char* str1 = PG_GETARG_CSTRING(0);
-    char* str2 = PG_GETARG_CSTRING(1);
+    EncText* s1 = PG_GETARG_TEXT_PP(0);   
+    EncText* s2 = PG_GETARG_TEXT_PP(1);
+    char* str1 = VARDATA_ANY(s1);
+    char* str2 = VARDATA_ANY(s2);
     bool cmp = false;
     int ans = 0;
     ans = strcmp(str1, str2);
@@ -194,8 +218,10 @@ PG_FUNCTION_INFO_V1(pg_enc_text_cmp);
 Datum
     pg_enc_text_cmp(PG_FUNCTION_ARGS)
 {
-    char* str1 = PG_GETARG_CSTRING(0);
-    char* str2 = PG_GETARG_CSTRING(1);
+    EncText* s1 = PG_GETARG_TEXT_PP(0);   
+    EncText* s2 = PG_GETARG_TEXT_PP(1);
+    char* str1 = VARDATA_ANY(s1);
+    char* str2 = VARDATA_ANY(s2);
     int ans = 0;
     ans = strcmp(str1, str2);
     PG_RETURN_INT32(ans);
@@ -208,13 +234,11 @@ PG_FUNCTION_INFO_V1(pg_enc_text_encrypt);
 Datum
     pg_enc_text_encrypt(PG_FUNCTION_ARGS)
 {
-    // ereport(INFO, (errmsg("pg_enc_text_encrypt here!")));
-    char* src = PG_GETARG_CSTRING(0);
-    size_t src_len = strlen(src);
-    char* pDst = (char*)palloc((src_len + 1) * sizeof(char));
-    memcpy(pDst, src, src_len);
-    pDst[src_len] = '\0';
-    PG_RETURN_CSTRING(pDst);
+    char* s = PG_GETARG_CSTRING(0);
+    EncText *result;
+    result = (EncText *) cstring_to_text_with_len(s, strlen(s));
+
+    PG_RETURN_POINTER(result);
 }
 
 // The function decrypts the input enc_text element.
@@ -224,8 +248,9 @@ PG_FUNCTION_INFO_V1(pg_enc_text_decrypt);
 Datum
     pg_enc_text_decrypt(PG_FUNCTION_ARGS)
 {
+    EncText* s1 = PG_GETARG_TEXT_PP(0);   
     // ereport(INFO, (errmsg("pg_enc_text_decrypt here!")));
-    char* src = PG_GETARG_CSTRING(0);
+    char* src = VARDATA_ANY(s1);
     size_t src_len = strlen(src);
     char* pDst = (char*)palloc((src_len + 1) * sizeof(char));
     memcpy(pDst, src, src_len);
@@ -239,9 +264,10 @@ PG_FUNCTION_INFO_V1(pg_enc_text_concatenate);
 Datum
     pg_enc_text_concatenate(PG_FUNCTION_ARGS)
 {
-
-    char* str1 = PG_GETARG_CSTRING(0);
-    char* str2 = PG_GETARG_CSTRING(1);
+    EncText* s1 = PG_GETARG_TEXT_PP(0);   
+    EncText* s2 = PG_GETARG_TEXT_PP(1);
+    char* str1 = VARDATA_ANY(s1);
+    char* str2 = VARDATA_ANY(s2);
     strcat(str1, str2);
     PG_RETURN_CSTRING(str1);
 }
@@ -250,8 +276,10 @@ PG_FUNCTION_INFO_V1(pg_enc_text_like);
 Datum
     pg_enc_text_like(PG_FUNCTION_ARGS)
 {
-    char* str = PG_GETARG_CSTRING(0);
-    char* pattern = PG_GETARG_CSTRING(1);
+    EncText* s1 = PG_GETARG_TEXT_PP(0);   
+    EncText* s2 = PG_GETARG_TEXT_PP(1);
+    char* str = VARDATA_ANY(s1);
+    char* pattern = VARDATA_ANY(s2);
     bool result = false;
     result = MatchText(str, strlen(str), pattern, strlen(pattern));
     PG_RETURN_BOOL(result);
@@ -261,8 +289,10 @@ PG_FUNCTION_INFO_V1(pg_enc_text_notlike);
 Datum
     pg_enc_text_notlike(PG_FUNCTION_ARGS)
 {
-    char* str = PG_GETARG_CSTRING(0);
-    char* pattern = PG_GETARG_CSTRING(1);
+    EncText* s1 = PG_GETARG_TEXT_PP(0);   
+    EncText* s2 = PG_GETARG_TEXT_PP(1);
+    char* str = VARDATA_ANY(s1);
+    char* pattern = VARDATA_ANY(s2);
     bool result = 0;
     result = MatchText(str, strlen(str), pattern, strlen(pattern));
     PG_RETURN_BOOL(1 ^ result);
@@ -294,17 +324,8 @@ Datum
     varchar_to_enc_text(PG_FUNCTION_ARGS)
 {
     Datum txt = PG_GETARG_DATUM(0);
-    char* src = TextDatumGetCString(txt);
-    int len = strlen(src);
-    char* pDst = (char*)palloc((STRING_LENGTH) * sizeof(char));
-
-    if (len > STRING_LENGTH - 1)
-    {
-        ereport(ERROR, (errmsg("Error: the length of the element is more than maximum")));
-        PG_RETURN_CSTRING("");
-    }
-
-    memcpy(pDst, src, len);
-    pDst[len] = '\0';
-    PG_RETURN_CSTRING(pDst);
+    char* s = TextDatumGetCString(txt);
+    EncText *result;
+    result = (EncText *) cstring_to_text_with_len(s, strlen(s));
+    PG_RETURN_POINTER(result);
 }

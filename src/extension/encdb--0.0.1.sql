@@ -3,9 +3,9 @@
 -- complain if script is sourced in psql, rather than via CREATE EXTENSION
 \echo Use "CREATE EXTENSION encdb" to load this file. \quit
 
--- CREATE FUNCTION launch() RETURNS integer
--- AS 'MODULE_PATHNAME'
--- LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION launch() RETURNS integer
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT;
 
 -- CREATE OR REPLACE FUNCTION generate_key()
 -- RETURNS int
@@ -125,7 +125,7 @@ CREATE TYPE enc_int4 (
     OUTPUT         = pg_enc_int4_out,
 --    RECEIVE        = pg_enc_int4_recv,
 --    SEND           = pg_enc_int4_send,
-    INTERNALLENGTH = 32,
+    INTERNALLENGTH = 4,
     ALIGNMENT      = int4,
     STORAGE        = PLAIN
 );
@@ -243,9 +243,10 @@ CREATE OPERATOR >= (
 
 CREATE AGGREGATE sum (enc_int4)
 (
-   sfunc = array_append,
-   stype = enc_int4[],
-   finalfunc = pg_enc_int4_sum_bulk
+   sfunc = pg_enc_int4_add,
+   stype = enc_int4,
+   PARALLEL = safe, 
+   combinefunc = pg_enc_int4_add
 );
 
 CREATE AGGREGATE sum_simple (enc_int4)
@@ -447,11 +448,11 @@ CREATE TYPE enc_text (
     INPUT          = pg_enc_text_in,
     OUTPUT         = pg_enc_text_out,
 --      LIKE       = text,
-    INTERNALLENGTH = 1024,
+    INTERNALLENGTH = VARIABLE,
 --    CATEGORY = 'S',
 --    PREFERRED = false
     ALIGNMENT      = int4,
-    STORAGE        = PLAIN
+    STORAGE        = EXTENDED
 );
 COMMENT ON TYPE enc_text IS 'ENCRYPTED STRING';
 
