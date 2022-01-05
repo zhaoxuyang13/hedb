@@ -3,7 +3,6 @@
 #include <stdafx.h>
 #include <enc_types.h>
 #include <c.h>
-#include <extension_helper.h>
 // #define DECLARE_PG_FUNC(func) extern "C" { PG_FUNCTION_INFO_V1(func); }
 
 #define DatumGetEncInt(X)  ((EncInt *) DatumGetPointer(X))

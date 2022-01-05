@@ -23,6 +23,7 @@ void print_error(const char *fmt, ...)
 }
 
 // #define ENABLE_COUNTER
+#ifdef ENABLE_COUNTER
 int counter = 0;
 static inline void before_invoke_function(const char *str)
 {
@@ -56,6 +57,7 @@ static inline void before_invoke_function(const char *str)
         }
     }
 }
+#endif
 static int float2bytearray(float src, uint8_t *pDst, size_t dstLen)
 {
     memcpy(pDst, &src, FLOAT4_LENGTH);
