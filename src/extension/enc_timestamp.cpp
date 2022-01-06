@@ -3,6 +3,23 @@
  */
 #include "extension.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+PG_FUNCTION_INFO_V1(pg_enc_timestamp_in);
+PG_FUNCTION_INFO_V1(pg_enc_timestamp_out);
+PG_FUNCTION_INFO_V1(pg_enc_timestamp_encrypt);
+PG_FUNCTION_INFO_V1(pg_enc_timestamp_decrypt);
+PG_FUNCTION_INFO_V1(pg_enc_timestamp_eq);
+PG_FUNCTION_INFO_V1(pg_enc_timestamp_ne);
+PG_FUNCTION_INFO_V1(pg_enc_timestamp_lt);
+PG_FUNCTION_INFO_V1(pg_enc_timestamp_le);
+PG_FUNCTION_INFO_V1(pg_enc_timestamp_gt);
+PG_FUNCTION_INFO_V1(pg_enc_timestamp_ge);
+PG_FUNCTION_INFO_V1(pg_enc_timestamp_cmp);
+#ifdef __cplusplus
+}
+#endif
 
 static TimeOffset time2t(const int hour, const int min, const int sec, const fsec_t fsec)
 {
@@ -80,7 +97,6 @@ Timestamp pg_timestamp_in(char* str)
  * @input: string as a postgres arg
  * @return: enc_timestamp element as a string
  */
-PG_FUNCTION_INFO_V1(pg_enc_timestamp_in);
 Datum
     pg_enc_timestamp_in(PG_FUNCTION_ARGS)
 {
@@ -97,7 +113,6 @@ Datum
  * @input: enc_timestamp element
  * @return: string
  */
-PG_FUNCTION_INFO_V1(pg_enc_timestamp_out);
 Datum
     pg_enc_timestamp_out(PG_FUNCTION_ARGS)
 {
@@ -127,7 +142,6 @@ Datum
  *    @input: string
  *    @return: a string describing enc_timestamp element.
  */
-PG_FUNCTION_INFO_V1(pg_enc_timestamp_encrypt);
 Datum
     pg_enc_timestamp_encrypt(PG_FUNCTION_ARGS)
 {
@@ -149,7 +163,6 @@ Datum
  *  @input: enc_timestamp element
  *   @return: string
  */
-PG_FUNCTION_INFO_V1(pg_enc_timestamp_decrypt);
 Datum
     pg_enc_timestamp_decrypt(PG_FUNCTION_ARGS)
 {
@@ -181,7 +194,6 @@ Datum
  * @return: true, if the first integer is equal to the second one.
  *       false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_timestamp_eq);
 Datum
     pg_enc_timestamp_eq(PG_FUNCTION_ARGS)
 {
@@ -203,7 +215,6 @@ Datum
  * @return: true, if the first integer is equal to the second one.
  *       false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_timestamp_ne);
 Datum
     pg_enc_timestamp_ne(PG_FUNCTION_ARGS)
 {
@@ -225,7 +236,6 @@ Datum
  * @return: true, if the first integer is equal to the second one.
  *       false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_timestamp_lt);
 Datum
     pg_enc_timestamp_lt(PG_FUNCTION_ARGS)
 {
@@ -247,7 +257,6 @@ Datum
  * @return: true, if the first integer is equal to the second one.
  *       false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_timestamp_le);
 Datum
     pg_enc_timestamp_le(PG_FUNCTION_ARGS)
 {
@@ -269,7 +278,6 @@ Datum
  * @return: true, if the first integer is equal to the second one.
  *       false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_timestamp_gt);
 Datum
     pg_enc_timestamp_gt(PG_FUNCTION_ARGS)
 {
@@ -291,7 +299,6 @@ Datum
  * @return: true, if the first integer is equal to the second one.
  *       false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_timestamp_ge);
 Datum
     pg_enc_timestamp_ge(PG_FUNCTION_ARGS)
 {
@@ -312,7 +319,6 @@ Datum
  * @input: two enc_timestamp values
  * @return: -1, 0 ,1
  */
-PG_FUNCTION_INFO_V1(pg_enc_timestamp_cmp);
 Datum
     pg_enc_timestamp_cmp(PG_FUNCTION_ARGS)
 {

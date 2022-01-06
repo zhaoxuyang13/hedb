@@ -18,7 +18,6 @@ public:
     }
     /* send request, get result in req->res, get resp as return value.*/
     int sendRequest(Request *req);
-
 };
 
 #ifdef __x86_64 

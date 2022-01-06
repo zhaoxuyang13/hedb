@@ -1,6 +1,8 @@
 #pragma once 
 #include <defs.h>
-#include <stdafx.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <string.h>
 // #define DECLARE_PG_FUNC(func) extern "C" { PG_FUNCTION_INFO_V1(func); } 
 
 /* enc_int type */

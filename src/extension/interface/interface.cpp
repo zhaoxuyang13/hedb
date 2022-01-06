@@ -1,9 +1,10 @@
 #include <interface.hpp>
+#include <tee_interface.hpp>
 #include <sync.h>
 
-
+TEEInvoker *TEEInvoker::invoker = NULL;
 TEEInvoker::~TEEInvoker() {
-    free(req_buffer);
+    freeBuffer(req_buffer);
 }
 
 int TEEInvoker::sendRequest(Request *req) {
@@ -29,5 +30,5 @@ int TEEInvoker::sendRequest(Request *req) {
 }
 
 TEEInvoker::TEEInvoker() {
-    req_buffer = (void *)malloc(sizeof (EncIntBulkRequestData));
+    req_buffer = getSharedBuffer(sizeof (EncIntBulkRequestData));
 }

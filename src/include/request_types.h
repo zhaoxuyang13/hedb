@@ -1,5 +1,9 @@
 #pragma once 
-#include <request_types.h>
+#include <enc_types.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef enum ReqStatus
 {
@@ -9,7 +13,6 @@ typedef enum ReqStatus
 } ReqStat;
 typedef struct BaseRequest
 {
-    static const int max_buffer_size = 65536;
     volatile ReqStat status;
     int reqType;
     int resp;
@@ -43,3 +46,6 @@ typedef struct EncIntDecRequestData {
     EncInt ciphertext;
     int plaintext;
 }EncIntDecRequestData;
+#ifdef __cplusplus
+}
+#endif

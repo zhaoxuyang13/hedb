@@ -9,13 +9,46 @@
 #include <enc_int_ops.hpp>
 extern bool debugMode;
 
+#ifdef __cplusplus
+extern "C"{
+#endif
+PG_FUNCTION_INFO_V1(pg_enc_int4_in);
+PG_FUNCTION_INFO_V1(pg_enc_int4_out);
+PG_FUNCTION_INFO_V1(pg_enc_int4_add);
+PG_FUNCTION_INFO_V1(pg_enc_int4_sub);
+PG_FUNCTION_INFO_V1(pg_enc_int4_mult);
+PG_FUNCTION_INFO_V1(pg_enc_int4_div);
+PG_FUNCTION_INFO_V1(pg_enc_int4_pow);
+PG_FUNCTION_INFO_V1(pg_enc_int4_mod);
+PG_FUNCTION_INFO_V1(pg_enc_int4_cmp);
+PG_FUNCTION_INFO_V1(pg_enc_int4_eq);
+PG_FUNCTION_INFO_V1(pg_enc_int4_ne);
+PG_FUNCTION_INFO_V1(pg_enc_int4_lt);
+PG_FUNCTION_INFO_V1(pg_enc_int4_le);
+PG_FUNCTION_INFO_V1(pg_enc_int4_gt);
+PG_FUNCTION_INFO_V1(pg_enc_int4_ge);
+PG_FUNCTION_INFO_V1(pg_enc_int4_encrypt);
+PG_FUNCTION_INFO_V1(pg_enc_int4_decrypt);
+PG_FUNCTION_INFO_V1(pg_enc_int4_max);
+PG_FUNCTION_INFO_V1(pg_enc_int4_min);
+PG_FUNCTION_INFO_V1(pg_enc_int4_sum_bulk);
+// PG_FUNCTION_INFO_V1(pg_enc_int4_avgfinal);
+// PG_FUNCTION_INFO_V1(pg_enc_int4_avg_bulk);
+PG_FUNCTION_INFO_V1(pg_enc_int4_min_bulk);
+PG_FUNCTION_INFO_V1(pg_enc_int4_max_bulk);
+PG_FUNCTION_INFO_V1(pg_int4_to_enc_int4);
+PG_FUNCTION_INFO_V1(pg_int8_to_enc_int4);
+#ifdef __cplusplus
+}
+#endif
+
+
 /*
  * The function converts string to enc_int4. It is called by dbms every time it parses a query and finds an enc_int4 element.
  * If flag debugMode is true it tries to convert input to int4 and encrypt it
  * @input: string as a postgres arg
  * @return: enc_int4 element as a string
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_in);
 Datum
     pg_enc_int4_in(PG_FUNCTION_ARGS)
 {
@@ -34,7 +67,6 @@ Datum
  * @input: enc_int4 element
  * @return: string
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_out);
 Datum
     pg_enc_int4_out(PG_FUNCTION_ARGS)
 {
@@ -60,7 +92,6 @@ Datum
  * @return: encrypted sum of input values
  * output format: BASE64(iv[12 bytes]||AES-GCM(s1+s2)[4 bytes]||AUTHTAG[16bytes])
 */
-PG_FUNCTION_INFO_V1(pg_enc_int4_add);
 Datum
     pg_enc_int4_add(PG_FUNCTION_ARGS)
 {
@@ -80,7 +111,6 @@ Datum
  * @input: two enc_int4 values
  * @return: an encrypted result of input values . output format: BASE64(iv[12 bytes]||AES-GCM(s1+s2)[4 bytes]||AUTHTAG[16bytes])
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_sub);
 Datum
     pg_enc_int4_sub(PG_FUNCTION_ARGS)
 {
@@ -100,7 +130,6 @@ Datum
  * @input: two enc_int4 values
  * @return: an encrypted result of input values . output format: BASE64(iv[12 bytes]||AES-GCM(s1+s2)[4 bytes]||AUTHTAG[16bytes])
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_mult);
 Datum
     pg_enc_int4_mult(PG_FUNCTION_ARGS)
 {
@@ -120,7 +149,6 @@ Datum
  * @input: two enc_int4 values
  * @return: an encrypted result of input values . output format: BASE64(iv[12 bytes]||AES-GCM(s1+s2)[4 bytes]||AUTHTAG[16bytes])
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_div);
 Datum
     pg_enc_int4_div(PG_FUNCTION_ARGS)
 {
@@ -141,7 +169,6 @@ Datum
  * @input: two enc_int4 values
  * @return: an encrypted result of input values . output format: BASE64(iv[12 bytes]||AES-GCM(s1+s2)[4 bytes]||AUTHTAG[16bytes])
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_pow);
 Datum
     pg_enc_int4_pow(PG_FUNCTION_ARGS)
 {
@@ -162,7 +189,6 @@ Datum
  * @input: two enc_int4 values
  * @return: an encrypted result of input values . output format: BASE64(iv[12 bytes]||AES-GCM(s1+s2)[4 bytes]||AUTHTAG[16bytes])
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_mod);
 Datum
     pg_enc_int4_mod(PG_FUNCTION_ARGS)
 {
@@ -182,7 +208,6 @@ Datum
  * @input: two enc_int4 values
  * @return: -1, 0 ,1
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_cmp);
 Datum
     pg_enc_int4_cmp(PG_FUNCTION_ARGS)
 {
@@ -204,7 +229,6 @@ Datum
  * @return: true, if the first decrypted integer is equal to the second one.
  *       false, otherwise
 */
-PG_FUNCTION_INFO_V1(pg_enc_int4_eq);
 Datum
     pg_enc_int4_eq(PG_FUNCTION_ARGS)
 {
@@ -232,7 +256,6 @@ Datum
  * @return: true, if the first decrypted integer is not equal to the second one.
  *       false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_ne);
 Datum
     pg_enc_int4_ne(PG_FUNCTION_ARGS)
 {
@@ -260,7 +283,6 @@ Datum
  * @return: true, if the first decrypted integer is less the the second one.
  *       false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_lt);
 Datum
     pg_enc_int4_lt(PG_FUNCTION_ARGS)
 {
@@ -288,7 +310,6 @@ Datum
  * @return: true, if the first decrypted integer is less or equal than the second one.
  *       false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_le);
 Datum
     pg_enc_int4_le(PG_FUNCTION_ARGS)
 {
@@ -316,7 +337,6 @@ Datum
  * @return: true, if the first decrypted integer is greater than the second one.
  *          false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_gt);
 Datum
     pg_enc_int4_gt(PG_FUNCTION_ARGS)
 {
@@ -344,7 +364,6 @@ Datum
  * @return: true, if the first decrypted integer is greater or equal than the second one.
  *          false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_ge);
 Datum
     pg_enc_int4_ge(PG_FUNCTION_ARGS)
 {
@@ -360,10 +379,10 @@ Datum
         cmp = true;
     else
         cmp = false;
+    PG_RETURN_BOOL(cmp);
 }
 
 // DEBUG FUNCTION, WILL BE DELETED IN THE PRODUCT
-PG_FUNCTION_INFO_V1(pg_enc_int4_encrypt);
 Datum
     pg_enc_int4_encrypt(PG_FUNCTION_ARGS)
 {
@@ -375,7 +394,6 @@ Datum
 }
 
 // WILL BE DELETED IN THE PRODUCT
-PG_FUNCTION_INFO_V1(pg_enc_int4_decrypt);
 Datum
     pg_enc_int4_decrypt(PG_FUNCTION_ARGS)
 {
@@ -388,11 +406,10 @@ Datum
 
 
 /*
- * The function 
+ * The function
  * @input: two enc_int4 values
  * @return: the larger enc_int4 value.
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_max);
 Datum
     pg_enc_int4_max(PG_FUNCTION_ARGS)
 {
@@ -410,16 +427,15 @@ Datum
     else {
         PG_RETURN_POINTER(right);
     }
-    
+
 }
 
 
 /*
- * The function 
+ * The function
  * @input: two enc_int4 values
  * @return: the smaller enc_int4 value.
  */
-PG_FUNCTION_INFO_V1(pg_enc_int4_min);
 Datum
     pg_enc_int4_min(PG_FUNCTION_ARGS)
 {
@@ -437,11 +453,10 @@ Datum
     else {
         PG_RETURN_POINTER(left);
     }
-    
+
 }
 
 
-PG_FUNCTION_INFO_V1(pg_enc_int4_sum_bulk);
 Datum
     pg_enc_int4_sum_bulk(PG_FUNCTION_ARGS)
 {
@@ -486,7 +501,6 @@ Datum
 //  * @input: an array of enc_int4 elements
 //  * @return: an encrypted result (encrypted integer). output format: BASE64(iv[12 bytes]||AES-GCM(s1+s2)[4 bytes]||AUTHTAG[16bytes])
 //  */
-// PG_FUNCTION_INFO_V1(pg_enc_int4_avgfinal);
 // Datum
 //     pg_enc_int4_avgfinal(PG_FUNCTION_ARGS)
 // {
@@ -527,7 +541,6 @@ Datum
 //     PG_RETURN_CSTRING(pSrc2);
 // }
 
-// PG_FUNCTION_INFO_V1(pg_enc_int4_avg_bulk);
 // Datum
 //     pg_enc_int4_avg_bulk(PG_FUNCTION_ARGS)
 // {
@@ -584,7 +597,6 @@ Datum
 //     PG_RETURN_CSTRING(pSrc2);
 // }
 
-PG_FUNCTION_INFO_V1(pg_enc_int4_min_bulk);
 Datum
     pg_enc_int4_min_bulk(PG_FUNCTION_ARGS)
 {
@@ -623,7 +635,6 @@ Datum
 }
 
 
-PG_FUNCTION_INFO_V1(pg_enc_int4_max_bulk);
 Datum
     pg_enc_int4_max_bulk(PG_FUNCTION_ARGS)
 {
@@ -639,8 +650,8 @@ Datum
     int* dims1 = ARR_DIMS(v);
     int nitems = ArrayGetNItems(ndims1, dims1); //number of items in array
 
-    char* pMax = (char*)palloc(sizeof(EncInt));
-    char* pTemp = (char*)palloc(sizeof(EncInt));
+    EncInt* pMax = (EncInt*)palloc(sizeof(EncInt));
+    EncInt* pTemp = (EncInt*)palloc(sizeof(EncInt));
 
     array_iterator = array_create_iterator(v, 0, my_extra);
     array_iterate(array_iterator, &value, &isnull);
@@ -667,7 +678,6 @@ Datum
  * @input: int4
  * @return: an encrypted result. output format: BASE64(iv[12 bytes]||AES-GCM(s1+s2)[4 bytes]||AUTHTAG[16bytes])
  */
-PG_FUNCTION_INFO_V1(pg_int4_to_enc_int4);
 Datum
     pg_int4_to_enc_int4(PG_FUNCTION_ARGS)
 {
@@ -684,7 +694,6 @@ Datum
  * @input: int8
  * @return: an encrypted result. output format: BASE64(iv[12 bytes]||AES-GCM(s1+s2)[4 bytes]||AUTHTAG[16bytes])
  */
-PG_FUNCTION_INFO_V1(pg_int8_to_enc_int4);
 Datum
     pg_int8_to_enc_int4(PG_FUNCTION_ARGS)
 {

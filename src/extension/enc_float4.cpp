@@ -3,25 +3,43 @@
  */
 #include "extension.h"
 #include <string.h>
-void print_info(char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    ereport(INFO, (errmsg(fmt, args)));
-    va_end(args);
-}
-void print_info_str(char *str)
-{
-    ereport(INFO, (errmsg(str)));
-}
-void print_error(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    ereport(ERROR, (errmsg(fmt, args)));
-    va_end(args);
-}
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+PG_FUNCTION_INFO_V1(pg_enc_float4_in);
+PG_FUNCTION_INFO_V1(pg_enc_float4_out);
+PG_FUNCTION_INFO_V1(pg_enc_float4_encrypt);
+PG_FUNCTION_INFO_V1(pg_enc_float4_decrypt);
+PG_FUNCTION_INFO_V1(pg_enc_float4_addfinal);
+PG_FUNCTION_INFO_V1(pg_enc_float4_sum_bulk);
+PG_FUNCTION_INFO_V1(pg_enc_float4_avgfinal);
+PG_FUNCTION_INFO_V1(pg_enc_float4_avg_bulk);
+PG_FUNCTION_INFO_V1(pg_enc_float4_maxfinal);
+PG_FUNCTION_INFO_V1(pg_enc_float4_max_bulk);
+PG_FUNCTION_INFO_V1(pg_enc_float4_minfinal);
+PG_FUNCTION_INFO_V1(pg_enc_float4_min_bulk);
+PG_FUNCTION_INFO_V1(pg_enc_float4_add);
+PG_FUNCTION_INFO_V1(pg_enc_float4_subs);
+PG_FUNCTION_INFO_V1(pg_enc_float4_mult);
+PG_FUNCTION_INFO_V1(pg_enc_float4_div);
+PG_FUNCTION_INFO_V1(pg_enc_float4_exp);
+PG_FUNCTION_INFO_V1(pg_enc_float4_eq);
+PG_FUNCTION_INFO_V1(pg_enc_float4_ne);
+PG_FUNCTION_INFO_V1(pg_enc_float4_lt);
+PG_FUNCTION_INFO_V1(pg_enc_float4_le);
+PG_FUNCTION_INFO_V1(pg_enc_float4_gt);
+PG_FUNCTION_INFO_V1(pg_enc_float4_ge);
+PG_FUNCTION_INFO_V1(pg_enc_float4_cmp);
+PG_FUNCTION_INFO_V1(pg_enc_float4_mod);
+PG_FUNCTION_INFO_V1(float4_to_enc_float4);
+PG_FUNCTION_INFO_V1(numeric_to_enc_float4);
+PG_FUNCTION_INFO_V1(double_to_enc_float4);
+PG_FUNCTION_INFO_V1(int8_to_enc_float4);
+PG_FUNCTION_INFO_V1(int4_to_enc_float4);
+#ifdef __cplusplus
+}
+#endif
 // #define ENABLE_COUNTER
 #ifdef ENABLE_COUNTER
 int counter = 0;
@@ -113,7 +131,6 @@ get_float4_nan(void)
  * @input: string as a postgres arg
  * @return: enc_float4 element as a string
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_in);
 Datum pg_enc_float4_in(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
@@ -132,7 +149,6 @@ Datum pg_enc_float4_in(PG_FUNCTION_ARGS)
  * @input: enc_float4 element
  * @return: string
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_out);
 Datum pg_enc_float4_out(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
@@ -149,7 +165,6 @@ Datum pg_enc_float4_out(PG_FUNCTION_ARGS)
 // TODO
 //  DEBUG FUNCTION
 //  WILL BE DELETED IN THE PRODUCT
-PG_FUNCTION_INFO_V1(pg_enc_float4_encrypt);
 Datum pg_enc_float4_encrypt(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
@@ -164,7 +179,6 @@ Datum pg_enc_float4_encrypt(PG_FUNCTION_ARGS)
 // TODO
 //  DEBUG FUNCTION
 //  WILL BE DELETED IN THE PRODUCT
-PG_FUNCTION_INFO_V1(pg_enc_float4_decrypt);
 Datum pg_enc_float4_decrypt(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
@@ -182,7 +196,6 @@ Datum pg_enc_float4_decrypt(PG_FUNCTION_ARGS)
  * @input: an array of enc_float4 values which should be summarize
  * @return: a enc_float4 result.
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_addfinal);
 Datum pg_enc_float4_addfinal(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
@@ -218,7 +231,6 @@ Datum pg_enc_float4_addfinal(PG_FUNCTION_ARGS)
     PG_RETURN_POINTER(pSrc1);
 }
 
-PG_FUNCTION_INFO_V1(pg_enc_float4_sum_bulk);
 Datum pg_enc_float4_sum_bulk(PG_FUNCTION_ARGS)
 {
     // SAME AS pg_enc_float4_addfinal()
@@ -258,7 +270,6 @@ Datum pg_enc_float4_sum_bulk(PG_FUNCTION_ARGS)
  * @input: an array of enc_float4 elements
  * @return: a result (enc_float4).
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_avgfinal);
 Datum pg_enc_float4_avgfinal(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
@@ -302,7 +313,6 @@ Datum pg_enc_float4_avgfinal(PG_FUNCTION_ARGS)
     PG_RETURN_POINTER(pSrc2);
 }
 
-PG_FUNCTION_INFO_V1(pg_enc_float4_avg_bulk);
 Datum pg_enc_float4_avg_bulk(PG_FUNCTION_ARGS)
 {
     // SAME AS pg_enc_float4_avgfinal()
@@ -350,7 +360,6 @@ Datum pg_enc_float4_avg_bulk(PG_FUNCTION_ARGS)
  * @input: array of enc_float4 elements
  * @return: an enc_float4 result.
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_maxfinal);
 Datum pg_enc_float4_maxfinal(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
@@ -393,7 +402,6 @@ Datum pg_enc_float4_maxfinal(PG_FUNCTION_ARGS)
     PG_RETURN_POINTER(max);
 }
 
-PG_FUNCTION_INFO_V1(pg_enc_float4_max_bulk);
 Datum pg_enc_float4_max_bulk(PG_FUNCTION_ARGS)
 {
     // SAME AS pg_enc_float4_maxfinal()
@@ -440,7 +448,6 @@ Datum pg_enc_float4_max_bulk(PG_FUNCTION_ARGS)
  * @input: array of enc_float4 elements
  * @return: an enc_float4 result.
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_minfinal);
 Datum pg_enc_float4_minfinal(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
@@ -487,7 +494,6 @@ Datum pg_enc_float4_minfinal(PG_FUNCTION_ARGS)
     PG_RETURN_POINTER(pSrc1);
 }
 
-PG_FUNCTION_INFO_V1(pg_enc_float4_min_bulk);
 Datum pg_enc_float4_min_bulk(PG_FUNCTION_ARGS)
 {
     // SAME AS pg_enc_float4_minfinal()
@@ -537,14 +543,13 @@ Datum pg_enc_float4_min_bulk(PG_FUNCTION_ARGS)
  * @return: sum of input values
  */
 
-PG_FUNCTION_INFO_V1(pg_enc_float4_add);
 Datum pg_enc_float4_add(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = (float *)PG_GETARG_CSTRING(0);
+    float *c2 = (float *)PG_GETARG_CSTRING(1);
     float *pDst = (float *)palloc((FLOAT4_LENGTH) * sizeof(char));
 
     *pDst = *c1 + *c2;
@@ -557,7 +562,6 @@ Datum pg_enc_float4_add(PG_FUNCTION_ARGS)
  * @input: two enc_float4 values
  * @return: result of input values .
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_subs);
 Datum pg_enc_float4_subs(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
@@ -581,7 +585,6 @@ Datum pg_enc_float4_subs(PG_FUNCTION_ARGS)
  * @input: two enc_float4 values
  * @return: an enc_float4 result of input values .
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_mult);
 Datum pg_enc_float4_mult(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
@@ -606,7 +609,6 @@ Datum pg_enc_float4_mult(PG_FUNCTION_ARGS)
  * @return: an enc_float4 result of input values .
  */
 
-PG_FUNCTION_INFO_V1(pg_enc_float4_div);
 Datum pg_enc_float4_div(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
@@ -631,7 +633,6 @@ Datum pg_enc_float4_div(PG_FUNCTION_ARGS)
  * @input: two enc_float4 values
  * @return: an enc_float4 result of input values .
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_exp);
 Datum pg_enc_float4_exp(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
@@ -657,14 +658,13 @@ Datum pg_enc_float4_exp(PG_FUNCTION_ARGS)
  * @return: true, if the first float is equal to the second one.
  *       false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_eq);
 Datum pg_enc_float4_eq(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = (float *)PG_GETARG_CSTRING(0);
+    float *c2 = (float *)PG_GETARG_CSTRING(1);
     int ans = 0;
     float a, b;
     a = *c1, b = *c2;
@@ -681,14 +681,13 @@ Datum pg_enc_float4_eq(PG_FUNCTION_ARGS)
  * @return: true, if the first float is not equal to the second one.
  *       false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_ne);
 Datum pg_enc_float4_ne(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = (float *)PG_GETARG_CSTRING(0);
+    float *c2 = (float *)PG_GETARG_CSTRING(1);
     int ans = 0;
     float a, b;
     a = *c1, b = *c2;
@@ -705,14 +704,13 @@ Datum pg_enc_float4_ne(PG_FUNCTION_ARGS)
  * @return: true, if the first decrypted float is less the the second one.
  *       false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_lt);
 Datum pg_enc_float4_lt(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = (float *)PG_GETARG_CSTRING(0);
+    float *c2 = (float *)PG_GETARG_CSTRING(1);
     int ans = 0;
     float a, b;
     a = *c1, b = *c2;
@@ -728,14 +726,13 @@ Datum pg_enc_float4_lt(PG_FUNCTION_ARGS)
  * @return: true, if the first enc_float4 is less or equal than the second one.
  *       false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_le);
 Datum pg_enc_float4_le(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = (float *)PG_GETARG_CSTRING(0);
+    float *c2 = (float *)PG_GETARG_CSTRING(1);
     int ans = 0;
     float a, b;
     a = *c1, b = *c2;
@@ -751,14 +748,13 @@ Datum pg_enc_float4_le(PG_FUNCTION_ARGS)
  * @return: true, if the first float is greater than the second one.
  *          false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_gt);
 Datum pg_enc_float4_gt(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = (float *)PG_GETARG_CSTRING(0);
+    float *c2 = (float *)PG_GETARG_CSTRING(1);
     int ans = 0;
     float a, b;
     a = *c1, b = *c2;
@@ -774,14 +770,13 @@ Datum pg_enc_float4_gt(PG_FUNCTION_ARGS)
  * @return: true, if the first float is greater or equal than the second one.
  *          false, otherwise
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_ge);
 Datum pg_enc_float4_ge(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = (float *)PG_GETARG_CSTRING(0);
+    float *c2 = (float *)PG_GETARG_CSTRING(1);
     int ans = 0;
     float a, b;
     a = *c1, b = *c2;
@@ -796,14 +791,13 @@ Datum pg_enc_float4_ge(PG_FUNCTION_ARGS)
  * @input: two enc_float4 values
  * @return: -1, 0 ,1
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_cmp);
 Datum pg_enc_float4_cmp(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = (float *)PG_GETARG_CSTRING(0);
+    float *c2 = (float *)PG_GETARG_CSTRING(1);
     int ans = 0;
     float a, b;
     a = *c1, b = *c2;
@@ -820,7 +814,6 @@ Datum pg_enc_float4_cmp(PG_FUNCTION_ARGS)
  * @input: two enc_float4 values
  * @return: result of input values .
  */
-PG_FUNCTION_INFO_V1(pg_enc_float4_mod);
 Datum pg_enc_float4_mod(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
@@ -844,7 +837,6 @@ Datum pg_enc_float4_mod(PG_FUNCTION_ARGS)
  * @input: float4
  * @return: an encrypted result.
  */
-PG_FUNCTION_INFO_V1(float4_to_enc_float4);
 Datum float4_to_enc_float4(PG_FUNCTION_ARGS)
 {
     float src = PG_GETARG_FLOAT4(0);
@@ -993,7 +985,6 @@ float4 pg_float4_in(char *num)
  * @input: float4
  * @return: an enc_float4 result.
  */
-PG_FUNCTION_INFO_V1(numeric_to_enc_float4);
 Datum numeric_to_enc_float4(PG_FUNCTION_ARGS)
 {
     Numeric num = PG_GETARG_NUMERIC(0);
@@ -1012,7 +1003,6 @@ Datum numeric_to_enc_float4(PG_FUNCTION_ARGS)
  * @input: float8
  * @return: an enc_float4 result.
  */
-PG_FUNCTION_INFO_V1(double_to_enc_float4);
 Datum double_to_enc_float4(PG_FUNCTION_ARGS)
 {
     float8 num = PG_GETARG_FLOAT8(0);
@@ -1032,7 +1022,6 @@ Datum double_to_enc_float4(PG_FUNCTION_ARGS)
  * @input: int8
  * @return: an enc_float4 result.
  */
-PG_FUNCTION_INFO_V1(int8_to_enc_float4);
 Datum int8_to_enc_float4(PG_FUNCTION_ARGS)
 {
     int8 num = PG_GETARG_INT64(0);
@@ -1052,7 +1041,6 @@ Datum int8_to_enc_float4(PG_FUNCTION_ARGS)
  * @input: int4
  * @return: an enc_float4 result.
  */
-PG_FUNCTION_INFO_V1(int4_to_enc_float4);
 Datum int4_to_enc_float4(PG_FUNCTION_ARGS)
 {
     int num = PG_GETARG_INT32(0);

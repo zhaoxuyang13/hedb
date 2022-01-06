@@ -17,10 +17,10 @@ LANGUAGE C IMMUTABLE STRICT;
 -- AS 'MODULE_PATHNAME'
 -- LANGUAGE C IMMUTABLE STRICT;
 
--- CREATE OR REPLACE FUNCTION enable_debug_mode(int)
--- RETURNS int
--- AS 'MODULE_PATHNAME'
--- LANGUAGE C IMMUTABLE STRICT;
+CREATE OR REPLACE FUNCTION enable_debug_mode(int)
+RETURNS int
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT;
 
 -------------------------------------------------------------------------------
 --ENCRYPTED INTEGER TYPE (randomized)
@@ -125,16 +125,16 @@ CREATE TYPE enc_int4 (
     OUTPUT         = pg_enc_int4_out,
 --    RECEIVE        = pg_enc_int4_recv,
 --    SEND           = pg_enc_int4_send,
-    INTERNALLENGTH = 4,
+    INTERNALLENGTH = 32,
     ALIGNMENT      = int4,
     STORAGE        = PLAIN
 );
 COMMENT ON TYPE enc_int4 IS 'ENCRYPTED INTEGER';
 
-CREATE FUNCTION pg_enc_int4_addfinal(enc_int4[])
-RETURNS enc_int4
-AS 'MODULE_PATHNAME'
-LANGUAGE C IMMUTABLE STRICT;
+-- CREATE FUNCTION pg_enc_int4_addfinal(enc_int4[])
+-- RETURNS enc_int4
+-- AS 'MODULE_PATHNAME'
+-- LANGUAGE C IMMUTABLE STRICT;
 
 CREATE FUNCTION pg_enc_int4_sum_bulk(enc_int4[])
 RETURNS enc_int4
@@ -151,20 +151,11 @@ LANGUAGE C IMMUTABLE STRICT;
 -- AS 'MODULE_PATHNAME'
 -- LANGUAGE C IMMUTABLE STRICT;
 
-CREATE FUNCTION pg_enc_int4_minfinal(enc_int4[])
-RETURNS enc_int4
-AS 'MODULE_PATHNAME'
-LANGUAGE C IMMUTABLE STRICT;
-
 CREATE FUNCTION pg_enc_int4_min_bulk(enc_int4[])
 RETURNS enc_int4
 AS 'MODULE_PATHNAME'
 LANGUAGE C IMMUTABLE STRICT;
 
-CREATE FUNCTION pg_enc_int4_maxfinal(enc_int4[])
-RETURNS enc_int4
-AS 'MODULE_PATHNAME'
-LANGUAGE C IMMUTABLE STRICT;
 
 CREATE FUNCTION pg_enc_int4_max_bulk(enc_int4[])
 RETURNS enc_int4
@@ -249,14 +240,6 @@ CREATE AGGREGATE sum (enc_int4)
    combinefunc = pg_enc_int4_add
 );
 
-CREATE AGGREGATE sum_simple (enc_int4)
-(
-   sfunc = pg_enc_int4_add,
-   stype = enc_int4,
-   PARALLEL = safe,
-   combinefunc = pg_enc_int4_add
-);
-
 -- CREATE AGGREGATE avg (enc_int4)
 -- (
 --    sfunc = array_append,
@@ -275,33 +258,21 @@ CREATE AGGREGATE sum_simple (enc_int4)
 -- );
 
 CREATE AGGREGATE min (enc_int4)
-(
-   sfunc = array_append,
-   stype = enc_int4[],
-   finalfunc = pg_enc_int4_min_bulk
-);
-
-CREATE AGGREGATE min_simple (enc_int4)
-(
+(  
    sfunc = pg_enc_int4_min,
    stype = enc_int4,
    PARALLEL = safe, 
    combinefunc = pg_enc_int4_min
+
 );
 
 CREATE AGGREGATE max (enc_int4)
-(
-   sfunc = array_append,
-   stype = enc_int4[],
-   finalfunc = pg_enc_int4_max_bulk
-);
-
-CREATE AGGREGATE max_simple (enc_int4)
 (
    sfunc = pg_enc_int4_max,
    stype = enc_int4,
    PARALLEL = safe, 
    combinefunc = pg_enc_int4_max
+
 );
 
 CREATE OPERATOR + (
