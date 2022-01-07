@@ -15,7 +15,15 @@ typedef struct EncInt
     /* may contain other fields like ope */
 } EncInt;
 
-// typedef struct request
-// {
+/* float contain also 4 bytes*/
+typedef struct EncFloat
+{
+    uint8_t iv[IV_SIZE];
+    uint8_t data[FLOAT4_LENGTH];
+    uint8_t tag[TAG_SIZE];
+}
+
+typedef struct EncTimstamp
+{
     /* data */
-// };
+};

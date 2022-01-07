@@ -22,10 +22,23 @@ add_enclave_library(enclave
                     EDL_SEARCH_PATHS ${EDL_SEARCH_PATHS}
                     LDSCRIPT enclave/sgx/enclave.lds)
 ## DE
-enclave_sign(enclave OUTPUT enclave.so KEY enclave/sgx/Enclave_private.pem CONFIG enclave/sgx/enclave.config.xml)
+enclave_sign(enclave KEY enclave/sgx/Enclave_private.pem CONFIG enclave/sgx/enclave.config.xml)
 
-file(GLOB U_SRCS extension/interface/sgx/*.cpp)
+file(GLOB U_SRCS extension/interface/sgx/sgx_interface.cpp)
 include_directories(extension/include extension/interface/sgx)
+
+# custom installation for enclave.so and datafile.
+SET(ENCLAVE_INSTALL_DIR "/usr/local/lib/hedb")
+set(SIGNED_ENCLAVE_FILENAME "enclave.signed.so")
+SET(DATA_FILENAME "${ENCLAVE_INSTALL_DIR}/hedb.data")
+SET(ENCLAVE_FILENAME "${ENCLAVE_INSTALL_DIR}/${SIGNED_ENCLAVE_FILENAME}")
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${SIGNED_ENCLAVE_FILENAME} DESTINATION ${ENCLAVE_INSTALL_DIR})
+install(CODE "execute_process(COMMAND touch ${DATA_FILENAME})" )
+install(CODE "execute_process(COMMAND chown postgres:postgres ${DATA_FILENAME})")
+
+add_compile_definitions(ENCLAVE_FILENAME="${ENCLAVE_FILENAME}")
+add_compile_definitions(DATA_FILENAME="${DATA_FILENAME}")
+
 add_untrusted_library(SGXInterface
                     STATIC
                     SRCS ${U_SRCS} 

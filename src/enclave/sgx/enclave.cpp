@@ -4,7 +4,7 @@
 #include <request_types.h>
 #include <stdarg.h>
 #include <stdio.h>      /* vsnprintf */
-
+#include <sync.h>
 void printf(const char *fmt, ...)
 {
     char buf[BUFSIZ] = {'\0'};
@@ -186,20 +186,18 @@ int encrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t dst_len)
 
 int enclaveProcess(void* arg1)
 {
-  
+    printf("enclave process called %p\n", arg1);
     if (arg1 == NULL)
         return -1;
     BaseRequest *req = (BaseRequest *)arg1; 
     while (true)
     {
-        
-
         if (req->status != SENT)
-            __asm__("pause");
+            YIELD_PROCESSOR;
         else
         {
-            handle_ops(req);
-            
+            handle_ops(req);     
+            // printf("req returned %d\n",req->reqType);
             req->status = DONE;
         }
     }

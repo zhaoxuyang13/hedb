@@ -1,7 +1,7 @@
 #include <enc_int_ops.hpp>
 #include <interface.hpp>
 #include <request.hpp>
-
+#include <extension_helper.hpp>
 int enc_int_sum_bulk(size_t bulk_size, EncInt* arg1, EncInt* res)
 {
     auto *req = new EncIntBulkRequest(CMD_INT_SUM_BULK, bulk_size, arg1, res);
@@ -63,7 +63,7 @@ int enc_int_cmp(EncInt* int1, EncInt* int2, int* res)
 }
 
 int enc_int_encrypt(int pSrc, EncInt* pDst)
-{
+{   
     auto *req = new EncIntEncRequest(pSrc, pDst);
     TEEInvoker *invoker = TEEInvoker::getInstance();
     int resp = invoker->sendRequest(req);

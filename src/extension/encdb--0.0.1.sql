@@ -541,7 +541,7 @@ CREATE TYPE enc_float4 (
     INPUT          = pg_enc_float4_in,
     OUTPUT         = pg_enc_float4_out,
     -- INTERNALLENGTH = 45,
-    INTERNALLENGTH = 4,
+    INTERNALLENGTH = 32,
     ALIGNMENT      = int4,
     STORAGE        = PLAIN
 );

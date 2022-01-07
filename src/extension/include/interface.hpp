@@ -18,10 +18,7 @@ public:
     }
     /* send request, get result in req->res, get resp as return value.*/
     int sendRequest(Request *req);
+
 };
 
-#ifdef __x86_64 
-#define YIELD_PROCESSOR __asm__ volatile("pause")
-#elif __aarch64__
-#define YIELD_PROCESSOR __asm__ volatile("yield")
-#endif
+
