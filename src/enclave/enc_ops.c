@@ -79,16 +79,9 @@ int handle_ops(BaseRequest *base_req)
         base_req->resp = enc_float32_cmp((EncFloatCmpRequestData *)base_req);
         break;
     
-        // case CMD_FLOAT_SUM_BULK:
-        // 	memcpy(&src_len, req->buffer, INT32_LENGTH);
-        // 	req->resp = enc_float32_sum_bulk(
-        // 		req->buffer,
-        // 		INT32_LENGTH,
-        // 		req->buffer + INT32_LENGTH,
-        // 		src_len * ENC_FLOAT4_LENGTH,
-        // 		req->buffer + (src_len)*ENC_FLOAT4_LENGTH + INT32_LENGTH,
-        // 		ENC_FLOAT4_LENGTH);
-        // 	break;
+    case CMD_FLOAT_SUM_BULK:
+        base_req->resp = enc_float32_bulk((EncFloatBulkRequestData *) base_req);
+        break;
 
     case CMD_FLOAT_ENC:{
         EncFloatEncRequestData *req = (EncFloatEncRequestData *) base_req;

@@ -750,7 +750,7 @@ AS
         FUNCTION        1       pg_enc_float4_cmp(enc_float4, enc_float4);
 
 
-CREATE AGGREGATE sum (enc_float4)
+CREATE AGGREGATE sum_simple (enc_float4)
 (
    sfunc = pg_enc_float4_add,
    stype = enc_float4,
@@ -758,12 +758,13 @@ CREATE AGGREGATE sum (enc_float4)
    COMBINEFUNC = pg_enc_float4_add 
 );
 
-CREATE AGGREGATE sum_simple (enc_float4)
+CREATE AGGREGATE sum (enc_float4)
 (
-   sfunc = pg_enc_float4_add,
-   stype = enc_float4,
+   sfunc = array_append,
+   stype = enc_float4[],
    PARALLEL = SAFE,
-   COMBINEFUNC = pg_enc_float4_add  
+   COMBINEFUNC = array_cat,
+   finalfunc = pg_enc_float4_sum_bulk  
 );
 
 CREATE AGGREGATE avg (enc_float4)

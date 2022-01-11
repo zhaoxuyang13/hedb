@@ -74,11 +74,29 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
 
 
 
-int enc_float32_sum_bulk(EncFloatBulkRequestData *req)
+int enc_float32_bulk(EncFloatBulkRequestData *req)
 {
     int bulk_size = req->bulk_size;
     EncFloat *array = req->items;
-    int sum = 0;
-    return -1;
-    // printf("not supported\n");
+    float res = 0,tmp = 0;
+    int count = 0, resp = 0;
+    while (count < bulk_size)
+    {
+        resp = decrypt_bytes((uint8_t *) &array[count], sizeof(EncFloat), (uint8_t*) &tmp, sizeof(float));    
+        if (resp != SGX_SUCCESS)
+            return resp;
+
+        switch (req->common.reqType)
+        {
+        case CMD_FLOAT_SUM_BULK:
+            res += tmp; 
+            break;
+        default:
+            break;
+        }
+        count ++;
+    }
+
+    resp = encrypt_bytes((uint8_t*) &res, sizeof(float),(uint8_t*) &req->res, sizeof(req->res));
+    return resp;
 }
