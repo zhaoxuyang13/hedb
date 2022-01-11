@@ -16,42 +16,46 @@ public:
 
 private:
 };
-//typedef enum RequestType {
-//
-//}ReqType;
-class EncIntCmpRequest : public Request {
-public:
-    EncIntCmpRequest(EncInt *left, EncInt *right, int *cmp) : left(left), right(right), cmp(cmp) {}
 
-    EncInt *left;
-    EncInt *right;
+/* DataType should be one of CMP DATA */
+
+template <typename EncType>
+class CmpRequest : public Request {
+public:
+    DEFINE_ENCTYPE_CMP_ReqData(EncType);
+    CmpRequest(EncType *left, EncType *right, int *cmp) : left(left), right(right), cmp(cmp) {}
+
+    EncType *left;
+    EncType *right;
     int *cmp;
 
-
     void serializeTo(void *buffer) const override  {
-        auto *req = (EncIntCmpRequestData *) buffer;
+        auto *req = (EncTypeCmpRequestData *) buffer;
         req->common.reqType = CMD_INT_CMP;
         req->left = *left;
         req->right = *right;
     }
 
     void copyResultFrom(void *buffer)const override  {
-        auto *req = (EncIntCmpRequestData *) buffer;
+        auto *req = (EncTypeCmpRequestData *) buffer;
         *cmp = req->cmp;
     }
 };
 
-class EncIntCalcRequest : public Request {
-public:
-    int op;
-    EncInt *left;
-    EncInt *right;
-    EncInt *res;
 
-    EncIntCalcRequest(int op, EncInt *left, EncInt *right, EncInt *res) : op(op), left(left), right(right), res(res) {}
+template <typename EncType>
+class CalcRequest : public Request {
+public:
+    DEFINE_ENCTYPE_CALC_ReqData(EncType);
+    int op;
+    EncType *left;
+    EncType *right;
+    EncType *res;
+
+    CalcRequest(int op, EncType *left, EncType *right, EncType *res) : op(op), left(left), right(right), res(res) {}
 
     void serializeTo(void *buffer) const override {
-        auto *req = (EncIntCalcRequestData *) buffer;
+        auto *req = (EncTypeCalcRequestData *) buffer;
         req->common.reqType = op;
         req->op = op;
         req->left = *left;
@@ -59,71 +63,79 @@ public:
     }
 
     void copyResultFrom(void *buffer)const override  {
-        auto *req = (EncIntCalcRequestData *) buffer;
+        auto *req = (EncTypeCalcRequestData *) buffer;
         *res = req->res;
     }
 };
 
-class EncIntBulkRequest : public Request {
+template<typename EncType>
+class BulkRequest : public Request {
 public:
+    DEFINE_ENCTYPE_BULK_ReqData(EncType)
     int bulk_type;
     int bulk_size;
-    EncInt *items; //begin of items
-    EncInt *res;   // Maybe EncFloat in average, use union that-wise
+    EncType *items; //begin of items
+    EncType *res;   // Maybe EncFloat in average, use union that-wise
 
-    EncIntBulkRequest(int bulkType, int bulkSize, EncInt *items, EncInt *res) : bulk_type(bulkType),
+    BulkRequest(int bulkType, int bulkSize, EncType *items, EncType *res) : bulk_type(bulkType),
                                                                                 bulk_size(bulkSize), items(items),
                                                                                 res(res) {}
 
-
     void serializeTo(void *buffer) const override  {
-        auto *req = (EncIntBulkRequestData *)buffer;
+        auto *req = (EncTypeBulkRequestData *)buffer;
         req->common.reqType = bulk_type;
         req->bulk_size = bulk_size;
-        memcpy(req->items, items, sizeof(EncInt) * bulk_size);
+        memcpy(req->items, items, sizeof(EncType) * bulk_size);
     }
 
     void copyResultFrom(void *buffer)const override  {
-        auto *req = (EncIntBulkRequestData *)buffer;
+        auto *req = (EncTypeBulkRequestData *)buffer;
         *res = req->res;
     }
 };
 
-class EncIntEncRequest : public Request {
+/* TODO: define = operator for encstr type, and other types
+         change encstr type to {size, char[]}
+*/
+template<typename PlainType, typename EncType>
+class EncRequest : public Request {
 public:
-    int plaintext;
+    DEFINE_ENCTYPE_ENC_ReqData(EncType,PlainType);
 
-    EncIntEncRequest(int plaintext, EncInt *res) : plaintext(plaintext), res(res) {}
+    PlainType *plaintext;
+    EncType *res;
 
-    EncInt *res;
+    EncRequest(PlainType *plaintext, EncType *res) : plaintext(plaintext), res(res) {}
 
     void serializeTo(void *buffer) const override {
-        auto *req = (EncIntEncRequestData *) buffer;
+        auto *req = (EncTypeEncRequestData *) buffer;
         req->common.reqType = CMD_INT_ENC;
-        req->plaintext = plaintext;
+        req->plaintext = *plaintext;
     }
 
     void copyResultFrom(void *buffer)const override {
-        auto *req = (EncIntEncRequestData *) buffer;
+        auto *req = (EncTypeEncRequestData *) buffer;
         *res = req->ciphertext;
     }
 };
 
-class EncIntDecRequest : public Request {
+template<typename EncType,typename PlainType>
+class DecRequest : public Request {
 public:
-    EncInt *ciphertext;
-    int *res;
+    DEFINE_ENCTYPE_DEC_ReqData(EncType, PlainType);
+    EncType *ciphertext;
+    PlainType *res;
     
-    EncIntDecRequest(EncInt *ciphertext, int *res) : ciphertext(ciphertext), res(res) {}
+    DecRequest(EncType *ciphertext, PlainType *res) : ciphertext(ciphertext), res(res) {}
 
     void serializeTo(void *buffer) const override{
-        auto *req = (EncIntDecRequestData *) buffer;
+        auto *req = (EncTypeDecRequestData *) buffer;
         req->common.reqType = CMD_INT_DEC;
         req->ciphertext = *ciphertext;
     }
 
     void copyResultFrom(void *buffer)const override {
-        auto *req = (EncIntDecRequestData *) buffer;
+        auto *req = (EncTypeDecRequestData *) buffer;
         *res = req->plaintext;
     }
 };

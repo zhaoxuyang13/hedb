@@ -20,7 +20,6 @@ int TEEInvoker::sendRequest(Request *req) {
      while (req_control->status != DONE)
          YIELD_PROCESSOR;
      /* TODO read barrier */
-    // print_info("result received");
 
      req->copyResultFrom(req_buffer);
      resp = req_control->resp;

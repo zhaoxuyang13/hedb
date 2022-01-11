@@ -341,79 +341,79 @@ CREATE CAST (int8 AS enc_int4) WITH FUNCTION enc_int4(int8) AS ASSIGNMENT;
 --------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION pg_enc_text_in(cstring)
 RETURNS enc_text
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE OR REPLACE FUNCTION pg_enc_text_out(enc_text)
 RETURNS cstring
 --LANGUAGE internal IMMUTABLE AS 'textout';
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_text_eq(enc_text, enc_text)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_text_ne(enc_text, enc_text)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_text_lt(enc_text, enc_text)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_text_le(enc_text, enc_text)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_text_gt(enc_text, enc_text)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_text_ge(enc_text, enc_text)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_text_cmp(enc_text, enc_text)
 RETURNS integer
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_text_concatenate(enc_text, enc_text)
 RETURNS enc_text
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE OR REPLACE FUNCTION pg_catalog.substring(enc_text, enc_int4, enc_int4)
 RETURNS enc_text
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_text_like(enc_text, enc_text)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_text_notlike(enc_text, enc_text)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_text_encrypt(cstring)
 RETURNS enc_text
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_text_decrypt(enc_text)
 RETURNS cstring
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE TYPE enc_text (
     INPUT          = pg_enc_text_in,
@@ -519,7 +519,7 @@ AS
 
 CREATE OR REPLACE FUNCTION enc_text(varchar)
     RETURNS enc_text
-    AS '$libdir/encdb', 'varchar_to_enc_text'
+    AS 'MODULE_PATHNAME', 'varchar_to_enc_text'
     LANGUAGE C STRICT IMMUTABLE ;
 
 CREATE CAST (varchar AS enc_text) WITH FUNCTION enc_text(varchar) AS ASSIGNMENT;
@@ -529,13 +529,13 @@ CREATE CAST (varchar AS enc_text) WITH FUNCTION enc_text(varchar) AS ASSIGNMENT;
 --------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION pg_enc_float4_in(cstring)
 RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE OR REPLACE FUNCTION pg_enc_float4_out(enc_float4)
 RETURNS cstring
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE TYPE enc_float4 (
     INPUT          = pg_enc_float4_in,
@@ -548,118 +548,99 @@ CREATE TYPE enc_float4 (
 
 CREATE FUNCTION pg_enc_float4_encrypt(float4)
 RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_decrypt(enc_float4)
 RETURNS float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_eq(enc_float4, enc_float4)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_ne(enc_float4, enc_float4)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_lt(enc_float4, enc_float4)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_le(enc_float4, enc_float4)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_gt(enc_float4, enc_float4)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_ge(enc_float4, enc_float4)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_cmp(enc_float4, enc_float4)
 RETURNS integer
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_add(enc_float4, enc_float4)
 RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_subs(enc_float4, enc_float4)
 RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_mult(enc_float4, enc_float4)
 RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_div(enc_float4, enc_float4)
 RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_exp(enc_float4, enc_float4)
 RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
-
-CREATE FUNCTION pg_enc_float4_addfinal(enc_float4[])
-RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_sum_bulk(enc_float4[])
 RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
-CREATE FUNCTION pg_enc_float4_maxfinal(enc_float4[])
-RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
 
-CREATE FUNCTION pg_enc_float4_max_bulk(enc_float4[])
+CREATE FUNCTION pg_enc_float4_max(enc_float4, enc_float4)
 RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
-CREATE FUNCTION pg_enc_float4_minfinal(enc_float4[])
+CREATE FUNCTION pg_enc_float4_min(enc_float4, enc_float4)
 RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
-
-CREATE FUNCTION pg_enc_float4_min_bulk(enc_float4[])
-RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
-
-CREATE FUNCTION pg_enc_float4_avgfinal(enc_float4[])
-RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_avg_bulk(enc_float4[])
 RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_float4_mod(enc_float4, enc_float4)
 RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE OPERATOR = (
   LEFTARG = enc_float4,
@@ -796,60 +777,48 @@ CREATE AGGREGATE avg_simple (enc_float4)
 (
    sfunc = array_append,
    stype = enc_float4[],
-   finalfunc = pg_enc_float4_avgfinal
+   finalfunc = pg_enc_float4_avg_bulk
 );
 
 CREATE AGGREGATE max (enc_float4)
 (
-   sfunc = array_append,
-   stype = enc_float4[],
-   finalfunc = pg_enc_float4_max_bulk
-);
-
-CREATE AGGREGATE max_simple (enc_float4)
-(
-   sfunc = array_append,
-   stype = enc_float4[],
-   finalfunc = pg_enc_float4_maxfinal
+   sfunc = pg_enc_float4_max,
+   stype = enc_float4,
+   PARALLEL = SAFE,
+   combinefunc = pg_enc_float4_max
 );
 
 CREATE AGGREGATE min (enc_float4)
 (
-   sfunc = array_append,
-   stype = enc_float4[],
-   finalfunc = pg_enc_float4_min_bulk
-);
-
-CREATE AGGREGATE min_simple (enc_float4)
-(
-   sfunc = array_append,
-   stype = enc_float4[],
-   finalfunc = pg_enc_float4_minfinal
+   sfunc = pg_enc_float4_min,
+   stype = enc_float4,
+   PARALLEL = SAFE,
+   combinefunc = pg_enc_float4_min
 );
 
 CREATE OR REPLACE FUNCTION enc_float4(float4)
     RETURNS enc_float4
-    AS '$libdir/encdb', 'float4_to_enc_float4'
+    AS 'MODULE_PATHNAME', 'float4_to_enc_float4'
     LANGUAGE C STRICT IMMUTABLE ;
 
 CREATE OR REPLACE FUNCTION enc_float4(double precision)
     RETURNS enc_float4
-    AS '$libdir/encdb', 'double_to_enc_float4'
+    AS 'MODULE_PATHNAME', 'double_to_enc_float4'
     LANGUAGE C STRICT IMMUTABLE ;
 
 CREATE OR REPLACE FUNCTION enc_float4(numeric)
     RETURNS enc_float4
-    AS '$libdir/encdb', 'numeric_to_enc_float4'
+    AS 'MODULE_PATHNAME', 'numeric_to_enc_float4'
     LANGUAGE C STRICT IMMUTABLE ;
 
 CREATE OR REPLACE FUNCTION enc_float4(int8)
     RETURNS enc_float4
-    AS '$libdir/encdb', 'int8_to_enc_float4'
+    AS 'MODULE_PATHNAME', 'int8_to_enc_float4'
     LANGUAGE C STRICT IMMUTABLE ;
 
 CREATE OR REPLACE FUNCTION enc_float4(int4)
     RETURNS enc_float4
-    AS '$libdir/encdb', 'int4_to_enc_float4'
+    AS 'MODULE_PATHNAME', 'int4_to_enc_float4'
     LANGUAGE C STRICT IMMUTABLE ;
 
 CREATE CAST (float4 AS enc_float4) WITH FUNCTION enc_float4(float4) AS ASSIGNMENT;
@@ -862,13 +831,13 @@ CREATE CAST (int4 AS enc_float4) WITH FUNCTION enc_float4(int4) AS ASSIGNMENT;
 --------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION pg_enc_timestamp_in(cstring)
 RETURNS enc_timestamp
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE OR REPLACE FUNCTION pg_enc_timestamp_out(enc_timestamp)
 RETURNS cstring
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE TYPE enc_timestamp (
     INPUT          = pg_enc_timestamp_in,
@@ -881,53 +850,53 @@ CREATE TYPE enc_timestamp (
 
 CREATE FUNCTION pg_enc_timestamp_encrypt(cstring)
 RETURNS enc_timestamp
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_timestamp_decrypt(enc_timestamp)
 RETURNS cstring
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_timestamp_eq(enc_timestamp, enc_timestamp)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_timestamp_ne(enc_timestamp, enc_timestamp)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_timestamp_lt(enc_timestamp, enc_timestamp)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_timestamp_le(enc_timestamp, enc_timestamp)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 -- CREATE OR REPLACE FUNCTION pg_catalog.date_part(text, enc_timestamp)
 -- RETURNS enc_int4
--- AS '$libdir/encdb'
--- LANGUAGE C IMMUTABLE STRICT ;
+-- AS 'MODULE_PATHNAME'
+-- LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_timestamp_gt(enc_timestamp, enc_timestamp)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_timestamp_ge(enc_timestamp, enc_timestamp)
 RETURNS boolean
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_timestamp_cmp(enc_timestamp, enc_timestamp)
 RETURNS integer
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE OPERATOR = (
   LEFTARG = enc_timestamp,
@@ -1002,7 +971,7 @@ AS
 
 CREATE OR REPLACE FUNCTION enc_timestamp(timestamp)
     RETURNS enc_timestamp
-    AS '$libdir/encdb', 'pg_enc_timestamp_encrypt'
+    AS 'MODULE_PATHNAME', 'pg_enc_timestamp_encrypt'
     LANGUAGE C STRICT IMMUTABLE ;
 
 CREATE CAST (timestamp AS enc_timestamp) WITH FUNCTION enc_timestamp(timestamp) AS ASSIGNMENT;

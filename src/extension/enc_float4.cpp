@@ -1,8 +1,9 @@
 /*
  * a simple UDF for float4
  */
-#include "extension.h"
+#include <extension.h>
 #include <string.h>
+#include <enc_float_ops.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,14 +12,10 @@ PG_FUNCTION_INFO_V1(pg_enc_float4_in);
 PG_FUNCTION_INFO_V1(pg_enc_float4_out);
 PG_FUNCTION_INFO_V1(pg_enc_float4_encrypt);
 PG_FUNCTION_INFO_V1(pg_enc_float4_decrypt);
-PG_FUNCTION_INFO_V1(pg_enc_float4_addfinal);
 PG_FUNCTION_INFO_V1(pg_enc_float4_sum_bulk);
-PG_FUNCTION_INFO_V1(pg_enc_float4_avgfinal);
 PG_FUNCTION_INFO_V1(pg_enc_float4_avg_bulk);
-PG_FUNCTION_INFO_V1(pg_enc_float4_maxfinal);
-PG_FUNCTION_INFO_V1(pg_enc_float4_max_bulk);
-PG_FUNCTION_INFO_V1(pg_enc_float4_minfinal);
-PG_FUNCTION_INFO_V1(pg_enc_float4_min_bulk);
+PG_FUNCTION_INFO_V1(pg_enc_float4_min);
+PG_FUNCTION_INFO_V1(pg_enc_float4_max);
 PG_FUNCTION_INFO_V1(pg_enc_float4_add);
 PG_FUNCTION_INFO_V1(pg_enc_float4_subs);
 PG_FUNCTION_INFO_V1(pg_enc_float4_mult);
@@ -76,17 +73,6 @@ static inline void before_invoke_function(const char *str)
     }
 }
 #endif
-static int float2bytearray(float src, uint8_t *pDst, size_t dstLen)
-{
-    memcpy(pDst, &src, FLOAT4_LENGTH);
-    return 0;
-}
-
-static int bytearray2float(uint8_t *pSrc, float *dst, size_t srcLen)
-{
-    memcpy(dst, pSrc, FLOAT4_LENGTH);
-    return 0;
-}
 
 float4 pg_float4_in(char *num);
 
@@ -136,12 +122,12 @@ Datum pg_enc_float4_in(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    char *pSrc = PG_GETARG_CSTRING(0);
-    char *pDst = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    float dst;
-    dst = pg_float4_in(pSrc);
-    float2bytearray(dst, pDst, FLOAT4_LENGTH);
-    PG_RETURN_POINTER(pDst);
+    char *s = PG_GETARG_CSTRING(0);
+    float val = pg_float4_in(s);
+    EncFloat *f = (EncFloat *) palloc(sizeof(EncFloat));
+    int resp = enc_float_encrypt(val, f);
+
+    PG_RETURN_POINTER(f);
 }
 
 /*
@@ -154,13 +140,104 @@ Datum pg_enc_float4_out(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    char *pSrc = PG_GETARG_CSTRING(0);
-    char *str = (char *)palloc(FLOAT4_LENGTH * sizeof(char));
+    EncFloat *s = PG_GETARG_ENCFlOAT(0);
+    char *str = (char *)palloc(sizeof(EncFloat));
     float ans;
-    bytearray2float(pSrc, &ans, FLOAT4_LENGTH);
+    enc_float_decrypt(s, &ans);
     sprintf(str, "%f", ans);
     PG_RETURN_POINTER(str);
 }
+
+
+/*
+ * The function converts a float to enc_float4 value. This function is called by sql function CAST.
+ * @input: float4
+ * @return: an encrypted result.
+ */
+Datum float4_to_enc_float4(PG_FUNCTION_ARGS)
+{
+    float src = PG_GETARG_FLOAT4(0);
+    EncFloat *f = (EncFloat *) palloc(sizeof(EncFloat));
+    enc_float_encrypt(src, f);
+    PG_RETURN_POINTER(f);
+}
+
+/*
+ * The function converts a numeric datatype(postgres variable datatype can be any of int2, int4, int8, float4, float8) to enc_float4 value.
+ * This function is called by sql function CAST. It uses function pg_float4_in to convert it to float4 and return an error if it can't
+ * @input: float4
+ * @return: an enc_float4 result.
+ */
+Datum numeric_to_enc_float4(PG_FUNCTION_ARGS)
+{
+    Numeric num = PG_GETARG_NUMERIC(0);
+    EncFloat *f = (EncFloat *) palloc(sizeof(EncFloat));
+    float4 src;
+    char *tmp = DatumGetCString(DirectFunctionCall1(numeric_out, NumericGetDatum(num)));
+
+    src = pg_float4_in(tmp);
+    enc_float_encrypt(src,f);
+    pfree(tmp);
+    PG_RETURN_POINTER(f);
+}
+
+/*
+ * The function converts a double precision datatype to enc_float4 value.
+ * This function is called by sql function CAST. It uses function pg_float4_in to convert it to float4 and return an error if it can't
+ * @input: float8
+ * @return: an enc_float4 result.
+ */
+Datum double_to_enc_float4(PG_FUNCTION_ARGS)
+{
+    float8 num = PG_GETARG_FLOAT8(0);
+    EncFloat *f = (EncFloat *) palloc(sizeof(EncFloat));
+    float src;
+    char *tmp = DatumGetCString(DirectFunctionCall1(float8out, Float8GetDatum(num)));
+
+    src = pg_float4_in(tmp);
+    enc_float_encrypt(src, f);
+    pfree(tmp);
+    PG_RETURN_POINTER(f);
+}
+
+/*
+ * The function converts a bigint (int8) datatype to enc_float4 value.
+ * This function is called by sql function CAST. It uses function pg_float4_in to convert it to float4 and return an error if it can't
+ * @input: int8
+ * @return: an enc_float4 result.
+ */
+Datum int8_to_enc_float4(PG_FUNCTION_ARGS)
+{
+    int8 num = PG_GETARG_INT64(0);
+    EncFloat *f = (EncFloat *) palloc(sizeof(EncFloat));
+    float4 src;
+    char *tmp = DatumGetCString(DirectFunctionCall1(int8out, Int8GetDatum(num)));
+
+    src = pg_float4_in(tmp);
+    enc_float_encrypt(src, f);
+    pfree(tmp);
+    PG_RETURN_POINTER(f);
+}
+
+/*
+ * The function converts a int (int4) datatype to enc_float4 value.
+ * This function is called by sql function CAST. It uses function pg_float4_in to convert it to float4 and return an error if it can't
+ * @input: int4
+ * @return: an enc_float4 result.
+ */
+Datum int4_to_enc_float4(PG_FUNCTION_ARGS)
+{
+    int num = PG_GETARG_INT32(0);
+    EncFloat *f = (EncFloat *) palloc(sizeof(EncFloat));
+    float4 src;
+    char *tmp = DatumGetCString(DirectFunctionCall1(int4out, Int32GetDatum(num)));
+
+    src = pg_float4_in(tmp);
+    enc_float_encrypt(src, f);
+    pfree(tmp);
+    PG_RETURN_POINTER(f);
+}
+
 
 // TODO
 //  DEBUG FUNCTION
@@ -171,9 +248,9 @@ Datum pg_enc_float4_encrypt(PG_FUNCTION_ARGS)
     before_invoke_function(__func__);
 #endif
     float src = PG_GETARG_FLOAT4(0);
-    char *pDst = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    float2bytearray(src, pDst, FLOAT4_LENGTH);
-    PG_RETURN_CSTRING(pDst);
+    EncFloat *f = (EncFloat *) palloc(sizeof(EncFloat));
+    enc_float_encrypt(src, f);
+    PG_RETURN_CSTRING(f);
 }
 
 // TODO
@@ -184,138 +261,50 @@ Datum pg_enc_float4_decrypt(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float dst = 0;
-    char *pSrc = PG_GETARG_CSTRING(0);
-    bytearray2float(pSrc, &dst, FLOAT4_LENGTH);
-    PG_RETURN_FLOAT4(dst);
-}
-
-/*
- * The function calculates the sum of elements from input array
- * It is called by sql aggregate command SUM, which is firstly appends needed enc_float4 elements into array and then calls this function.
- * @input: an array of enc_float4 values which should be summarize
- * @return: a enc_float4 result.
- */
-Datum pg_enc_float4_addfinal(PG_FUNCTION_ARGS)
-{
-#ifdef ENABLE_COUNTER
-    before_invoke_function(__func__);
-#endif
-    ArrayType *v = PG_GETARG_ARRAYTYPE_P(0);
-    bool isnull;
-    Datum value;
-    char *pSrc1 = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    char *pSrc2 = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    char *pTemp = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-
-    ArrayMetaState *my_extra = (ArrayMetaState *)fcinfo->flinfo->fn_extra;
-    ArrayIterator array_iterator = array_create_iterator(v, 0, my_extra);
-    array_iterate(array_iterator, &value, &isnull);
-
-    memcpy(pSrc1, DatumGetCString(value), FLOAT4_LENGTH);
-    while (array_iterate(array_iterator, &value, &isnull))
-    {
-        memcpy(pTemp, DatumGetCString(value), FLOAT4_LENGTH);
-        float a, b;
-        bytearray2float(pTemp, &a, FLOAT4_LENGTH);
-        bytearray2float(pSrc1, &b, FLOAT4_LENGTH);
-
-        float result = a + b;
-
-        float2bytearray(result, pSrc2, FLOAT4_LENGTH);
-        memcpy(pSrc1, pSrc2, FLOAT4_LENGTH);
-    }
-    pfree(pTemp);
-    pfree(pSrc2);
-
-    PG_RETURN_POINTER(pSrc1);
+    EncFloat *s = PG_GETARG_ENCFlOAT(0);
+    float ans;
+    enc_float_decrypt(s, &ans);
+    PG_RETURN_FLOAT4(ans);
 }
 
 Datum pg_enc_float4_sum_bulk(PG_FUNCTION_ARGS)
 {
-    // SAME AS pg_enc_float4_addfinal()
     ArrayType *v = PG_GETARG_ARRAYTYPE_P(0);
     bool isnull;
     Datum value;
-    char *pSrc1 = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    char *pSrc2 = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    char *pTemp = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
+    EncFloat *sum = (EncFloat *) palloc(sizeof(EncFloat));
+    EncFloat array[BULK_SIZE];
+    int counter = 1; // sum will be at array[0]
 
     ArrayMetaState *my_extra = (ArrayMetaState *)fcinfo->flinfo->fn_extra;
     ArrayIterator array_iterator = array_create_iterator(v, 0, my_extra);
-    array_iterate(array_iterator, &value, &isnull);
 
-    memcpy(pSrc1, DatumGetCString(value), FLOAT4_LENGTH);
+    array_iterate(array_iterator, &value, &isnull);
+    *sum = *DatumGetEncFloat(value);
+    array[0] = *sum;
     while (array_iterate(array_iterator, &value, &isnull))
     {
-        memcpy(pTemp, DatumGetCString(value), FLOAT4_LENGTH);
-        float a, b;
-        bytearray2float(pTemp, &a, FLOAT4_LENGTH);
-        bytearray2float(pSrc1, &b, FLOAT4_LENGTH);
-
-        float result = a + b;
-
-        float2bytearray(result, pSrc2, FLOAT4_LENGTH);
-        memcpy(pSrc1, pSrc2, FLOAT4_LENGTH);
+        array[counter] = *DatumGetEncFloat(value);
+        counter ++; 
+        if(counter == BULK_SIZE){
+            enc_float_sum_bulk(BULK_SIZE,array, sum);
+            array[0] = *sum;
+            counter = 1;
+        }
     }
-    pfree(pTemp);
-    pfree(pSrc2);
-
-    PG_RETURN_POINTER(pSrc1);
-}
-
-/*
- * The function computes the average of elements from array of enc_float4 elements.
- * It is called by sql aggregate command AVG, which is firstly appends needed enc_float4 elements into array and then calls this function.
- * @input: an array of enc_float4 elements
- * @return: a result (enc_float4).
- */
-Datum pg_enc_float4_avgfinal(PG_FUNCTION_ARGS)
-{
-#ifdef ENABLE_COUNTER
-    before_invoke_function(__func__);
-#endif
-    ArrayType *v = PG_GETARG_ARRAYTYPE_P(0);
-    bool isnull;
-    Datum value;
-    int ndims1 = ARR_NDIM(v); // array dimension
-    int *dims1 = ARR_DIMS(v);
-    int nitems = ArrayGetNItems(ndims1, dims1); // number of items in array
-
-    char *pSrc1 = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    char *pSrc2 = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    char *pTemp = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    ArrayMetaState *my_extra = (ArrayMetaState *)fcinfo->flinfo->fn_extra;
-    ArrayIterator array_iterator = array_create_iterator(v, 0, my_extra);
-    array_iterate(array_iterator, &value, &isnull);
-
-    memcpy(pSrc1, DatumGetCString(value), FLOAT4_LENGTH);
-    float result = 0;
-    while (array_iterate(array_iterator, &value, &isnull))
-    {
-        memcpy(pTemp, DatumGetCString(value), FLOAT4_LENGTH);
-        float a, b;
-        bytearray2float(pTemp, &a, FLOAT4_LENGTH);
-        bytearray2float(pSrc1, &b, FLOAT4_LENGTH);
-
-        result = a + b;
-
-        float2bytearray(result, pSrc2, FLOAT4_LENGTH);
-        memcpy(pSrc1, pSrc2, FLOAT4_LENGTH);
+    if(counter > 1){
+        enc_float_sum_bulk(counter,array, sum);
     }
 
-    result /= nitems;
-
-    float2bytearray(result, pSrc2, FLOAT4_LENGTH);
-    pfree(pTemp);
-    pfree(pSrc1);
-
-    PG_RETURN_POINTER(pSrc2);
+    PG_RETURN_POINTER(sum);
 }
+
 
 Datum pg_enc_float4_avg_bulk(PG_FUNCTION_ARGS)
 {
-    // SAME AS pg_enc_float4_avgfinal()
+#ifdef ENABLE_COUNTER
+    before_invoke_function(__func__);
+#endif
     ArrayType *v = PG_GETARG_ARRAYTYPE_P(0);
     bool isnull;
     Datum value;
@@ -323,238 +312,86 @@ Datum pg_enc_float4_avg_bulk(PG_FUNCTION_ARGS)
     int *dims1 = ARR_DIMS(v);
     int nitems = ArrayGetNItems(ndims1, dims1); // number of items in array
 
-    char *pSrc1 = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    char *pSrc2 = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    char *pTemp = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
+    EncFloat *sum = (EncFloat *) palloc(sizeof(EncFloat));
+    EncFloat *res = (EncFloat *) palloc(sizeof(EncFloat));
+    EncFloat num;
+    EncFloat array[BULK_SIZE];
+    int counter = 1; // sum will be at array[0]
+
     ArrayMetaState *my_extra = (ArrayMetaState *)fcinfo->flinfo->fn_extra;
     ArrayIterator array_iterator = array_create_iterator(v, 0, my_extra);
-    array_iterate(array_iterator, &value, &isnull);
 
-    memcpy(pSrc1, DatumGetCString(value), FLOAT4_LENGTH);
-    float result = 0;
+    array_iterate(array_iterator, &value, &isnull);
+    *sum = *DatumGetEncFloat(value);
+    array[0] = *sum;
     while (array_iterate(array_iterator, &value, &isnull))
     {
-        memcpy(pTemp, DatumGetCString(value), FLOAT4_LENGTH);
-        float a, b;
-        bytearray2float(pTemp, &a, FLOAT4_LENGTH);
-        bytearray2float(pSrc1, &b, FLOAT4_LENGTH);
-
-        result = a + b;
-
-        float2bytearray(result, pSrc2, FLOAT4_LENGTH);
-        memcpy(pSrc1, pSrc2, FLOAT4_LENGTH);
+        array[counter] = *DatumGetEncFloat(value);
+        counter ++; 
+        if(counter == BULK_SIZE){
+            enc_float_sum_bulk(BULK_SIZE,array, sum);
+            array[0] = *sum;
+            counter = 1;
+        }
     }
-
-    result /= nitems;
-
-    float2bytearray(result, pSrc2, FLOAT4_LENGTH);
-    pfree(pTemp);
-    pfree(pSrc1);
-
-    PG_RETURN_POINTER(pSrc2);
+    if(counter > 1){
+        enc_float_sum_bulk(counter,array, sum);
+    }
+    enc_float_encrypt(nitems*1.0, &num);
+    enc_float_div(sum, &num,res);
+    free(sum);
+    PG_RETURN_POINTER(res);
 }
 
 /*
- * The function computes the maximal element of array of enc_float4 elements
- * It is called by sql aggregate command MAX, which first appends needed enc_float4 elements to an array and then calls this function.
- * @input: array of enc_float4 elements
- * @return: an enc_float4 result.
+ * return the less between the two.
  */
-Datum pg_enc_float4_maxfinal(PG_FUNCTION_ARGS)
+Datum pg_enc_float4_max(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    ArrayType *v = PG_GETARG_ARRAYTYPE_P(0);
-    int ans = 0;
-    ArrayIterator array_iterator;
-    ArrayMetaState *my_extra = (ArrayMetaState *)fcinfo->flinfo->fn_extra;
-    bool isnull;
-    Datum value;
-    int item_count = ArrayGetNItems(ARR_NDIM(v), ARR_DIMS(v)); // number of items in array
-    char *max = palloc(FLOAT4_LENGTH * sizeof(*max));
-    char *value_bytes = palloc(FLOAT4_LENGTH * sizeof(*value_bytes));
-    char *res = palloc(FLOAT4_LENGTH * sizeof(*res));
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    int cmp; 
 
-    array_iterator = array_create_iterator(v, 0, my_extra);
-    array_iterate(array_iterator, &value, &isnull);
-
-    memcpy(max, DatumGetCString(value), FLOAT4_LENGTH);
-    while (array_iterate(array_iterator, &value, &isnull))
-    {
-        memcpy(value_bytes, DatumGetCString(value), FLOAT4_LENGTH);
-        float a, b;
-        bytearray2float(max, &a, FLOAT4_LENGTH);
-        bytearray2float(value_bytes, &b, FLOAT4_LENGTH);
-
-        ans = (a == b)  ? 0
-              : (a < b) ? -1
-                        : 1;
-
-        if (ans == -1)
-        {
-            memcpy(max, value_bytes, FLOAT4_LENGTH);
-        }
-    }
-    pfree(value_bytes);
-    pfree(res);
-
-    PG_RETURN_POINTER(max);
+    enc_float_cmp(f1,f2,&cmp);
+    if(cmp == 1)
+        PG_RETURN_POINTER(f1);
+    else 
+        PG_RETURN_POINTER(f2);
 }
-
-Datum pg_enc_float4_max_bulk(PG_FUNCTION_ARGS)
-{
-    // SAME AS pg_enc_float4_maxfinal()
-    ArrayType *v = PG_GETARG_ARRAYTYPE_P(0);
-    int ans = 0;
-    ArrayIterator array_iterator;
-    ArrayMetaState *my_extra = (ArrayMetaState *)fcinfo->flinfo->fn_extra;
-    bool isnull;
-    Datum value;
-    int item_count = ArrayGetNItems(ARR_NDIM(v), ARR_DIMS(v)); // number of items in array
-    char *max = palloc(FLOAT4_LENGTH * sizeof(*max));
-    char *value_bytes = palloc(FLOAT4_LENGTH * sizeof(*value_bytes));
-    char *res = palloc(FLOAT4_LENGTH * sizeof(*res));
-
-    array_iterator = array_create_iterator(v, 0, my_extra);
-    array_iterate(array_iterator, &value, &isnull);
-
-    memcpy(max, DatumGetCString(value), FLOAT4_LENGTH);
-    while (array_iterate(array_iterator, &value, &isnull))
-    {
-        memcpy(value_bytes, DatumGetCString(value), FLOAT4_LENGTH);
-        float a, b;
-        bytearray2float(max, &a, FLOAT4_LENGTH);
-        bytearray2float(value_bytes, &b, FLOAT4_LENGTH);
-
-        ans = (a == b)  ? 0
-              : (a < b) ? -1
-                        : 1;
-
-        if (ans == -1)
-        {
-            memcpy(max, value_bytes, FLOAT4_LENGTH);
-        }
-    }
-    pfree(value_bytes);
-    pfree(res);
-
-    PG_RETURN_POINTER(max);
-}
-
 /*
- * The function computes the minimal element of array of enc_float4 elements
- * It is called by sql aggregate command MIN, which first appends needed enc_float4 elements to an array and then calls this function.
- * @input: array of enc_float4 elements
- * @return: an enc_float4 result.
+ * return the less between the two.
  */
-Datum pg_enc_float4_minfinal(PG_FUNCTION_ARGS)
+Datum pg_enc_float4_min(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    ArrayType *v = PG_GETARG_ARRAYTYPE_P(0);
-    int ans = 0;
-    ArrayIterator array_iterator;
-    ArrayMetaState *my_extra = (ArrayMetaState *)fcinfo->flinfo->fn_extra;
-    bool isnull;
-    Datum value;
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    int cmp; 
 
-    int ndims1 = ARR_NDIM(v); // array dimension
-    int *dims1 = ARR_DIMS(v);
-    int nitems = ArrayGetNItems(ndims1, dims1); // number of items in array
-
-    char *pSrc1 = palloc((FLOAT4_LENGTH) * sizeof(*pSrc1));
-    char *pTemp = palloc((FLOAT4_LENGTH) * sizeof(*pTemp));
-    char *pDst = palloc((FLOAT4_LENGTH) * sizeof(*pDst));
-
-    array_iterator = array_create_iterator(v, 0, my_extra);
-    array_iterate(array_iterator, &value, &isnull);
-
-    memcpy(pSrc1, DatumGetCString(value), FLOAT4_LENGTH);
-    while (array_iterate(array_iterator, &value, &isnull))
-    {
-        memcpy(pTemp, DatumGetCString(value), FLOAT4_LENGTH);
-        float a, b;
-        bytearray2float(pSrc1, &a, FLOAT4_LENGTH);
-        bytearray2float(pTemp, &b, FLOAT4_LENGTH);
-
-        ans = (a == b)  ? 0
-              : (a < b) ? -1
-                        : 1;
-
-        if (ans == 1)
-        {
-            memcpy(pSrc1, pTemp, FLOAT4_LENGTH);
-        }
-    }
-    pfree(pDst);
-    pfree(pTemp);
-
-    PG_RETURN_POINTER(pSrc1);
+    enc_float_cmp(f1,f2,&cmp);
+    if(cmp == 0)
+        PG_RETURN_POINTER(f1);
+    else 
+        PG_RETURN_POINTER(f2);
 }
-
-Datum pg_enc_float4_min_bulk(PG_FUNCTION_ARGS)
-{
-    // SAME AS pg_enc_float4_minfinal()
-    ArrayType *v = PG_GETARG_ARRAYTYPE_P(0);
-    int ans = 0;
-    ArrayIterator array_iterator;
-    ArrayMetaState *my_extra = (ArrayMetaState *)fcinfo->flinfo->fn_extra;
-    bool isnull;
-    Datum value;
-
-    int ndims1 = ARR_NDIM(v); // array dimension
-    int *dims1 = ARR_DIMS(v);
-    int nitems = ArrayGetNItems(ndims1, dims1); // number of items in array
-
-    char *pSrc1 = palloc((FLOAT4_LENGTH) * sizeof(*pSrc1));
-    char *pTemp = palloc((FLOAT4_LENGTH) * sizeof(*pTemp));
-    char *pDst = palloc((FLOAT4_LENGTH) * sizeof(*pDst));
-
-    array_iterator = array_create_iterator(v, 0, my_extra);
-    array_iterate(array_iterator, &value, &isnull);
-
-    memcpy(pSrc1, DatumGetCString(value), FLOAT4_LENGTH);
-    while (array_iterate(array_iterator, &value, &isnull))
-    {
-        memcpy(pTemp, DatumGetCString(value), FLOAT4_LENGTH);
-        float a, b;
-        bytearray2float(pSrc1, &a, FLOAT4_LENGTH);
-        bytearray2float(pTemp, &b, FLOAT4_LENGTH);
-
-        ans = (a == b)  ? 0
-              : (a < b) ? -1
-                        : 1;
-
-        if (ans == 1)
-        {
-            memcpy(pSrc1, pTemp, FLOAT4_LENGTH);
-        }
-    }
-    pfree(pDst);
-    pfree(pTemp);
-
-    PG_RETURN_POINTER(pSrc1);
-}
-/*
- * The function calculates the sum of two enc_float4 values. It is called by binary operator '+' defined in sql extension.
- * @input: two enc_float4 values
- * @return: sum of input values
- */
 
 Datum pg_enc_float4_add(PG_FUNCTION_ARGS)
 {
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = (float *)PG_GETARG_CSTRING(0);
-    float *c2 = (float *)PG_GETARG_CSTRING(1);
-    float *pDst = (float *)palloc((FLOAT4_LENGTH) * sizeof(char));
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    EncFloat *f = (EncFloat *)palloc(sizeof(EncFloat));   
 
-    *pDst = *c1 + *c2;
+    enc_float_add(f1,f2,f);
 
-    PG_RETURN_POINTER(pDst);
+    PG_RETURN_POINTER(f);
 }
 
 /*
@@ -567,17 +404,13 @@ Datum pg_enc_float4_subs(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    char *c1 = PG_GETARG_CSTRING(0);
-    char *c2 = PG_GETARG_CSTRING(1);
-    char *pDst = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    float a, b;
-    bytearray2float(c1, &a, FLOAT4_LENGTH);
-    bytearray2float(c2, &b, FLOAT4_LENGTH);
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    EncFloat *f = (EncFloat *)palloc(sizeof(EncFloat));   
 
-    float result = a - b;
+    enc_float_sub(f1,f2,f);
 
-    float2bytearray(result, pDst, FLOAT4_LENGTH);
-    PG_RETURN_POINTER(pDst);
+    PG_RETURN_POINTER(f);
 }
 
 /*
@@ -590,17 +423,13 @@ Datum pg_enc_float4_mult(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    char *c1 = PG_GETARG_CSTRING(0);
-    char *c2 = PG_GETARG_CSTRING(1);
-    char *pDst = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    float a, b;
-    bytearray2float(c1, &a, FLOAT4_LENGTH);
-    bytearray2float(c2, &b, FLOAT4_LENGTH);
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    EncFloat *f = (EncFloat *)palloc(sizeof(EncFloat));   
 
-    float result = a * b;
+    enc_float_mult(f1,f2,f);
 
-    float2bytearray(result, pDst, FLOAT4_LENGTH);
-    PG_RETURN_POINTER(pDst);
+    PG_RETURN_POINTER(f);
 }
 
 /*
@@ -614,17 +443,13 @@ Datum pg_enc_float4_div(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    char *c1 = PG_GETARG_CSTRING(0);
-    char *c2 = PG_GETARG_CSTRING(1);
-    char *pDst = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    float a, b;
-    bytearray2float(c1, &a, FLOAT4_LENGTH);
-    bytearray2float(c2, &b, FLOAT4_LENGTH);
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    EncFloat *f = (EncFloat *)palloc(sizeof(EncFloat));   
 
-    float result = a / b;
+    enc_float_div(f1,f2,f);
 
-    float2bytearray(result, pDst, FLOAT4_LENGTH);
-    PG_RETURN_POINTER(pDst);
+    PG_RETURN_POINTER(f);
 }
 
 /*
@@ -638,19 +463,34 @@ Datum pg_enc_float4_exp(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    char *c1 = PG_GETARG_CSTRING(0);
-    char *c2 = PG_GETARG_CSTRING(1);
-    char *pDst = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    float a, b;
-    bytearray2float(c1, &a, FLOAT4_LENGTH);
-    bytearray2float(c2, &b, FLOAT4_LENGTH);
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    EncFloat *f = (EncFloat *)palloc(sizeof(EncFloat));   
 
-    float result = pow(a, b);
+    enc_float_pow(f1,f2,f);
 
-    float2bytearray(result, pDst, FLOAT4_LENGTH);
-    PG_RETURN_POINTER(pDst);
+    PG_RETURN_POINTER(f);
 }
 
+/*
+ * The function calculates the first input enc_float4 value by module the second input enc_float4 value.
+ * It is called by binary operator '%' defined in sql extension.
+ * @input: two enc_float4 values
+ * @return: result of input values .
+ */
+Datum pg_enc_float4_mod(PG_FUNCTION_ARGS)
+{
+#ifdef ENABLE_COUNTER
+    before_invoke_function(__func__);
+#endif
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    EncFloat *f = (EncFloat *)palloc(sizeof(EncFloat));   
+
+    enc_float_mod(f1,f2,f);
+
+    PG_RETURN_POINTER(f);
+}
 /*
  * The function checks if the first input enc_float4 is equal to the second one.
  * It is called by binary operator '=' defined in sql extension.
@@ -663,15 +503,15 @@ Datum pg_enc_float4_eq(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = (float *)PG_GETARG_CSTRING(0);
-    float *c2 = (float *)PG_GETARG_CSTRING(1);
-    int ans = 0;
-    float a, b;
-    a = *c1, b = *c2;
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    int cmp,ret; 
 
-    int cmp = (a == b) ? true : false;
+    enc_float_cmp(f1,f2,&cmp);
 
-    PG_RETURN_BOOL(cmp);
+    ret = cmp == 0;
+
+    PG_RETURN_BOOL(ret);
 }
 
 /*
@@ -686,15 +526,15 @@ Datum pg_enc_float4_ne(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = (float *)PG_GETARG_CSTRING(0);
-    float *c2 = (float *)PG_GETARG_CSTRING(1);
-    int ans = 0;
-    float a, b;
-    a = *c1, b = *c2;
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    int cmp,ret; 
 
-    int cmp = (a != b) ? true : false;
+    enc_float_cmp(f1,f2,&cmp);
 
-    PG_RETURN_BOOL(cmp);
+    ret = cmp != 0;
+
+    PG_RETURN_BOOL(ret);
 }
 
 /*
@@ -709,14 +549,15 @@ Datum pg_enc_float4_lt(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = (float *)PG_GETARG_CSTRING(0);
-    float *c2 = (float *)PG_GETARG_CSTRING(1);
-    int ans = 0;
-    float a, b;
-    a = *c1, b = *c2;
-    int cmp = (a < b) ? true : false;
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    int cmp,ret; 
 
-    PG_RETURN_BOOL(cmp);
+    enc_float_cmp(f1,f2,&cmp);
+
+    ret = cmp == -1;
+
+    PG_RETURN_BOOL(ret);
 }
 
 /*
@@ -731,14 +572,15 @@ Datum pg_enc_float4_le(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = (float *)PG_GETARG_CSTRING(0);
-    float *c2 = (float *)PG_GETARG_CSTRING(1);
-    int ans = 0;
-    float a, b;
-    a = *c1, b = *c2;
-    int cmp = (a <= b) ? true : false;
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    int cmp,ret; 
 
-    PG_RETURN_BOOL(cmp);
+    enc_float_cmp(f1,f2,&cmp);
+
+    ret = cmp <= 0;
+
+    PG_RETURN_BOOL(ret);
 }
 
 /*
@@ -753,14 +595,15 @@ Datum pg_enc_float4_gt(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = (float *)PG_GETARG_CSTRING(0);
-    float *c2 = (float *)PG_GETARG_CSTRING(1);
-    int ans = 0;
-    float a, b;
-    a = *c1, b = *c2;
-    int cmp = (a > b) ? true : false;
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    int cmp,ret; 
 
-    PG_RETURN_BOOL(cmp);
+    enc_float_cmp(f1,f2,&cmp);
+
+    ret = cmp == 1;
+
+    PG_RETURN_BOOL(ret);
 }
 
 /*
@@ -775,15 +618,15 @@ Datum pg_enc_float4_ge(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = (float *)PG_GETARG_CSTRING(0);
-    float *c2 = (float *)PG_GETARG_CSTRING(1);
-    int ans = 0;
-    float a, b;
-    a = *c1, b = *c2;
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    int cmp,ret; 
 
-    int cmp = (a >= b) ? true : false;
+    enc_float_cmp(f1,f2,&cmp);
 
-    PG_RETURN_BOOL(cmp);
+    ret = cmp >= 0;
+
+    PG_RETURN_BOOL(ret);
 }
 
 /*
@@ -796,54 +639,16 @@ Datum pg_enc_float4_cmp(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = (float *)PG_GETARG_CSTRING(0);
-    float *c2 = (float *)PG_GETARG_CSTRING(1);
-    int ans = 0;
-    float a, b;
-    a = *c1, b = *c2;
-    ans = (a == b)  ? 0
-          : (a < b) ? -1
-                    : 1;
+    EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
+    EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
+    int cmp; 
 
-    PG_RETURN_INT32(ans);
+    enc_float_cmp(f1,f2,&cmp);
+
+
+    PG_RETURN_INT32(cmp);
 }
 
-/*
- * The function calculates the first input enc_float4 value by module the second input enc_float4 value.
- * It is called by binary operator '%' defined in sql extension.
- * @input: two enc_float4 values
- * @return: result of input values .
- */
-Datum pg_enc_float4_mod(PG_FUNCTION_ARGS)
-{
-#ifdef ENABLE_COUNTER
-    before_invoke_function(__func__);
-#endif
-    char *c1 = PG_GETARG_CSTRING(0);
-    char *c2 = PG_GETARG_CSTRING(1);
-    char *pDst = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    float a, b;
-    bytearray2float(c1, &a, FLOAT4_LENGTH);
-    bytearray2float(c2, &b, FLOAT4_LENGTH);
-
-    float result = (int)a % (int)b;
-
-    float2bytearray(result, pDst, FLOAT4_LENGTH);
-    PG_RETURN_POINTER(pDst);
-}
-
-/*
- * The function converts a float to enc_float4 value. This function is called by sql function CAST.
- * @input: float4
- * @return: an encrypted result.
- */
-Datum float4_to_enc_float4(PG_FUNCTION_ARGS)
-{
-    float src = PG_GETARG_FLOAT4(0);
-    char *pDst = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    float2bytearray(src, pDst, FLOAT4_LENGTH);
-    PG_RETURN_POINTER((const char *)pDst);
-}
 
 float4 pg_float4_in(char *num)
 {
@@ -977,79 +782,4 @@ float4 pg_float4_in(char *num)
     // CHECKFLOATVAL((float4) val, isinf(val), val == 0);
 
     return ((float4)val);
-}
-
-/*
- * The function converts a numeric datatype(postgres variable datatype can be any of int2, int4, int8, float4, float8) to enc_float4 value.
- * This function is called by sql function CAST. It uses function pg_float4_in to convert it to float4 and return an error if it can't
- * @input: float4
- * @return: an enc_float4 result.
- */
-Datum numeric_to_enc_float4(PG_FUNCTION_ARGS)
-{
-    Numeric num = PG_GETARG_NUMERIC(0);
-    char *pDst = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    float4 src;
-    char *tmp = DatumGetCString(DirectFunctionCall1(numeric_out, NumericGetDatum(num)));
-    src = pg_float4_in(tmp);
-    float2bytearray(src, pDst, FLOAT4_LENGTH);
-    pfree(tmp);
-    PG_RETURN_POINTER(pDst);
-}
-
-/*
- * The function converts a double precision datatype to enc_float4 value.
- * This function is called by sql function CAST. It uses function pg_float4_in to convert it to float4 and return an error if it can't
- * @input: float8
- * @return: an enc_float4 result.
- */
-Datum double_to_enc_float4(PG_FUNCTION_ARGS)
-{
-    float8 num = PG_GETARG_FLOAT8(0);
-    char *pDst = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    int ans;
-    float4 src;
-    char *tmp = DatumGetCString(DirectFunctionCall1(float8out, Float8GetDatum(num)));
-    src = pg_float4_in(tmp);
-    float2bytearray(src, pDst, FLOAT4_LENGTH);
-    pfree(tmp);
-    PG_RETURN_POINTER(pDst);
-}
-
-/*
- * The function converts a bigint (int8) datatype to enc_float4 value.
- * This function is called by sql function CAST. It uses function pg_float4_in to convert it to float4 and return an error if it can't
- * @input: int8
- * @return: an enc_float4 result.
- */
-Datum int8_to_enc_float4(PG_FUNCTION_ARGS)
-{
-    int8 num = PG_GETARG_INT64(0);
-    char *pDst = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    int ans;
-    float4 src;
-    char *tmp = DatumGetCString(DirectFunctionCall1(int8out, Int8GetDatum(num)));
-    src = pg_float4_in(tmp);
-    float2bytearray(src, pDst, FLOAT4_LENGTH);
-    pfree(tmp);
-    PG_RETURN_POINTER(pDst);
-}
-
-/*
- * The function converts a int (int4) datatype to enc_float4 value.
- * This function is called by sql function CAST. It uses function pg_float4_in to convert it to float4 and return an error if it can't
- * @input: int4
- * @return: an enc_float4 result.
- */
-Datum int4_to_enc_float4(PG_FUNCTION_ARGS)
-{
-    int num = PG_GETARG_INT32(0);
-    char *pDst = (char *)palloc((FLOAT4_LENGTH) * sizeof(char));
-    int ans;
-    float4 src;
-    char *tmp = DatumGetCString(DirectFunctionCall1(int4out, Int32GetDatum(num)));
-    src = pg_float4_in(tmp);
-    float2bytearray(src, pDst, FLOAT4_LENGTH);
-    pfree(tmp);
-    PG_RETURN_POINTER(pDst);
 }

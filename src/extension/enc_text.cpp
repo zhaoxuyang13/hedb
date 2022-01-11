@@ -54,7 +54,7 @@ static bool MatchText(char *t, int tlen, char *p, int plen)
 
 static char* SubText(char *str, int from, int to)
 {
-    char* result = palloc((to-from+1)*sizeof(char));
+    char* result = (char *)palloc((to-from+1)*sizeof(char));
     for (int i = 0; i < to-from+1; i++)
     {
         result[i] = str[from + i - 1];
@@ -98,7 +98,7 @@ Datum
     pg_enc_text_out(PG_FUNCTION_ARGS)
 {
     // ereport(INFO, (errmsg("pg_enc_text_out here!")));
-    EncText* s = PG_GETARG_DATUM(0);
+    EncText* s = (EncText *)PG_GETARG_DATUM(0);
 
     PG_RETURN_CSTRING(TextDatumGetCString(s));
 }

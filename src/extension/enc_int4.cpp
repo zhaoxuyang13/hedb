@@ -7,6 +7,7 @@
  */
 #include <extension.h>
 #include <enc_int_ops.hpp>
+#include <enc_float_ops.hpp>
 extern bool debugMode;
 
 #ifdef __cplusplus
@@ -496,52 +497,6 @@ Datum
     PG_RETURN_CSTRING(sum);
 }
 
-// /*
-//  * The function computes the average of elements from array of enc_int4 elements.
-//  * It is called by sql aggregate command AVG, which is firstly appends needed enc_int4 elements into array and then calls this function.
-//  * It requires a running SGX enclave and uses the function 'enc_int_add', 'enc_int_div', 'enc_int_encrypt' from the 'interface' library.
-//  * @input: an array of enc_int4 elements
-//  * @return: an encrypted result (encrypted integer). output format: BASE64(iv[12 bytes]||AES-GCM(s1+s2)[4 bytes]||AUTHTAG[16bytes])
-//  */
-// Datum
-//     pg_enc_int4_avgfinal(PG_FUNCTION_ARGS)
-// {
-//     ArrayType* v = PG_GETARG_ARRAYTYPE_P(0);
-//     int resp = 0;
-//     ArrayIterator array_iterator;
-//     ArrayMetaState* my_extra = (ArrayMetaState*)fcinfo->flinfo->fn_extra;
-//     bool isnull;
-//     Datum value;
-//     int ndims1 = ARR_NDIM(v); //array dimension
-//     int* dims1 = ARR_DIMS(v);
-//     int nitems = ArrayGetNItems(ndims1, dims1); //number of items in array
-//     EncInt* pSrc1 = (EncInt*)palloc(sizeof(EncInt));
-//     EncInt* pSrc2 = (EncInt*)palloc(sizeof(EncInt));
-//     EncInt* pTemp = (EncInt*)palloc(sizeof(EncInt));
-
-//     array_iterator = array_create_iterator(v, 0, my_extra);
-//     array_iterate(array_iterator, &value, &isnull);
-
-//     memcpy(pSrc1, DatumGetCString(value), sizeof(EncInt));
-//     while (array_iterate(array_iterator, &value, &isnull))
-//     {
-//         memcpy(pTemp, DatumGetCString(value), sizeof(EncInt));
-
-//         resp = enc_int_add(pSrc1, pTemp, pSrc2);
-//         sgxErrorHandler(resp);
-
-//         memcpy(pSrc1, pSrc2, sizeof(EncInt));
-//     }
-
-//     resp = enc_int_encrypt(nitems, pTemp);
-
-//     resp = enc_int_div(pSrc1, pTemp, pSrc2);
-
-//     pfree(pTemp);
-//     pfree(pSrc1);
-
-//     PG_RETURN_CSTRING(pSrc2);
-// }
 
 Datum
     pg_enc_int4_avg_bulk(PG_FUNCTION_ARGS)
@@ -556,44 +511,40 @@ Datum
     int ndims1 = ARR_NDIM(v); //array dimension
     int* dims1 = ARR_DIMS(v);
     int nitems = ArrayGetNItems(ndims1, dims1); //number of items in array
-    char* pSrc2 = (char*)palloc((sizeof(EncInt)) * sizeof(char));
-    EncInt* pTemp = (EncInt*)palloc(sizeof(EncInt) * bulk_size);
-
+    unsigned long current_position = 0, counter = 0;
+    EncInt* sum = (EncInt*)palloc(sizeof(EncInt));
+    EncInt* bulkBuffer = (EncInt*)palloc(sizeof(EncInt) * bulk_size);
+    EncInt* result =(EncInt*)palloc(sizeof(EncInt)); 
     array_iterator = array_create_iterator(v, 0, my_extra);
 
     while (array_iterate(array_iterator, &value, &isnull))
     {
-        memcpy(pTemp + current_position, DatumGetCString(value), sizeof(EncInt));
+        memcpy(bulkBuffer + current_position, DatumGetCString(value), sizeof(EncInt));
         current_position += sizeof(EncInt);
         counter++;
 
         if (counter % (bulk_size) == 0)
         {
-            resp = enc_int_sum_bulk(bulk_size, pTemp, pSrc2);
-            //ereport(INFO, (errmsg("ret %d", resp)));
-            sgxErrorHandler(resp);
+            enc_int_sum_bulk(bulk_size, bulkBuffer, sum);
 
-            memcpy(pTemp, pSrc2, sizeof(EncInt));
+            memcpy(bulkBuffer, sum, sizeof(EncInt));
             current_position = sizeof(EncInt);
             counter++;
-            //ereport(INFO, (errmsg("res %s", pSrc2)));
         }
     }
 
     //ereport(INFO, (errmsg("send rest %d: bulk %d,  %s", current_position, counter%bulk_size, pTemp)));
-    resp = enc_int_sum_bulk(counter % bulk_size, pTemp, pSrc1);
-    sgxErrorHandler(resp);
+    resp = enc_int_sum_bulk(counter % bulk_size, bulkBuffer, sum);
+    
 
-    resp = enc_int_encrypt(nitems, pTemp);
-    sgxErrorHandler(resp);
+    resp = enc_int_encrypt(nitems, bulkBuffer);
 
-    resp = enc_float32_div(pSrc1, pTemp, pSrc2);
-    sgxErrorHandler(resp);
+    resp = enc_int_div(sum, bulkBuffer, result);
 
-    pfree(pTemp);
-    pfree(pSrc1);
+    pfree(bulkBuffer);
+    pfree(sum);
 
-    PG_RETURN_CSTRING(pSrc2);
+    PG_RETURN_CSTRING(result);
 }
 
 Datum

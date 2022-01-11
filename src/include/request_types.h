@@ -11,41 +11,77 @@ typedef enum ReqStatus
     SENT,
     DONE
 } ReqStat;
-typedef struct BaseRequest
+typedef struct
 {
     volatile ReqStat status;
     int reqType;
     int resp;
 } BaseRequest;
-typedef struct EncIntCmpRequestData {
-    BaseRequest common;
-    EncInt left;
-    EncInt right;
-    int cmp;
-}EncIntCmpRequestData;
-typedef struct EncIntCalcRequestData {
-    BaseRequest common;
-    int op;
-    EncInt left;
-    EncInt right;
-    EncInt res;
-}EncIntCalcRequestData;
-typedef struct EncIntBulkRequestData {
-    BaseRequest common;
-    int bulk_size;
-    EncInt items[BULK_SIZE];
-    EncInt res;
-}EncIntBulkRequestData;
-typedef struct EncIntEncRequestData {
-    BaseRequest common;
-    int plaintext;
-    EncInt ciphertext;
-}EncIntEncRequestData;
-typedef struct EncIntDecRequestData {
-    BaseRequest common;
-    EncInt ciphertext;
-    int plaintext;
-}EncIntDecRequestData;
+
+/* enc and dec req are for debug purpose. */
+#define DEFINE_ENCTYPE_ENC_ReqData(enc_type, plain_type) \
+typedef struct {           \
+    BaseRequest common;    \
+    plain_type plaintext;         \
+    enc_type ciphertext;   \
+} enc_type##EncRequestData;
+
+DEFINE_ENCTYPE_ENC_ReqData(EncInt,int);
+DEFINE_ENCTYPE_ENC_ReqData(EncFloat,float);
+DEFINE_ENCTYPE_ENC_ReqData(EncTimestamp,int64_t);
+DEFINE_ENCTYPE_ENC_ReqData(EncStr,PlainStr);
+
+#define DEFINE_ENCTYPE_DEC_ReqData(enc_type,plain_type) \
+typedef struct {             \
+    BaseRequest common;      \
+    enc_type ciphertext;     \
+    plain_type plaintext;           \
+} enc_type##DecRequestData;
+
+
+DEFINE_ENCTYPE_DEC_ReqData(EncInt, int);
+DEFINE_ENCTYPE_DEC_ReqData(EncFloat, float);
+DEFINE_ENCTYPE_DEC_ReqData(EncTimestamp, int64_t);
+DEFINE_ENCTYPE_DEC_ReqData(EncStr, PlainStr);
+
+#define DEFINE_ENCTYPE_CMP_ReqData(enc_type) \
+typedef struct {            \
+    BaseRequest common;     \
+    enc_type left;            \
+    enc_type right;           \
+    int cmp;                \
+} enc_type##CmpRequestData;
+
+DEFINE_ENCTYPE_CMP_ReqData(EncInt);
+DEFINE_ENCTYPE_CMP_ReqData(EncFloat);
+DEFINE_ENCTYPE_CMP_ReqData(EncTimestamp);
+DEFINE_ENCTYPE_CMP_ReqData(EncStr);
+
+#define DEFINE_ENCTYPE_CALC_ReqData(enc_type) \
+typedef struct {              \
+    BaseRequest common;       \
+    int op;                   \
+    enc_type left;            \
+    enc_type right;           \
+    enc_type res;             \
+} enc_type##CalcRequestData;
+
+DEFINE_ENCTYPE_CALC_ReqData(EncInt);
+DEFINE_ENCTYPE_CALC_ReqData(EncFloat);
+DEFINE_ENCTYPE_CALC_ReqData(EncTimestamp);
+DEFINE_ENCTYPE_CALC_ReqData(EncStr);
+
+#define DEFINE_ENCTYPE_BULK_ReqData(enc_type) \
+typedef struct {                \
+    BaseRequest common;         \
+    int bulk_size;              \
+    enc_type items[BULK_SIZE];  \
+    enc_type res;               \
+} enc_type##BulkRequestData;
+
+DEFINE_ENCTYPE_BULK_ReqData(EncInt);
+DEFINE_ENCTYPE_BULK_ReqData(EncFloat);
+
 #ifdef __cplusplus
 }
 #endif

@@ -163,7 +163,7 @@ void *getSharedBuffer(size_t size)
 
     return buffer;
 }
-void *freeBuffer(void *buffer)
+void freeBuffer(void *buffer)
 {
     /* stop enclave first TODO */
     free(buffer);

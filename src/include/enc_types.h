@@ -5,25 +5,22 @@
 #include <string.h>
 // #define DECLARE_PG_FUNC(func) extern "C" { PG_FUNCTION_INFO_V1(func); } 
 
+
+#define DEFINE_ENCTYPE(type_name ,data_size) \
+typedef struct {            \
+    uint8_t iv[IV_SIZE];    \
+    uint8_t data[data_size]; \
+    uint8_t tag[TAG_SIZE];  \
+} type_name;
+ 
 /* enc_int type */
 
-typedef struct EncInt
-{
-    uint8_t iv[IV_SIZE];
-    uint8_t data[INT32_LENGTH]; 
-    uint8_t tag[TAG_SIZE];
-    /* may contain other fields like ope */
-} EncInt;
+DEFINE_ENCTYPE(EncInt, INT32_LENGTH);
+DEFINE_ENCTYPE(EncFloat, FLOAT4_LENGTH);
+DEFINE_ENCTYPE(EncTimestamp, TIMESTAMP_LENGTH);
+DEFINE_ENCTYPE(EncStr, STRING_LENGTH);
 
-/* float contain also 4 bytes*/
-typedef struct EncFloat
+typedef struct 
 {
-    uint8_t iv[IV_SIZE];
-    uint8_t data[FLOAT4_LENGTH];
-    uint8_t tag[TAG_SIZE];
-}
-
-typedef struct EncTimstamp
-{
-    /* data */
-};
+    uint8_t data[STRING_LENGTH];
+}PlainStr;

@@ -1,4 +1,4 @@
-#include "include/enc_int32_ops.h"
+#include "include/enc_int_ops.h"
 
 
 int int2bytearray(int src, uint8_t *pDst, size_t dstLen);
