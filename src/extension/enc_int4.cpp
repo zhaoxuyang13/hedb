@@ -5,7 +5,7 @@
  * encrypted integer type, format: BASE64(IV[12bytes]||AES-GCM(int)[4 bytes]||AUTHTAG[16 bytes])
  * (input size: 4 bytes; output size: 44 bytes; operators: +,-,*,/,%,>=,>,<=,<,=,!=; functions: SUM, AVG, MIN, MAX)
  */
-#include <extension.h>
+#include <extension.hpp>
 #include <enc_int_ops.hpp>
 #include <enc_float_ops.hpp>
 extern bool debugMode;

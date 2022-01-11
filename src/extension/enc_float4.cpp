@@ -1,7 +1,7 @@
 /*
  * a simple UDF for float4
  */
-#include <extension.h>
+#include <extension.hpp>
 #include <string.h>
 #include <enc_float_ops.hpp>
 

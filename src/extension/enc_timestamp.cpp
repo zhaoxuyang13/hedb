@@ -1,7 +1,7 @@
 /*
  * a simple UDF for timestamp
  */
-#include "extension.h"
+#include "extension.hpp"
 
 #ifdef __cplusplus
 extern "C" {

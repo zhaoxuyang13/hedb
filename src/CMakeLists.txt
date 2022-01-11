@@ -6,7 +6,8 @@ find_package(SGX REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-include_directories(${SGX_INCLUDE_DIR} include enclave)
+include_directories(${SGX_INCLUDE_DIR} include enclave enclave/include)
+
 set(EDL enclave/sgx/enclave.edl)
 set(EDL_SEARCH_PATHS enclave/sgx)
 
@@ -14,7 +15,8 @@ set(EDL_SEARCH_PATHS enclave/sgx)
 
 # file(GLOB T_SRCS LocalAttestationCode/*.c*)
 # add_trusted_library(LocalAttestationLib SRCS "${T_SRCS}" EDL LocalAttestationCode/LocalAttestationCode.edl EDL_SEARCH_PATHS ${EDL_SEARCH_PATHS})
-file(GLOB E_SRCS enclave/sgx/*.cpp enclave/*.c)
+file(GLOB E_SRCS enclave/sgx/*.cpp enclave/kv/*.c enclave/*.c)
+
 add_enclave_library(enclave
                     USE_PREFIX
                     SRCS ${E_SRCS} 

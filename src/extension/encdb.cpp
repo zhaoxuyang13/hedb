@@ -1,5 +1,5 @@
-#include <stdafx.h>
-#include <extension.h>
+#include <stdafx.hpp>
+#include <extension.hpp>
 #include <extension_helper.hpp>
 #include <stdarg.h>
 extern "C"{

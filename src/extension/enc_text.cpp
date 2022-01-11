@@ -1,7 +1,7 @@
 /*
  * a simple UDF for text
  */
-#include "extension.h"
+#include "extension.hpp"
 
 #ifdef __cplusplus
 extern "C" {

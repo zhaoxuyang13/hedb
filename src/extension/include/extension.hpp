@@ -1,6 +1,6 @@
 #pragma once
 #include <defs.h>
-#include <stdafx.h>
+#include <stdafx.hpp>
 #include <enc_types.h>
 
 #define DatumGetEncInt(X)  ((EncInt *) DatumGetPointer(X))
