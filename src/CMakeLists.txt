@@ -64,7 +64,13 @@ elseif ( ${TEE_TYPE} EQUAL "TZ" )
     set (CMAKE_TOOLCHAIN_FILE CMakeToolchain.txt)
     add_compile_options (-Wall)
     include(GNUInstallDirs)
+   
+    add_custom_target(build_ta ALL
+        COMMAND ${CMAKE_MAKE_PROGRAM}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/enclave/trustzone
+        COMMENT "trustzone TA target")
     
+
     project(TZInterface)
     set (USRC extension/interface/trustzone/tz_interface.c)
 

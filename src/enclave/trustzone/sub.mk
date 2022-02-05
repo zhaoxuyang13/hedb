@@ -1,5 +1,5 @@
-ENC_OPS := $(shell find ops -name '*.c')
-TOOLS := $(shell find ../tools -name "*.c")
+ENC_OPS := $(shell find .. -name '*.c')
+# TOOLS := $(shell find ../tools -name "*.c")
 global-incdirs-y += include ../include  
 srcs-y += ops_ta.c $(ENC_OPS) $(TOOLS) 
 # libdirs += ../mbedtls/lib
