@@ -30,23 +30,19 @@
 #include <defs.h>
 #include <stdint.h>
 #include <string.h>
-#include <tools/Queue.hpp>
-#include <tools/sync_utils.hpp>
 
-/*
- * This UUID is generated with uuidgen command 
- * the ITU-T UUID generator at http://www.itu.int/ITU-T/asn1/uuid.html
- */
-#define TA_OPS_UUID \
-	{ 0x64974d40, 0x92cd, 0x4714, \
-		{ 0x9e, 0x8f, 0x44, 0x2f, 0x3a, 0x4d, 0xb3, 0xaf} }
+// /*
+//  * This UUID is generated with uuidgen command 
+//  * the ITU-T UUID generator at http://www.itu.int/ITU-T/asn1/uuid.html
+//  */
+// #define TA_OPS_UUID { 0x64974d40, 0x92cd, 0x4714,		{ 0x9e, 0x8f, 0x44, 0x2f, 0x3a, 0x4d, 0xb3, 0xaf} }
 
-/* The function IDs implemented in this TA */
-#define TA_OPS_CMD_INC_VALUE		0
-#define TA_OPS_CMD_DEC_VALUE		1
-#define TA_OPS_CMD_OPS_PROCESS      2
-#define TA_OPS_CMD_AES_GCM 			3
-#define TA_OPS_CMD_LOAD_KEY			4
+// /* The function IDs implemented in this TA */
+// #define TA_OPS_CMD_INC_VALUE		0
+// #define TA_OPS_CMD_DEC_VALUE		1
+// #define TA_OPS_CMD_OPS_PROCESS      2
+// #define TA_OPS_CMD_AES_GCM 			3
+// #define TA_OPS_CMD_LOAD_KEY			4
 
 
 
@@ -86,35 +82,10 @@
 #define CMD_TIMESTAMP_DEC 152
 #define CMD_TIMESTAMP_EXTRACT_YEAR 153
 
-/* META data*/
 
 typedef unsigned char BYTE; // 1byte
 typedef unsigned short WORD; // 2bytes
 typedef unsigned long DWORD; //4bytes
-
-
-#define ENC_INT32_LENGTH_B64 45 //((4 * n / 3) + 3) & ~3
-#define ENC_INT32_LENGTH 32
-#define INT32_LENGTH sizeof(int)
-
-#define ENC_FLOAT4_LENGTH_B64 45 //((4 * n / 3) + 3) & ~3
-#define ENC_FLOAT4_LENGTH 32
-#define FLOAT4_LENGTH sizeof(float)
-
-#define ENC_TIMESTAMP_LENGTH_B64 49 //((4 * n / 3) + 3) & ~3
-#define ENC_TIMESTAMP_LENGTH 36
-#define TIMESTAMP int64_t
-#define TIMESTAMP_LENGTH sizeof(int64_t)
-
-#define ENC_STRING_LENGTH_B64 1405 //((4 * n / 3) + 3) & ~3
-#define ENC_STRING_LENGTH 1052
-#define STRING_LENGTH 1024
-
-
-#define INPUT_BUFFER_SIZE (ENC_STRING_LENGTH_B64 + ENC_STRING_LENGTH_B64 + 1)
-#define MAX_BUFSIZE 256
-#define BULK_SIZE 256
-
 
 #define SHARED_BUF_SIZE  0x01000000
 

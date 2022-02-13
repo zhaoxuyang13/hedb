@@ -1,6 +1,11 @@
 #pragma once
 
+#if defined(TEE_SGX)
 #include <sgx/enclave.hpp>
+#elif defined(TEE_TZ) 
+#include <trustzone/ops_ta.h>
+#endif
+
 
 int enc_int32_add(uint8_t* int1,
                   size_t int1_len,

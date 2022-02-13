@@ -1,7 +1,7 @@
 #pragma once 
 
-#include <include/enc_int_ops.h>
-#include <include/enc_float_ops.h>
+#include <enc_int_ops.h>
+#include <enc_float_ops.h>
 #include <request_types.h>
 #include <defs.h>
 

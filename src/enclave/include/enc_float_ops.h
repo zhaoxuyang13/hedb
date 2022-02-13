@@ -1,6 +1,11 @@
 #pragma once
 
+#if defined(TEE_SGX)
 #include <sgx/enclave.hpp>
+#elif defined(TEE_TZ)
+#include <trustzone/ops_ta.h>
+#endif
+
 #include <request_types.h>
 
 typedef union {

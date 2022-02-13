@@ -14,7 +14,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 # endif(CCACHE_FOUND)
 
 
-if ( ${TEE_TYPE} EQUAL "SGX" )
+if ( ${TEE_TYPE} STREQUAL "SGX" )
 
     include_directories(${SGX_INCLUDE_DIR} include enclave enclave/include)
     find_package(SGX REQUIRED)
@@ -26,7 +26,7 @@ if ( ${TEE_TYPE} EQUAL "SGX" )
     # file(GLOB T_SRCS LocalAttestationCode/*.c*)
     # add_trusted_library(LocalAttestationLib SRCS "${T_SRCS}" EDL LocalAttestationCode/LocalAttestationCode.edl EDL_SEARCH_PATHS ${EDL_SEARCH_PATHS})
     file(GLOB E_SRCS enclave/sgx/*.cpp enclave/kv/*.c enclave/*.c)
-
+   
     add_enclave_library(enclave
                         USE_PREFIX
                         SRCS ${E_SRCS} 
@@ -35,6 +35,7 @@ if ( ${TEE_TYPE} EQUAL "SGX" )
                         LDSCRIPT enclave/sgx/enclave.lds)
     ## DE
     enclave_sign(enclave KEY enclave/sgx/Enclave_private.pem CONFIG enclave/sgx/enclave.config.xml)
+    target_compile_definitions(enclave TEE_SGX)
 
     file(GLOB U_SRCS extension/interface/sgx/sgx_interface.cpp)
     include_directories(extension/include extension/interface/sgx)
@@ -47,7 +48,7 @@ if ( ${TEE_TYPE} EQUAL "SGX" )
     install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${SIGNED_ENCLAVE_FILENAME} DESTINATION ${ENCLAVE_INSTALL_DIR})
     install(CODE "execute_process(COMMAND touch ${DATA_FILENAME})" )
     install(CODE "execute_process(COMMAND chown postgres:postgres ${DATA_FILENAME})")
-
+   
     add_compile_definitions(ENCLAVE_FILENAME="${ENCLAVE_FILENAME}")
     add_compile_definitions(DATA_FILENAME="${DATA_FILENAME}")
 
@@ -58,18 +59,19 @@ if ( ${TEE_TYPE} EQUAL "SGX" )
                         EDL_SEARCH_PATHS ${EDL_SEARCH_PATHS})
     add_dependencies(SGXInterface enclave-sign)
 
-elseif ( ${TEE_TYPE} EQUAL "TZ" )
+elseif ( ${TEE_TYPE} STREQUAL "TZ" )
 
     # https://cmake.org/Wiki/CMake_Useful_Variables
     set (CMAKE_TOOLCHAIN_FILE CMakeToolchain.txt)
     add_compile_options (-Wall)
     include(GNUInstallDirs)
+
    
     add_custom_target(build_ta ALL
         COMMAND ${CMAKE_MAKE_PROGRAM}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/enclave/trustzone
         COMMENT "trustzone TA target")
-    
+
 
     project(TZInterface)
     set (USRC extension/interface/trustzone/tz_interface.c)
@@ -79,15 +81,19 @@ elseif ( ${TEE_TYPE} EQUAL "TZ" )
     target_include_directories(${PROJECT_NAME}
                 PRIVATE extension/include 
                 PRIVATE extension/include/trustzone
+                PRIVATE extension/interface/trustzone
+                PRIVATE include
+                # PRIVATE enclave/trustzone
                 )
 
+    target_link_libraries (${PROJECT_NAME} PRIVATE pthread)
     target_link_libraries (${PROJECT_NAME} PRIVATE teec)
 
     install (TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 
 else()
-    message( FATAL_ERROR "TEE_TYPE not specified (SGX/TZ). CMake wil exit.")
+    message( FATAL_ERROR "TEE_TYPE ${TEE_TYPE} not specified (SGX/TZ). CMake wil exit.")
 endif()
 
 ## for extension 

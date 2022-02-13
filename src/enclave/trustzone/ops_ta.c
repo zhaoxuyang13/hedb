@@ -28,16 +28,17 @@
 #include <tee_internal_api.h>
 #include <tee_internal_api_extensions.h>
 #include <arm64_user_sysreg.h>
-#include <enc_float32_ops.h>
-#include <enc_int32_ops.h>
-#include <enc_text_ops.h>
-#include <enc_timestamp_ops.h>
+#include <enc_ops.h>
 #include <ops_ta.h>
 #include <string.h>
 #include <string_ext.h>
 #include <util.h>
 #include <assert.h> // for debugging
 #include "crypto.h"
+#include <sync.h>
+
+#define LOAD_BARRIER asm volatile("dsb ld" ::: "memory")
+#define STORE_BARRIER asm volatile("dsb st" ::: "memory")
 
 // #define __TA_PROFILE 
 /*
@@ -155,18 +156,17 @@ static TEE_Result gcm_demo(uint32_t param_types,
 	memcpy(buffer, &a, INT32_LENGTH);
 
 	in_sz = INT32_LENGTH;
-	res = gcm_encrypt(buffer, in_sz, buffer + INT32_LENGTH, &out_sz);
+	res = gcm_encrypt((uint8_t *)buffer, in_sz,(uint8_t *) (buffer + INT32_LENGTH), &out_sz);
 	DMSG("in %d,struct %d,out %d", in_sz, *(int *) buffer,out_sz);
 	if (res == TEE_SUCCESS)
 	{
 		assert(out_sz == ENC_INT32_LENGTH);
 	}
 
-//	_print_hex("",buffer,INT32_LENGTH +  ENC_INT32_LENGTH);
 	memset(buffer, 0, INT32_LENGTH);
 	in_sz = ENC_INT32_LENGTH;
 	out_sz = INT32_LENGTH;
-	res = gcm_decrypt(buffer + INT32_LENGTH, in_sz, buffer, &out_sz);
+	res = gcm_decrypt((uint8_t *)(buffer + INT32_LENGTH), in_sz,(uint8_t *) buffer, &out_sz);
 	DMSG("decrypt size %d, result %d\n",out_sz, *((int*) buffer));
 	return TEE_SUCCESS;
 }
@@ -179,30 +179,23 @@ static TEE_Result dec_value(uint32_t param_types,
 											   TEE_PARAM_TYPE_NONE);
 	if (param_types != exp_param_types)
 		return TEE_ERROR_BAD_PARAMETERS;
-	request_t *req = (request_t *)params[0].memref.buffer;
-	assert(params[0].memref.size == sizeof(request_t));
-	assert(req->ocall_index = 233);
+	BaseRequest *req = (BaseRequest *)params[0].memref.buffer; 
+	assert(params[0].memref.size == sizeof(EncIntBulkRequestData));
+	assert(req->reqType = 233);
 	int counter = 0;
-
+	
 	gcm_demo(param_types,params);
 	
-	size_t src_len = 0, src2_len = 0, src3_len = 0, dst_len = 0;
-    uint8_t src1[INPUT_BUFFER_SIZE];
-    uint8_t src2[INPUT_BUFFER_SIZE];
-    uint8_t dst[INPUT_BUFFER_SIZE];
-    uint8_t in1[ENC_INT32_LENGTH], in2[ENC_INT32_LENGTH];
-    int buf_pos = 0;
-	// bool touched[300];
-	// for(int i = 0; i < 300 ; i ++)
-	// 	touched[i] = false;
-	uint64_t duration =0,timer = 0;
-	uint64_t start,end;
-	uint32_t freq = read_cntfrq();
+	// uint64_t duration =0,timer = 0;
+	// uint64_t start,end;
+	// uint32_t freq = read_cntfrq();
 	while (true)
 	{
-		if (req->is_done == -1)
+		if (req->status != SENT)
+            YIELD_PROCESSOR;
+		else
 		{
-			asm volatile("dsb ld" ::: "memory");
+			LOAD_BARRIER;
 #ifdef __TA_PROFILE
 			start = read_cntpct();
 #endif
@@ -210,340 +203,15 @@ static TEE_Result dec_value(uint32_t param_types,
 			if (counter % 10000 == 0)
 				DMSG("counter %d", counter++);
 
-			// if(!touched[req->ocall_index]){
-			// 	touched[req->ocall_index] = true;
-			// 	printf("touched: ");
-			// 	for (int i = 0; i < 300; i++)
-			// 		if (touched[i])
-			// 			printf("%d,",i);
-			// 	printf(", current one is %d\n",req->ocall_index);
-			// }
-			switch (req->ocall_index)
-			{
-			case CMD_INT64_ENC:
-				req->resp = encrypt_bytes(req->buffer,
-										  INT32_LENGTH,
-										  req->buffer + INT32_LENGTH,
-										  ENC_INT32_LENGTH);
-				// enc_int_counter++;
-				// INFO("encrypt: %x\n",*((unsigned int *) req->buffer));
-				break;
-			case CMD_INT64_DEC:
-				req->resp = decrypt_bytes(req->buffer,
-										  ENC_INT32_LENGTH,
-										  req->buffer + ENC_INT32_LENGTH,
-										  INT32_LENGTH);
-				// INFO("decrypt:%x -> %x\n",*((unsigned int *) req->buffer) ,*((unsigned int *) (req->buffer+ENC_INT32_LENGTH)));
-				// dec_int_counter++;
-				break;
-			case CMD_INT64_PLUS:
-				req->resp = enc_int32_add(req->buffer,
-										  ENC_INT32_LENGTH,
-										  req->buffer + ENC_INT32_LENGTH,
-										  ENC_INT32_LENGTH,
-										  req->buffer + ENC_INT32_LENGTH + ENC_INT32_LENGTH,
-										  ENC_INT32_LENGTH);
-				// INFO("add result: %x\n", *((unsigned int *) (req->buffer+ ENC_INT32_LENGTH * 2)));
-				break;
-			case CMD_INT64_MINUS:
-				req->resp = enc_int32_sub(req->buffer,
-										  ENC_INT32_LENGTH,
-										  req->buffer + ENC_INT32_LENGTH,
-										  ENC_INT32_LENGTH,
-										  req->buffer + ENC_INT32_LENGTH + ENC_INT32_LENGTH,
-										  ENC_INT32_LENGTH);
-				break;
+			handle_ops(req);
 
-			case CMD_INT64_MULT:
-				req->resp = enc_int32_mult(req->buffer,
-										   ENC_INT32_LENGTH,
-										   req->buffer + ENC_INT32_LENGTH,
-										   ENC_INT32_LENGTH,
-										   req->buffer + ENC_INT32_LENGTH + ENC_INT32_LENGTH,
-										   ENC_INT32_LENGTH);
-				break;
-
-			case CMD_INT64_DIV:
-				req->resp = enc_int32_div(req->buffer,
-										  ENC_INT32_LENGTH,
-										  req->buffer + ENC_INT32_LENGTH,
-										  ENC_INT32_LENGTH,
-										  req->buffer + ENC_INT32_LENGTH + ENC_INT32_LENGTH,
-										  ENC_INT32_LENGTH);
-				break;
-
-			case CMD_INT64_EXP:
-				req->resp = enc_int32_pow(req->buffer,
-										  ENC_INT32_LENGTH,
-										  req->buffer + ENC_INT32_LENGTH,
-										  ENC_INT32_LENGTH,
-										  req->buffer + ENC_INT32_LENGTH + ENC_INT32_LENGTH,
-										  ENC_INT32_LENGTH);
-				break;
-
-			case CMD_INT64_MOD:
-				req->resp = enc_int32_mod(req->buffer,
-										  ENC_INT32_LENGTH,
-										  req->buffer + ENC_INT32_LENGTH,
-										  ENC_INT32_LENGTH,
-										  req->buffer + ENC_INT32_LENGTH + ENC_INT32_LENGTH,
-										  ENC_INT32_LENGTH);
-				break;
-			case CMD_INT64_CMP:
-				req->resp = enc_int32_cmp(req->buffer,
-										  ENC_INT32_LENGTH,
-										  req->buffer + ENC_INT32_LENGTH,
-										  ENC_INT32_LENGTH,
-										  req->buffer + 2 * ENC_INT32_LENGTH,
-										  INT32_LENGTH);
-				break;
-			case CMD_INT32_SUM_BULK:
-				memcpy(&src_len, req->buffer, INT32_LENGTH);
-				req->resp = enc_int32_sum_bulk(
-					req->buffer,
-					INT32_LENGTH,
-					req->buffer + INT32_LENGTH,
-					src_len * ENC_INT32_LENGTH,
-					req->buffer + (src_len)*ENC_INT32_LENGTH + INT32_LENGTH,
-					ENC_INT32_LENGTH);
-				break;
-			case CMD_FLOAT4_PLUS:
-				req->resp = enc_float32_add(req->buffer,
-											ENC_FLOAT4_LENGTH,
-											req->buffer + ENC_FLOAT4_LENGTH,
-											ENC_FLOAT4_LENGTH,
-											req->buffer + 2 * ENC_FLOAT4_LENGTH,
-											ENC_FLOAT4_LENGTH);
-				break;
-
-			case CMD_FLOAT4_MINUS:
-				req->resp = enc_float32_sub(req->buffer,
-											ENC_FLOAT4_LENGTH,
-											req->buffer + ENC_FLOAT4_LENGTH,
-											ENC_FLOAT4_LENGTH,
-											req->buffer + 2 * ENC_FLOAT4_LENGTH,
-											ENC_FLOAT4_LENGTH);
-				break;
-
-			case CMD_FLOAT4_MULT:
-				req->resp = enc_float32_mult(req->buffer,
-											 ENC_FLOAT4_LENGTH,
-											 req->buffer + ENC_FLOAT4_LENGTH,
-											 ENC_FLOAT4_LENGTH,
-											 req->buffer + 2 * ENC_FLOAT4_LENGTH,
-											 ENC_FLOAT4_LENGTH);
-				break;
-
-			case CMD_FLOAT4_DIV:
-				req->resp = enc_float32_div(req->buffer,
-											ENC_FLOAT4_LENGTH,
-											req->buffer + ENC_FLOAT4_LENGTH,
-											ENC_FLOAT4_LENGTH,
-											req->buffer + 2 * ENC_FLOAT4_LENGTH,
-											ENC_FLOAT4_LENGTH);
-				break;
-
-			case CMD_FLOAT4_EXP:
-				req->resp = enc_float32_pow(req->buffer,
-											ENC_FLOAT4_LENGTH,
-											req->buffer + ENC_FLOAT4_LENGTH,
-											ENC_FLOAT4_LENGTH,
-											req->buffer + 2 * ENC_FLOAT4_LENGTH,
-											ENC_FLOAT4_LENGTH);
-				break;
-
-			case CMD_FLOAT4_MOD:
-				req->resp = enc_float32_mod(req->buffer,
-											ENC_FLOAT4_LENGTH,
-											req->buffer + ENC_FLOAT4_LENGTH,
-											ENC_FLOAT4_LENGTH,
-											req->buffer + 2 * ENC_FLOAT4_LENGTH,
-											ENC_FLOAT4_LENGTH);
-				break;
-
-			case CMD_FLOAT4_CMP:
-				req->resp = enc_float32_cmp(req->buffer,
-											ENC_FLOAT4_LENGTH,
-											req->buffer + ENC_FLOAT4_LENGTH,
-											ENC_FLOAT4_LENGTH,
-											req->buffer + 2 * ENC_FLOAT4_LENGTH,
-											INT32_LENGTH);
-				break;
-
-				// case CMD_FLOAT4_SUM_BULK:
-				// 	memcpy(&src_len, req->buffer, INT32_LENGTH);
-				// 	req->resp = enc_float32_sum_bulk(
-				// 		req->buffer,
-				// 		INT32_LENGTH,
-				// 		req->buffer + INT32_LENGTH,
-				// 		src_len * ENC_FLOAT4_LENGTH,
-				// 		req->buffer + (src_len)*ENC_FLOAT4_LENGTH + INT32_LENGTH,
-				// 		ENC_FLOAT4_LENGTH);
-				// 	break;
-
-			case CMD_FLOAT4_ENC:
-				req->resp = encrypt_bytes(req->buffer,
-										  FLOAT4_LENGTH,
-										  req->buffer + FLOAT4_LENGTH,
-										  ENC_FLOAT4_LENGTH);
-				break;
-
-			case CMD_FLOAT4_DEC:
-				req->resp = decrypt_bytes(req->buffer,
-										  ENC_FLOAT4_LENGTH,
-										  req->buffer + ENC_FLOAT4_LENGTH,
-										  FLOAT4_LENGTH);
-				break;
-			case CMD_STRING_CMP:
-				memcpy(&src_len, req->buffer, INT32_LENGTH);
-				memcpy(&src2_len, req->buffer + INT32_LENGTH + src_len, INT32_LENGTH);
-		
-				req->resp = enc_text_cmp(req->buffer + INT32_LENGTH,
-											src_len,
-											req->buffer + INT32_LENGTH + src_len + INT32_LENGTH,
-											src2_len,
-											req->buffer + 2 * INT32_LENGTH + src_len + src2_len,
-											INT32_LENGTH);
-
-				break;
-
-			case CMD_STRING_LIKE:
-				memcpy(&src_len, req->buffer + buf_pos, INT32_LENGTH);
-				buf_pos += INT32_LENGTH;
-
-				memcpy(src1, req->buffer + buf_pos, src_len);
-				buf_pos += src_len;
-
-				memcpy(&src2_len, req->buffer + buf_pos, INT32_LENGTH);
-				buf_pos += INT32_LENGTH;
-
-				memcpy(src2, req->buffer + buf_pos, src2_len);
-				buf_pos += src2_len;
-
-				req->resp = enc_text_like(
-					src1, src_len, src2, src2_len, req->buffer + buf_pos, INT32_LENGTH);
-				buf_pos = 0;
-				break;
-
-			case CMD_STRING_ENC:
-				memcpy(&src_len, req->buffer, INT32_LENGTH);
-				dst_len = src_len + IV_SIZE + TAG_SIZE;
-
-				memcpy(src1, req->buffer + INT32_LENGTH, src_len);
-
-				memcpy(req->buffer + INT32_LENGTH + src_len, &dst_len, INT32_LENGTH);
-				req->resp = encrypt_bytes(
-					src1, src_len, req->buffer + src_len + 2 * INT32_LENGTH, dst_len);
-				break;
-
-			case CMD_STRING_DEC:
-				memcpy(&src_len, req->buffer, INT32_LENGTH);
-				dst_len = src_len - IV_SIZE - TAG_SIZE;
-				memcpy(src1, req->buffer + INT32_LENGTH, src_len);
-				req->resp = decrypt_bytes(src1, src_len, dst, dst_len);
-				memcpy(req->buffer + INT32_LENGTH + src_len, &dst_len, INT32_LENGTH);
-				memcpy(req->buffer + src_len + 2 * INT32_LENGTH, dst, dst_len);
-				break;
-
-			case CMD_STRING_SUBSTRING: /* write src1, src2 will trigger write permission fault.*/
-				memcpy(&src_len, req->buffer + buf_pos, INT32_LENGTH);
-				buf_pos += INT32_LENGTH;
-
-				memcpy(src1, req->buffer + buf_pos, src_len);
-				buf_pos += src_len;
-
-				memcpy(&src2_len, req->buffer + buf_pos, INT32_LENGTH);
-				buf_pos += INT32_LENGTH;
-
-				memcpy(in1, req->buffer + buf_pos, src2_len);
-				buf_pos += src2_len;
-
-				memcpy(&src3_len, req->buffer + buf_pos, INT32_LENGTH);
-				buf_pos += INT32_LENGTH;
-
-				memcpy(in2, req->buffer + buf_pos, src3_len);
-				buf_pos += src3_len;
-
-				memcpy(&dst_len, req->buffer + buf_pos, INT32_LENGTH);
-				buf_pos += INT32_LENGTH;
-
-				memcpy(dst, req->buffer + buf_pos, dst_len);
-				buf_pos += dst_len;
-
-				req->resp = enc_text_substring(
-					src1, src_len, in1, src2_len, in2, src3_len, dst, &dst_len);
-
-				memcpy(req->buffer + buf_pos, &dst_len, INT32_LENGTH);
-				buf_pos += INT32_LENGTH;
-
-				memcpy(req->buffer + buf_pos, dst, dst_len);
-				buf_pos = 0;
-				break;
-
-			case CMD_STRING_CONCAT: 
-				memcpy(&src_len, req->buffer + buf_pos, INT32_LENGTH);
-				buf_pos += INT32_LENGTH;
-
-				// memcpy(src1, req->buffer + buf_pos, src_len);
-				buf_pos += src_len;
-
-				memcpy(&src2_len, req->buffer + buf_pos, INT32_LENGTH);
-				buf_pos += INT32_LENGTH;
-
-				// memcpy(src2, req->buffer + buf_pos, src2_len);
-				dst_len = src_len + src2_len - IV_SIZE - TAG_SIZE;
-
-				req->resp = enc_text_concatenate(req->buffer + INT32_LENGTH, src_len, 
-													req->buffer + INT32_LENGTH * 2 + src_len, src2_len, 
-													dst, dst_len);
-				memcpy(req->buffer + buf_pos, &dst_len, INT32_LENGTH);
-				buf_pos += INT32_LENGTH;
-
-				memcpy(req->buffer + buf_pos, dst, dst_len);
-				buf_pos = 0;
-				break;	
-
-            case CMD_TIMESTAMP_EXTRACT_YEAR:
-                req->resp = enc_timestamp_extract_year(req->buffer,
-                                                       ENC_TIMESTAMP_LENGTH,
-                                                       req->buffer + ENC_TIMESTAMP_LENGTH,
-                                                       ENC_INT32_LENGTH);
-                break;
-
-            case CMD_TIMESTAMP_CMP:
-                req->resp = enc_timestamp_cmp(req->buffer,
-                                              TIMESTAMP_LENGTH,
-                                              req->buffer + ENC_TIMESTAMP_LENGTH,
-                                              ENC_TIMESTAMP_LENGTH,
-                                              req->buffer + 2 * ENC_TIMESTAMP_LENGTH,
-                                              INT32_LENGTH);
-                break;
-
-            case CMD_TIMESTAMP_ENC:
-                req->resp = encrypt_bytes(req->buffer,
-                                          TIMESTAMP_LENGTH,
-                                          req->buffer + TIMESTAMP_LENGTH,
-                                          ENC_TIMESTAMP_LENGTH);
-                break;
-
-            case CMD_TIMESTAMP_DEC:
-                req->resp = decrypt_bytes(req->buffer,
-                                          ENC_TIMESTAMP_LENGTH,
-                                          req->buffer + ENC_TIMESTAMP_LENGTH,
-                                          TIMESTAMP_LENGTH);
-                break;
-			 
-			default:
-				IMSG("Unimplemented Command: 0x%x \n", req->ocall_index);
-				break;
-			}
 			if (req->resp != 0)
 			{
 				DMSG("TA error %d, %d\n",req->resp,counter);
 			}
-			// __sync_synchronize();
-			asm volatile("dsb st" ::: "memory");
-			req->is_done = 1;
+
+			STORE_BARRIER;
+			req->status = DONE;
 
 #ifdef __TA_PROFILE			
 			end = read_cntpct();
@@ -553,7 +221,7 @@ static TEE_Result dec_value(uint32_t param_types,
 #endif
 		}
 		
-		if (req->is_done == 233)
+		if (req->status == 233)
 		{
 			DMSG("TA Exit %d\n", counter);
 			break;
@@ -660,234 +328,6 @@ int encrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 	return resp;
 }
 
-static TEE_Result proccess_ops(uint32_t param_types,
-							   TEE_Param params[4])
-{
-	uint32_t exp_param_types = TEE_PARAM_TYPES(TEE_PARAM_TYPE_MEMREF_INOUT,
-											   TEE_PARAM_TYPE_NONE,
-											   TEE_PARAM_TYPE_NONE,
-											   TEE_PARAM_TYPE_NONE);
-
-	// DMSG("has been called");
-
-	if (param_types != exp_param_types)
-		return TEE_ERROR_BAD_PARAMETERS;
-	// static long long count = 0, enc_int_counter = 0, dec_int_counter = 0, cmp_int_counter = 0;
-
-	request_t *req = (request_t *)params[0].memref.buffer;
-
-	if (req == NULL || params[0].memref.size != sizeof(request_t))
-	{
-		IMSG("invalid input: 0x%p, %ld\n", req, req->ocall_index);
-		return TEE_ERROR_BAD_PARAMETERS;
-	}
-
-	static int counter = 0;
-	counter++;
-	if (counter % 10000 == 0)
-	{
-		DMSG("%d\n", counter);
-	}
-#ifdef __TA_PROFILE
-	uint64_t start,end,duration,timer;
-	uint32_t freq = read_cntfrq();
-	start = read_cntpct();
-#endif
-	switch (req->ocall_index)
-	{
-	case CMD_INT64_ENC:
-		req->resp = encrypt_bytes(req->buffer,
-								  INT32_LENGTH,
-								  req->buffer + INT32_LENGTH,
-								  ENC_INT32_LENGTH);
-		// enc_int_counter++;
-		// INFO("encrypt: %x\n",*((unsigned int *) req->buffer));
-		break;
-	case CMD_INT64_DEC:
-		req->resp = decrypt_bytes(req->buffer,
-								  ENC_INT32_LENGTH,
-								  req->buffer + ENC_INT32_LENGTH,
-								  INT32_LENGTH);
-		// INFO("decrypt:%x -> %x\n",*((unsigned int *) req->buffer) ,*((unsigned int *) (req->buffer+ENC_INT32_LENGTH)));
-		// dec_int_counter++;
-		break;
-	case CMD_INT64_PLUS:
-		req->resp = enc_int32_add(req->buffer,
-								  ENC_INT32_LENGTH,
-								  req->buffer + ENC_INT32_LENGTH,
-								  ENC_INT32_LENGTH,
-								  req->buffer + ENC_INT32_LENGTH + ENC_INT32_LENGTH,
-								  ENC_INT32_LENGTH);
-		// INFO("add result: %x\n", *((unsigned int *) (req->buffer+ ENC_INT32_LENGTH * 2)));
-		break;
-	case CMD_INT64_MINUS:
-		req->resp = enc_int32_sub(req->buffer,
-								  ENC_INT32_LENGTH,
-								  req->buffer + ENC_INT32_LENGTH,
-								  ENC_INT32_LENGTH,
-								  req->buffer + ENC_INT32_LENGTH + ENC_INT32_LENGTH,
-								  ENC_INT32_LENGTH);
-		break;
-
-	case CMD_INT64_MULT:
-		req->resp = enc_int32_mult(req->buffer,
-								   ENC_INT32_LENGTH,
-								   req->buffer + ENC_INT32_LENGTH,
-								   ENC_INT32_LENGTH,
-								   req->buffer + ENC_INT32_LENGTH + ENC_INT32_LENGTH,
-								   ENC_INT32_LENGTH);
-		break;
-
-	case CMD_INT64_DIV:
-		req->resp = enc_int32_div(req->buffer,
-								  ENC_INT32_LENGTH,
-								  req->buffer + ENC_INT32_LENGTH,
-								  ENC_INT32_LENGTH,
-								  req->buffer + ENC_INT32_LENGTH + ENC_INT32_LENGTH,
-								  ENC_INT32_LENGTH);
-		break;
-
-	case CMD_INT64_EXP:
-		req->resp = enc_int32_pow(req->buffer,
-								  ENC_INT32_LENGTH,
-								  req->buffer + ENC_INT32_LENGTH,
-								  ENC_INT32_LENGTH,
-								  req->buffer + ENC_INT32_LENGTH + ENC_INT32_LENGTH,
-								  ENC_INT32_LENGTH);
-		break;
-
-	case CMD_INT64_MOD:
-		req->resp = enc_int32_mod(req->buffer,
-								  ENC_INT32_LENGTH,
-								  req->buffer + ENC_INT32_LENGTH,
-								  ENC_INT32_LENGTH,
-								  req->buffer + ENC_INT32_LENGTH + ENC_INT32_LENGTH,
-								  ENC_INT32_LENGTH);
-		break;
-	case CMD_INT64_CMP:
-		req->resp = enc_int32_cmp(req->buffer,
-								  ENC_INT32_LENGTH,
-								  req->buffer + ENC_INT32_LENGTH,
-								  ENC_INT32_LENGTH,
-								  req->buffer + 2 * ENC_INT32_LENGTH,
-								  INT32_LENGTH);
-		break;
-		// case CMD_INT32_SUM_BULK:
-		// 	memcpy(&src_len, req->buffer, INT32_LENGTH);
-		// 	req->resp = enc_int32_sum_bulk(
-		// 		req->buffer,
-		// 		INT32_LENGTH,
-		// 		req->buffer + INT32_LENGTH,
-		// 		src_len * ENC_INT32_LENGTH,
-		// 		req->buffer + (src_len)*ENC_INT32_LENGTH + INT32_LENGTH,
-		// 		ENC_INT32_LENGTH);
-		// 	break;
-	case CMD_FLOAT4_PLUS:
-		req->resp = enc_float32_add(req->buffer,
-									ENC_FLOAT4_LENGTH,
-									req->buffer + ENC_FLOAT4_LENGTH,
-									ENC_FLOAT4_LENGTH,
-									req->buffer + 2 * ENC_FLOAT4_LENGTH,
-									ENC_FLOAT4_LENGTH);
-		break;
-
-	case CMD_FLOAT4_MINUS:
-		req->resp = enc_float32_sub(req->buffer,
-									ENC_FLOAT4_LENGTH,
-									req->buffer + ENC_FLOAT4_LENGTH,
-									ENC_FLOAT4_LENGTH,
-									req->buffer + 2 * ENC_FLOAT4_LENGTH,
-									ENC_FLOAT4_LENGTH);
-		break;
-
-	case CMD_FLOAT4_MULT:
-		req->resp = enc_float32_mult(req->buffer,
-									 ENC_FLOAT4_LENGTH,
-									 req->buffer + ENC_FLOAT4_LENGTH,
-									 ENC_FLOAT4_LENGTH,
-									 req->buffer + 2 * ENC_FLOAT4_LENGTH,
-									 ENC_FLOAT4_LENGTH);
-		break;
-
-	case CMD_FLOAT4_DIV:
-		req->resp = enc_float32_div(req->buffer,
-									ENC_FLOAT4_LENGTH,
-									req->buffer + ENC_FLOAT4_LENGTH,
-									ENC_FLOAT4_LENGTH,
-									req->buffer + 2 * ENC_FLOAT4_LENGTH,
-									ENC_FLOAT4_LENGTH);
-		break;
-
-	case CMD_FLOAT4_EXP:
-		req->resp = enc_float32_pow(req->buffer,
-									ENC_FLOAT4_LENGTH,
-									req->buffer + ENC_FLOAT4_LENGTH,
-									ENC_FLOAT4_LENGTH,
-									req->buffer + 2 * ENC_FLOAT4_LENGTH,
-									ENC_FLOAT4_LENGTH);
-		break;
-
-	case CMD_FLOAT4_MOD:
-		req->resp = enc_float32_mod(req->buffer,
-									ENC_FLOAT4_LENGTH,
-									req->buffer + ENC_FLOAT4_LENGTH,
-									ENC_FLOAT4_LENGTH,
-									req->buffer + 2 * ENC_FLOAT4_LENGTH,
-									ENC_FLOAT4_LENGTH);
-		break;
-
-	case CMD_FLOAT4_CMP:
-		req->resp = enc_float32_cmp(req->buffer,
-									ENC_FLOAT4_LENGTH,
-									req->buffer + ENC_FLOAT4_LENGTH,
-									ENC_FLOAT4_LENGTH,
-									req->buffer + 2 * ENC_FLOAT4_LENGTH,
-									INT32_LENGTH);
-		break;
-
-		// case CMD_FLOAT4_SUM_BULK:
-		// 	memcpy(&src_len, req->buffer, INT32_LENGTH);
-		// 	req->resp = enc_float32_sum_bulk(
-		// 		req->buffer,
-		// 		INT32_LENGTH,
-		// 		req->buffer + INT32_LENGTH,
-		// 		src_len * ENC_FLOAT4_LENGTH,
-		// 		req->buffer + (src_len)*ENC_FLOAT4_LENGTH + INT32_LENGTH,
-		// 		ENC_FLOAT4_LENGTH);
-		// 	break;
-
-	case CMD_FLOAT4_ENC:
-		req->resp = encrypt_bytes(req->buffer,
-								  FLOAT4_LENGTH,
-								  req->buffer + FLOAT4_LENGTH,
-								  ENC_FLOAT4_LENGTH);
-		break;
-
-	case CMD_FLOAT4_DEC:
-		req->resp = decrypt_bytes(req->buffer,
-								  ENC_FLOAT4_LENGTH,
-								  req->buffer + ENC_FLOAT4_LENGTH,
-								  FLOAT4_LENGTH);
-		break;
-		
-	default:
-		IMSG("Unimplemented Command: 0x%x \n", req->ocall_index);
-		break;
-	}
-#ifdef __TA_PROFILE
-	end = read_cntpct();
-	duration = (end - start) * 1000000 / freq;
-	timer += duration;
-	DMSG("duration in us %d, end %d, start %d, freq %d",duration,end,start,freq);
-#endif	
-	// req->is_done = 1;
-
-	// INFO("is done is set to 1\n");
-	/* TODO: re-encrypt result */
-	/* TODO: clear footprints? */
-
-	return TEE_SUCCESS;
-}
 
 static TEE_Result loadkey(uint32_t param_types,
 						  TEE_Param params[4])

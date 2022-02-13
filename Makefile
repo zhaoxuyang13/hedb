@@ -4,10 +4,10 @@
 all: build
 
 build: configure
-	cmake --build build
+	cmake --build build 
 
 configure:
-	cmake -B build -S ./src
+	cmake -B build -S ./src -DTEE_TYPE=TZ
 
 install: 
 	sudo cmake --install build

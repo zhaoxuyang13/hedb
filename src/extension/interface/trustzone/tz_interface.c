@@ -1,13 +1,19 @@
 #include <tee_interface.hpp>
-#include <tz_interface.hpp>
+#include <tz_interface.h>
 
+#include <pthread.h>
 #include <tee_client_api.h>
+#include <tee_client_api_extensions.h>
 #include <defs.h>
 #include <request_types.h>
 
 bool status = false;
 
 
+TEEC_Session sess;
+TEEC_SharedMemory teec_shm;
+TEEC_Context ctx;
+int init = false;
 void *call_ta(void *arg){
 
 
@@ -61,9 +67,8 @@ void *call_ta(void *arg){
 	op.params[0].memref.offset = 0;
 	op.params[0].memref.size = teec_shm.size;
 	
-	req = (request_t *) teec_shm.buffer;
-	req->ocall_index = 233;
-	req->is_done = 1;
+	BaseRequest *req = (BaseRequest *) teec_shm.buffer;
+	req->status = NONE;
 	init = true;
 	res = TEEC_InvokeCommand(&sess, TA_OPS_CMD_OPS_PROCESS, &op,
 				 &err_origin);
@@ -83,17 +88,24 @@ void *call_ta(void *arg){
 /* --------------------------------------------- */
 void *getSharedBuffer(size_t size)
 {
-    void *buffer = malloc(size);
+    // void *buffer = malloc(size);
 
 	pthread_t thread_id;
 	pthread_create(&thread_id, NULL, &call_ta, 0);  //创建线程
 	pthread_detach(thread_id); // 线程分离，结束时自动回收资源
-
+	while (!init)
+		;
+	
+	void *buffer = teec_shm.buffer;
 
     return buffer;
 }
 void freeBuffer(void *buffer)
 {
+	((BaseRequest *)teec_shm.buffer)->status = 233; // TODO
+	TEEC_ReleaseSharedMemory(&teec_shm);
+	TEEC_CloseSession(&sess);
+	TEEC_FinalizeContext(&ctx);
     /* stop enclave first TODO */
-    free(buffer);
+
 }

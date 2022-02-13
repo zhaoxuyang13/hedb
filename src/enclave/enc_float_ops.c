@@ -1,22 +1,42 @@
-#include "include/enc_float_ops.h"
-
+#include "enc_float_ops.h"
+// #include <math.h>
 
 int enc_float32_cmp(EncFloatCmpRequestData *req)
 {
     float left,right ;
     int resp = 0;
     resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), &left, sizeof(float));
-    if (resp != SGX_SUCCESS)
+    if (resp != 0)
         return resp;
 
     resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right), &right, sizeof(float));
-    if (resp != SGX_SUCCESS)
+    if (resp != 0)
         return resp;
 
     req->cmp = (left == right) ? 0 : (left < right) ? -1 : 1;
 
     return resp;
 }
+
+
+#if defined(TEE_TZ)
+
+double pow (double x, int y)
+{
+    double temp;
+    if (y == 0)
+    return 1;
+    temp = pow (x, y / 2);
+    if ((y % 2) == 0) {
+        return temp * temp;
+    } else {
+        if (y > 0)
+            return x * temp * temp;
+        else
+            return (temp * temp) / x;
+    }
+}
+#endif
 
 
 /* comment from PSQL code
@@ -34,11 +54,11 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
     float left,right,res;
     int resp = 0;
     resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(float));
-    if (resp != SGX_SUCCESS)
+    if (resp != 0)
         return resp;
 
     resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(float));
-    if (resp != SGX_SUCCESS)
+    if (resp != 0)
         return resp;
     // printf("clac type %d, %f, %f, ", req->common.reqType, left, right);
     switch (req->common.reqType) /* req->common.op */
@@ -83,7 +103,7 @@ int enc_float32_bulk(EncFloatBulkRequestData *req)
     while (count < bulk_size)
     {
         resp = decrypt_bytes((uint8_t *) &array[count], sizeof(EncFloat), (uint8_t*) &tmp, sizeof(float));    
-        if (resp != SGX_SUCCESS)
+        if (resp != 0)
             return resp;
 
         switch (req->common.reqType)
