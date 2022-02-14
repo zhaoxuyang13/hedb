@@ -9,7 +9,6 @@ int enc_int_sum_bulk(size_t bulk_size, EncInt* arg1, EncInt* res)
     TEEInvoker *invoker = TEEInvoker::getInstance();
     int resp = invoker->sendRequest(req);
     return resp;
-    
 }
 
 int enc_int_ops(int cmd, EncInt* left, EncInt* right, EncInt* res)

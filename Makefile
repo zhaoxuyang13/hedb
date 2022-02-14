@@ -1,5 +1,6 @@
+include config.mk 
 
-.PHONY: all build configure run test clean install load-tpch
+.PHONY: all build configure run test clean install load-tpch load-tpch-native
 
 all: build
 
@@ -14,21 +15,23 @@ install:
 
 BENCHMARK_DIR=benchmark
 
-load-tpch: 
-	cd $(BENCHMARK_DIR) && psql -U postgres -d test -f db_schemas/tpch-schema-encrypted.sql 
-	cd $(BENCHMARK_DIR) && psql -U postgres -d test -f db_schemas/tpch-index.sql 
-	cd $(BENCHMARK_DIR) && java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 100 --config config/tpch_config.xml --load true --execute false
-
-load-tpch-native:
-	cd $(BENCHMARK_DIR) && psql -U postgres -d test -f db_schemas/tpch-schema.sql 
-	cd $(BENCHMARK_DIR) && psql -U postgres -d test -f db_schemas/tpch-index.sql 
-	cd $(BENCHMARK_DIR) && java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 100 --config config/tpch_config.xml --load true --execute false
+load-tpcc: 
+	cd $(BENCHMARK_DIR) && psql -h ${PG_SERVER_IP} -p ${PG_SERVER_PORT} -U postgres -d test -f db_schemas/tpcc-schema_encrypted.sql 
+	cd $(BENCHMARK_DIR) && java -Dlog4j.configuration=log4j.properties -jar bin/oltp.jar -b tpcc -o output -s 20 --config config/tpcc_config.xml --load true --execute false
 
 load-tpcc-native: 
-	echo "not impl"
+	cd $(BENCHMARK_DIR) && psql -h ${PG_SERVER_IP} -p ${PG_SERVER_PORT} -U postgres -d test -f db_schemas/tpcc-schema.sql 
+	cd $(BENCHMARK_DIR) && java -Dlog4j.configuration=log4j.properties -jar bin/oltp.jar -b tpcc -o output -s 20 --config config/tpcc_config.xml --load true --execute false
 
-load-tpcc: 
-	echo "not impl"
+load-tpch: 
+	cd $(BENCHMARK_DIR) && psql -h ${PG_SERVER_IP} -p ${PG_SERVER_PORT} -U postgres -d test -f db_schemas/tpch-schema-encrypted.sql 
+	cd $(BENCHMARK_DIR) && psql -h ${PG_SERVER_IP} -p ${PG_SERVER_PORT} -U postgres -d test -f db_schemas/tpch-index.sql 
+	cd $(BENCHMARK_DIR) && java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 100 --config config/tpch_config.xml --load true --execute false
+
+load-tpch-native: 
+	cd $(BENCHMARK_DIR) && psql -h ${PG_SERVER_IP} -p ${PG_SERVER_PORT} -U postgres -d test -f db_schemas/tpch-schema.sql 
+	cd $(BENCHMARK_DIR) && psql -h ${PG_SERVER_IP} -p ${PG_SERVER_PORT} -U postgres -d test -f db_schemas/tpch-index.sql 
+	cd $(BENCHMARK_DIR) && java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 100 --config config/tpch_config.xml --load true --execute false
 
 run:
 	echo "run not impl"
@@ -38,3 +41,4 @@ test:
 
 clean:
 	rm -rf build
+	make clean -C src/enclave/trustzone

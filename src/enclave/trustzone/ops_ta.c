@@ -180,8 +180,8 @@ static TEE_Result dec_value(uint32_t param_types,
 	if (param_types != exp_param_types)
 		return TEE_ERROR_BAD_PARAMETERS;
 	BaseRequest *req = (BaseRequest *)params[0].memref.buffer; 
+	DMSG("req->reqtype: %d", req->reqType, req->status);
 	assert(params[0].memref.size == sizeof(EncIntBulkRequestData));
-	assert(req->reqType = 233);
 	int counter = 0;
 	
 	gcm_demo(param_types,params);

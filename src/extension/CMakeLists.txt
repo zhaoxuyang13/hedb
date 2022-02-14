@@ -22,5 +22,10 @@ add_postgresql_extension(
   )
 
 # extension depend on enclave interface to be build first. (enclave_u.* files)
-# add_dependencies(encdb SGXInterface)
-target_link_libraries(encdb SGXInterface)
+if ( ${TEE_TYPE} STREQUAL "SGX" )
+  add_dependencies(encdb SGXInterface)
+  target_link_libraries(encdb SGXInterface)
+elseif ( ${TEE_TYPE} STREQUAL "TZ" )
+  add_dependencies(encdb TZInterface)
+  target_link_libraries(encdb TZInterface)
+endif()

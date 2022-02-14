@@ -3,6 +3,8 @@
 #include <sync.h>
 #include <extension_helper.hpp>
 #include <timer.hpp>
+#include <stdlib.h> // at exit
+
 TEEInvoker *TEEInvoker::invoker = NULL;
 TEEInvoker::~TEEInvoker() {
     freeBuffer(req_buffer);
@@ -46,6 +48,15 @@ int TEEInvoker::sendRequest(Request *req) {
     return resp;
 }
 
+void exit_handler(){
+    TEEInvoker *invoker = TEEInvoker::getInstance();
+    delete invoker;
+}
+
+
 TEEInvoker::TEEInvoker() {
+    // print_info("get shared buffer");
     req_buffer = getSharedBuffer(sizeof (EncIntBulkRequestData));
+    // print_info("buffer got");
+    atexit(exit_handler);
 }

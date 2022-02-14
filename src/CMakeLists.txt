@@ -72,12 +72,15 @@ elseif ( ${TEE_TYPE} STREQUAL "TZ" )
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/enclave/trustzone
         COMMENT "trustzone TA target")
 
+    install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/enclave/trustzone/64974d40-92cd-4714-9e8f-442f3a4db3af.ta DESTINATION /lib/optee_armtz/ )    
+        # 64974d40-92cd-4714-9e8f-442f3a4db3af.ta
 
+    ######################
     project(TZInterface)
     set (USRC extension/interface/trustzone/tz_interface.c)
 
     add_library(${PROJECT_NAME} ${USRC})
-
+    set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
     target_include_directories(${PROJECT_NAME}
                 PRIVATE extension/include 
                 PRIVATE extension/include/trustzone

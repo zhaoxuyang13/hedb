@@ -1,15 +1,18 @@
 #include "enc_float_ops.h"
-// #include <math.h>
+
+#if defined(TEE_TZ)
+extern double pow(double x, int y);
+#endif
 
 int enc_float32_cmp(EncFloatCmpRequestData *req)
 {
     float left,right ;
     int resp = 0;
-    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), &left, sizeof(float));
+    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left),(uint8_t*) &left, sizeof(float));
     if (resp != 0)
         return resp;
 
-    resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right), &right, sizeof(float));
+    resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(float));
     if (resp != 0)
         return resp;
 
@@ -19,24 +22,6 @@ int enc_float32_cmp(EncFloatCmpRequestData *req)
 }
 
 
-#if defined(TEE_TZ)
-
-double pow (double x, int y)
-{
-    double temp;
-    if (y == 0)
-    return 1;
-    temp = pow (x, y / 2);
-    if ((y % 2) == 0) {
-        return temp * temp;
-    } else {
-        if (y > 0)
-            return x * temp * temp;
-        else
-            return (temp * temp) / x;
-    }
-}
-#endif
 
 
 /* comment from PSQL code
@@ -53,11 +38,11 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
 {
     float left,right,res;
     int resp = 0;
-    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(float));
+    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
     if (resp != 0)
         return resp;
 
-    resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(float));
+    resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(right));
     if (resp != 0)
         return resp;
     // printf("clac type %d, %f, %f, ", req->common.reqType, left, right);
@@ -85,7 +70,7 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
         break;
     }
 
-    resp = encrypt_bytes((uint8_t*) &res, sizeof(float),(uint8_t*) &req->res, sizeof(req->res));
+    resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
 
     return resp;
 }

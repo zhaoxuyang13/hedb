@@ -13,6 +13,7 @@ bool status = false;
 TEEC_Session sess;
 TEEC_SharedMemory teec_shm;
 TEEC_Context ctx;
+
 int init = false;
 void *call_ta(void *arg){
 
@@ -82,7 +83,6 @@ void *call_ta(void *arg){
 
 	return 0;
 }
-
 
 
 /* --------------------------------------------- */
