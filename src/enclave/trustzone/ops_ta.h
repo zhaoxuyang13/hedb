@@ -30,7 +30,8 @@
 #include <defs.h>
 #include <stdint.h>
 #include <string.h>
-
+#include <tee_internal_api.h>
+#include <tee_internal_api_extensions.h>
 // /*
 //  * This UUID is generated with uuidgen command 
 //  * the ITU-T UUID generator at http://www.itu.int/ITU-T/asn1/uuid.html

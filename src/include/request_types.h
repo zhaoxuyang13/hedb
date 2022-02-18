@@ -29,7 +29,7 @@ typedef struct {           \
 DEFINE_ENCTYPE_ENC_ReqData(EncInt,int);
 DEFINE_ENCTYPE_ENC_ReqData(EncFloat,float);
 DEFINE_ENCTYPE_ENC_ReqData(EncTimestamp,int64_t);
-DEFINE_ENCTYPE_ENC_ReqData(EncStr,PlainStr);
+DEFINE_ENCTYPE_ENC_ReqData(EncStr,Str);
 
 #define DEFINE_ENCTYPE_DEC_ReqData(enc_type,plain_type) \
 typedef struct {             \
@@ -42,7 +42,7 @@ typedef struct {             \
 DEFINE_ENCTYPE_DEC_ReqData(EncInt, int);
 DEFINE_ENCTYPE_DEC_ReqData(EncFloat, float);
 DEFINE_ENCTYPE_DEC_ReqData(EncTimestamp, int64_t);
-DEFINE_ENCTYPE_DEC_ReqData(EncStr, PlainStr);
+DEFINE_ENCTYPE_DEC_ReqData(EncStr, Str);
 
 #define DEFINE_ENCTYPE_CMP_ReqData(enc_type) \
 typedef struct {            \
@@ -56,6 +56,7 @@ DEFINE_ENCTYPE_CMP_ReqData(EncInt);
 DEFINE_ENCTYPE_CMP_ReqData(EncFloat);
 DEFINE_ENCTYPE_CMP_ReqData(EncTimestamp);
 DEFINE_ENCTYPE_CMP_ReqData(EncStr);
+typedef EncStrCmpRequestData EncStrLikeRequestData;
 
 #define DEFINE_ENCTYPE_CALC_ReqData(enc_type) \
 typedef struct {              \
@@ -81,6 +82,26 @@ typedef struct {                \
 
 DEFINE_ENCTYPE_BULK_ReqData(EncInt);
 DEFINE_ENCTYPE_BULK_ReqData(EncFloat);
+
+#define DEFINE_ENCTYPE_1ARG_ReqData(arg1_type, res_type, typename) \
+typedef struct {                \
+    BaseRequest common;         \
+    arg1_type in;               \
+    res_type res;               \
+} typename;
+
+DEFINE_ENCTYPE_1ARG_ReqData(EncTimestamp, EncInt, EncTimestampExtractYearRequestData);
+
+#define DEFINE_ENCTYPE_3ARG_ReqData(arg1_type, arg1_name, arg2_type, arg2_name,arg3_type, arg3_name, res_type, typename) \
+typedef struct {                \
+    BaseRequest common;         \
+    arg1_type arg1_name;               \
+    arg2_type arg2_name;               \
+    arg3_type arg3_name;               \
+    res_type res;               \
+} typename;
+
+DEFINE_ENCTYPE_3ARG_ReqData(EncStr, str, EncInt, begin, EncInt, end, EncStr, SubstringRequestData);
 
 #ifdef __cplusplus
 }

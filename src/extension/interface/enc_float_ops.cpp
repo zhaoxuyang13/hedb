@@ -6,21 +6,21 @@
 #include <request.hpp>
 
 int enc_float_cmp(EncFloat *left, EncFloat *right, int *res) {
-    auto *req = new CmpRequest<EncFloat>(left,right, res);
+    auto *req = new CmpRequest<EncFloat,CMD_FLOAT_CMP>(left,right, res);
     TEEInvoker *invoker = TEEInvoker::getInstance();
     int resp = invoker->sendRequest(req);
     return resp;
 }
 
 int enc_float_encrypt(float in, EncFloat *out) {
-    auto *req = new EncRequest<float, EncFloat>(&in,out);
+    auto *req = new EncRequest<float, EncFloat,CMD_FLOAT_ENC>(&in,out);
     TEEInvoker *invoker = TEEInvoker::getInstance();
     int resp = invoker->sendRequest(req);
     return resp;
 }
 
 int enc_float_decrypt(EncFloat *in, float *out) {
-    auto *req = new DecRequest<EncFloat,float>(in,out);
+    auto *req = new DecRequest<EncFloat,float, CMD_FLOAT_DEC>(in,out);
     TEEInvoker *invoker = TEEInvoker::getInstance();
     int resp = invoker->sendRequest(req);
     return resp;

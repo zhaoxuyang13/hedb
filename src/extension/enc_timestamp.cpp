@@ -2,7 +2,8 @@
  * a simple UDF for timestamp
  */
 #include "extension.hpp"
-
+#include "extension_helper.hpp"
+#include <enc_timestamp_ops.hpp>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -21,10 +22,10 @@ PG_FUNCTION_INFO_V1(pg_enc_timestamp_cmp);
 }
 #endif
 
-static TimeOffset time2t(const int hour, const int min, const int sec, const fsec_t fsec)
-{
-    return (((hour * MINS_PER_HOUR) + min) * SECS_PER_MINUTE) + sec + fsec;
-}
+// static TimeOffset time2t(const int hour, const int min, const int sec, const fsec_t fsec)
+// {
+//     return (((hour * MINS_PER_HOUR) + min) * SECS_PER_MINUTE) + sec + fsec;
+// }
 
 /* Convert a string to internal timestamp type. This function based on native postgres function 'timestamp_in'
  * @input: string as a postgres argument
@@ -75,13 +76,6 @@ Timestamp pg_timestamp_in(char* str)
         TIMESTAMP_NOBEGIN(result);
         break;
 
-//    case DTK_INVALID:
-//        ereport(ERROR,
-//                (errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
-//                 errmsg("date/time value \"%s\" is no longer supported", str)));
-
-//        TIMESTAMP_NOEND(result);
-//        break;
 
     default:
         elog(ERROR, "unexpected dtype %d while parsing timestamp \"%s\"",
@@ -100,13 +94,15 @@ Timestamp pg_timestamp_in(char* str)
 Datum
     pg_enc_timestamp_in(PG_FUNCTION_ARGS)
 {
-    // ereport(INFO, (errmsg("pg_enc_timestamp_in here!")));
     char* pSrc = PG_GETARG_CSTRING(0);
-    TIMESTAMP dst;
-    char* src = (char*)palloc(TIMESTAMP_LENGTH * sizeof(char));
-    dst = pg_timestamp_in(pSrc);
-    memcpy(src, &dst, TIMESTAMP_LENGTH * sizeof(char));
-    PG_RETURN_CSTRING(src);
+    TIMESTAMP time;
+    EncTimestamp* t = (EncTimestamp *)palloc0(ENC_TIMESTAMP_LENGTH);
+    time = pg_timestamp_in(pSrc);
+    // char ch[100];
+    // sprintf(ch, "time is %lx", time);
+    // print_info(ch);
+    int resp = enc_timestamp_encrypt(&time, t);
+    PG_RETURN_POINTER(t);
 }
 /*
  * The function converts enc_timestamp element to a string. If flag debugDecryption is true it decrypts the string and return unencrypted result.
@@ -116,14 +112,15 @@ Datum
 Datum
     pg_enc_timestamp_out(PG_FUNCTION_ARGS)
 {
-    // ereport(INFO, (errmsg("pg_enc_timestamp_out here!")));
-    char* c1 = PG_GETARG_CSTRING(0);
+    EncTimestamp *t = PG_GETARG_ENCTimestamp(0);
     TIMESTAMP timestamp;
-    char* result = (char*)palloc(TIMESTAMP_LENGTH * sizeof(char));
+    char* result = (char*)palloc0(TIMESTAMP_LENGTH * sizeof(char));
     struct pg_tm tt, *tm = &tt;
     fsec_t fsec;
     char buf[MAXDATELEN + 1];
-    memcpy(&timestamp, c1, TIMESTAMP_LENGTH * sizeof(char));
+
+    enc_timestamp_decrypt(t, &timestamp);
+
     if (timestamp2tm(timestamp, NULL, tm, &fsec, NULL, NULL) == 0)
         EncodeDateTime(tm, fsec, false, 0, NULL, 1, buf);
     else
@@ -151,11 +148,12 @@ Datum
 #endif
     int32 typmod = PG_GETARG_INT32(2);
 
-    Timestamp result;
-    char* src = (char*)palloc(TIMESTAMP_LENGTH);
-    result = pg_timestamp_in(arg);
-    memcpy(src, &result, sizeof(TIMESTAMP_LENGTH));
-    PG_RETURN_CSTRING(src);
+    Timestamp time;
+    EncTimestamp* t = (EncTimestamp *)palloc0(ENC_TIMESTAMP_LENGTH);
+
+    time = pg_timestamp_in(arg);
+    int resp = enc_timestamp_encrypt(&time, t);
+    PG_RETURN_POINTER(t);
 }
 
 /*
@@ -166,15 +164,16 @@ Datum
 Datum
     pg_enc_timestamp_decrypt(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
+    EncTimestamp *t = PG_GETARG_ENCTimestamp(0); 
     Timestamp timestamp;
     int resp;
     char* result;
-    struct pg_tm tt,
-        *tm = &tt;
+    struct pg_tm tt, *tm = &tt;
     fsec_t fsec;
     char buf[MAXDATELEN + 1];
-    memcpy(&timestamp, c1, TIMESTAMP_LENGTH);
+
+    enc_timestamp_decrypt(t, &timestamp);
+
     if (timestamp2tm(timestamp, NULL, tm, &fsec, NULL, NULL) == 0)
         EncodeDateTime(tm, fsec, false, 0, NULL, 1, buf);
     else
@@ -197,14 +196,14 @@ Datum
 Datum
     pg_enc_timestamp_eq(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
-    TIMESTAMP timestp1;
-    TIMESTAMP timestp2;
-    memcpy(&timestp1, c1, TIMESTAMP_LENGTH);
-    memcpy(&timestp2, c2, TIMESTAMP_LENGTH);
+    EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
+    EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
+    TIMESTAMP time1;
+    TIMESTAMP time2;
 
-    int ans = (timestp1 == timestp2) ? 0 : ((timestp1 < timestp2) ? -1 : 1);
+    int ans = 0;
+    enc_timestamp_cmp(t1,t2,&ans);
+
     PG_RETURN_BOOL((ans == 0) ? true : false);
 }
 
@@ -218,14 +217,14 @@ Datum
 Datum
     pg_enc_timestamp_ne(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
-    TIMESTAMP timestp1;
-    TIMESTAMP timestp2;
-    memcpy(&timestp1, c1, TIMESTAMP_LENGTH);
-    memcpy(&timestp2, c2, TIMESTAMP_LENGTH);
+    EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
+    EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
+    TIMESTAMP time1;
+    TIMESTAMP time2;
 
-    int ans = (timestp1 == timestp2) ? 0 : ((timestp1 < timestp2) ? -1 : 1);
+    int ans = 0;
+    enc_timestamp_cmp(t1,t2,&ans);
+
     PG_RETURN_BOOL((ans != 0) ? true : false);
 }
 
@@ -239,14 +238,14 @@ Datum
 Datum
     pg_enc_timestamp_lt(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
-    TIMESTAMP timestp1;
-    TIMESTAMP timestp2;
-    memcpy(&timestp1, c1, TIMESTAMP_LENGTH);
-    memcpy(&timestp2, c2, TIMESTAMP_LENGTH);
+    EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
+    EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
+    TIMESTAMP time1;
+    TIMESTAMP time2;
 
-    int ans = (timestp1 == timestp2) ? 0 : ((timestp1 < timestp2) ? -1 : 1);
+    int ans = 0;
+    enc_timestamp_cmp(t1,t2,&ans);
+
     PG_RETURN_BOOL((ans == -1) ? true : false);
 }
 
@@ -260,14 +259,14 @@ Datum
 Datum
     pg_enc_timestamp_le(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
-    TIMESTAMP timestp1;
-    TIMESTAMP timestp2;
-    memcpy(&timestp1, c1, TIMESTAMP_LENGTH);
-    memcpy(&timestp2, c2, TIMESTAMP_LENGTH);
+    EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
+    EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
+    TIMESTAMP time1;
+    TIMESTAMP time2;
 
-    int ans = (timestp1 == timestp2) ? 0 : ((timestp1 < timestp2) ? -1 : 1);
+    int ans = 0;
+    enc_timestamp_cmp(t1,t2,&ans);
+
     PG_RETURN_BOOL((ans <= 0) ? true : false);
 }
 
@@ -281,14 +280,13 @@ Datum
 Datum
     pg_enc_timestamp_gt(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
-    TIMESTAMP timestp1;
-    TIMESTAMP timestp2;
-    memcpy(&timestp1, c1, TIMESTAMP_LENGTH);
-    memcpy(&timestp2, c2, TIMESTAMP_LENGTH);
+    EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
+    EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
+    TIMESTAMP time1;
+    TIMESTAMP time2;
 
-    int ans = (timestp1 == timestp2) ? 0 : ((timestp1 < timestp2) ? -1 : 1);
+    int ans = 0;
+    enc_timestamp_cmp(t1,t2,&ans);
     PG_RETURN_BOOL((ans > 0) ? true : false);
 }
 
@@ -302,14 +300,13 @@ Datum
 Datum
     pg_enc_timestamp_ge(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
-    TIMESTAMP timestp1;
-    TIMESTAMP timestp2;
-    memcpy(&timestp1, c1, TIMESTAMP_LENGTH);
-    memcpy(&timestp2, c2, TIMESTAMP_LENGTH);
+    EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
+    EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
+    TIMESTAMP time1;
+    TIMESTAMP time2;
 
-    int ans = (timestp1 == timestp2) ? 0 : ((timestp1 < timestp2) ? -1 : 1);
+    int ans = 0;
+    enc_timestamp_cmp(t1,t2,&ans);
     PG_RETURN_BOOL((ans >= 0) ? true : false);
 }
 
@@ -322,15 +319,13 @@ Datum
 Datum
     pg_enc_timestamp_cmp(PG_FUNCTION_ARGS)
 {
-    char* c1 = PG_GETARG_CSTRING(0);
-    char* c2 = PG_GETARG_CSTRING(1);
+    EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
+    EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
+    TIMESTAMP time1;
+    TIMESTAMP time2;
 
-    TIMESTAMP timestp1;
-    TIMESTAMP timestp2;
-    memcpy(&timestp1, c1, TIMESTAMP_LENGTH);
-    memcpy(&timestp2, c2, TIMESTAMP_LENGTH);
-
-    int ans = (timestp1 == timestp2) ? 0 : ((timestp1 < timestp2) ? -1 : 1);
+    int ans = 0;
+    enc_timestamp_cmp(t1,t2,&ans);
 
     PG_RETURN_INT32(ans);
 }

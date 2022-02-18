@@ -128,17 +128,20 @@ int loadKeyEnclave(uint8_t* sealed_key, size_t sealedkey_len)
 */
 int decrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t dst_len)
 {
-    
+    uint8_t *iv_pos = pSrc;
+	uint8_t *tag_pos = pSrc+IV_SIZE;
+	uint8_t *data_pos = pSrc+IV_SIZE+TAG_SIZE;
+	
     int resp = sgx_rijndael128GCM_decrypt(
         p_key,
-        pSrc + SGX_AESGCM_IV_SIZE, // cipher
+        data_pos, // cipher
         dst_len,
         pDst, // plain out
-        pSrc,
+        iv_pos,
         SGX_AESGCM_IV_SIZE, // nonce
         NULL,
         0, // aad
-        (sgx_aes_gcm_128bit_tag_t*)(pSrc + SGX_AESGCM_IV_SIZE + dst_len)); // tag
+        (sgx_aes_gcm_128bit_tag_t*)(tag_pos)); // tag
 
     return resp;
 }
@@ -161,17 +164,21 @@ int encrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t dst_len)
     if (resp != SGX_SUCCESS)
         return resp;
 
-    memcpy(pDst, nonce, SGX_AESGCM_IV_SIZE);
+    uint8_t *iv_pos = pDst;
+	uint8_t *tag_pos = pDst+IV_SIZE;
+	uint8_t *data_pos = pDst+IV_SIZE+TAG_SIZE;
+	
+    memcpy(iv_pos, nonce, SGX_AESGCM_IV_SIZE);
     resp = sgx_rijndael128GCM_encrypt(
         p_key,
         pSrc,
         src_len,
-        pDst + SGX_AESGCM_IV_SIZE,
+        data_pos,
         nonce,
         SGX_AESGCM_IV_SIZE,
         NULL,
         0,
-        (sgx_aes_gcm_128bit_tag_t*)(pDst + SGX_AESGCM_IV_SIZE + src_len));
+        (sgx_aes_gcm_128bit_tag_t*)(tag_pos));
     
     /* ope */
     // if(src_len == INT32_LENGTH || src_len == FLOAT4_LENGTH){

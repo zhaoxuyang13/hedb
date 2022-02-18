@@ -124,7 +124,7 @@ Datum pg_enc_float4_in(PG_FUNCTION_ARGS)
 #endif
     char *s = PG_GETARG_CSTRING(0);
     float val = pg_float4_in(s);
-    EncFloat *f = (EncFloat *) palloc(sizeof(EncFloat));
+    EncFloat *f = (EncFloat *) palloc0(sizeof(EncFloat));
     int resp = enc_float_encrypt(val, f);
 
     PG_RETURN_POINTER(f);
@@ -141,7 +141,7 @@ Datum pg_enc_float4_out(PG_FUNCTION_ARGS)
     before_invoke_function(__func__);
 #endif
     EncFloat *s = PG_GETARG_ENCFlOAT(0);
-    char *str = (char *)palloc(sizeof(EncFloat));
+    char *str = (char *)palloc0(sizeof(EncFloat));
     float ans;
     enc_float_decrypt(s, &ans);
     sprintf(str, "%f", ans);
@@ -157,7 +157,7 @@ Datum pg_enc_float4_out(PG_FUNCTION_ARGS)
 Datum float4_to_enc_float4(PG_FUNCTION_ARGS)
 {
     float src = PG_GETARG_FLOAT4(0);
-    EncFloat *f = (EncFloat *) palloc(sizeof(EncFloat));
+    EncFloat *f = (EncFloat *) palloc0(sizeof(EncFloat));
     enc_float_encrypt(src, f);
     PG_RETURN_POINTER(f);
 }
@@ -171,7 +171,7 @@ Datum float4_to_enc_float4(PG_FUNCTION_ARGS)
 Datum numeric_to_enc_float4(PG_FUNCTION_ARGS)
 {
     Numeric num = PG_GETARG_NUMERIC(0);
-    EncFloat *f = (EncFloat *) palloc(sizeof(EncFloat));
+    EncFloat *f = (EncFloat *) palloc0(sizeof(EncFloat));
     float4 src;
     char *tmp = DatumGetCString(DirectFunctionCall1(numeric_out, NumericGetDatum(num)));
 
@@ -190,7 +190,7 @@ Datum numeric_to_enc_float4(PG_FUNCTION_ARGS)
 Datum double_to_enc_float4(PG_FUNCTION_ARGS)
 {
     float8 num = PG_GETARG_FLOAT8(0);
-    EncFloat *f = (EncFloat *) palloc(sizeof(EncFloat));
+    EncFloat *f = (EncFloat *) palloc0(sizeof(EncFloat));
     float src;
     char *tmp = DatumGetCString(DirectFunctionCall1(float8out, Float8GetDatum(num)));
 
@@ -209,7 +209,7 @@ Datum double_to_enc_float4(PG_FUNCTION_ARGS)
 Datum int8_to_enc_float4(PG_FUNCTION_ARGS)
 {
     int8 num = PG_GETARG_INT64(0);
-    EncFloat *f = (EncFloat *) palloc(sizeof(EncFloat));
+    EncFloat *f = (EncFloat *) palloc0(sizeof(EncFloat));
     float4 src;
     char *tmp = DatumGetCString(DirectFunctionCall1(int8out, Int8GetDatum(num)));
 
@@ -228,7 +228,7 @@ Datum int8_to_enc_float4(PG_FUNCTION_ARGS)
 Datum int4_to_enc_float4(PG_FUNCTION_ARGS)
 {
     int num = PG_GETARG_INT32(0);
-    EncFloat *f = (EncFloat *) palloc(sizeof(EncFloat));
+    EncFloat *f = (EncFloat *) palloc0(sizeof(EncFloat));
     float4 src;
     char *tmp = DatumGetCString(DirectFunctionCall1(int4out, Int32GetDatum(num)));
 
@@ -248,7 +248,7 @@ Datum pg_enc_float4_encrypt(PG_FUNCTION_ARGS)
     before_invoke_function(__func__);
 #endif
     float src = PG_GETARG_FLOAT4(0);
-    EncFloat *f = (EncFloat *) palloc(sizeof(EncFloat));
+    EncFloat *f = (EncFloat *) palloc0(sizeof(EncFloat));
     enc_float_encrypt(src, f);
     PG_RETURN_CSTRING(f);
 }
@@ -272,7 +272,7 @@ Datum pg_enc_float4_sum_bulk(PG_FUNCTION_ARGS)
     ArrayType *v = PG_GETARG_ARRAYTYPE_P(0);
     bool isnull;
     Datum value;
-    EncFloat *sum = (EncFloat *) palloc(sizeof(EncFloat));
+    EncFloat *sum = (EncFloat *) palloc0(sizeof(EncFloat));
     EncFloat array[BULK_SIZE];
     int counter = 1; // sum will be at array[0]
 
@@ -312,8 +312,8 @@ Datum pg_enc_float4_avg_bulk(PG_FUNCTION_ARGS)
     int *dims1 = ARR_DIMS(v);
     int nitems = ArrayGetNItems(ndims1, dims1); // number of items in array
 
-    EncFloat *sum = (EncFloat *) palloc(sizeof(EncFloat));
-    EncFloat *res = (EncFloat *) palloc(sizeof(EncFloat));
+    EncFloat *sum = (EncFloat *) palloc0(sizeof(EncFloat));
+    EncFloat *res = (EncFloat *) palloc0(sizeof(EncFloat));
     EncFloat num;
     EncFloat array[BULK_SIZE];
     int counter = 1; // sum will be at array[0]
@@ -387,7 +387,7 @@ Datum pg_enc_float4_add(PG_FUNCTION_ARGS)
 #endif
     EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
     EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
-    EncFloat *f = (EncFloat *)palloc(sizeof(EncFloat));   
+    EncFloat *f = (EncFloat *)palloc0(sizeof(EncFloat));   
 
     enc_float_add(f1,f2,f);
 
@@ -406,7 +406,7 @@ Datum pg_enc_float4_subs(PG_FUNCTION_ARGS)
 #endif
     EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
     EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
-    EncFloat *f = (EncFloat *)palloc(sizeof(EncFloat));   
+    EncFloat *f = (EncFloat *)palloc0(sizeof(EncFloat));   
 
     enc_float_sub(f1,f2,f);
 
@@ -425,7 +425,7 @@ Datum pg_enc_float4_mult(PG_FUNCTION_ARGS)
 #endif
     EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
     EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
-    EncFloat *f = (EncFloat *)palloc(sizeof(EncFloat));   
+    EncFloat *f = (EncFloat *)palloc0(sizeof(EncFloat));   
 
     enc_float_mult(f1,f2,f);
 
@@ -445,7 +445,7 @@ Datum pg_enc_float4_div(PG_FUNCTION_ARGS)
 #endif
     EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
     EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
-    EncFloat *f = (EncFloat *)palloc(sizeof(EncFloat));   
+    EncFloat *f = (EncFloat *)palloc0(sizeof(EncFloat));   
 
     enc_float_div(f1,f2,f);
 
@@ -465,7 +465,7 @@ Datum pg_enc_float4_exp(PG_FUNCTION_ARGS)
 #endif
     EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
     EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
-    EncFloat *f = (EncFloat *)palloc(sizeof(EncFloat));   
+    EncFloat *f = (EncFloat *)palloc0(sizeof(EncFloat));   
 
     enc_float_pow(f1,f2,f);
 
@@ -485,7 +485,7 @@ Datum pg_enc_float4_mod(PG_FUNCTION_ARGS)
 #endif
     EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
     EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
-    EncFloat *f = (EncFloat *)palloc(sizeof(EncFloat));   
+    EncFloat *f = (EncFloat *)palloc0(sizeof(EncFloat));   
 
     enc_float_mod(f1,f2,f);
 

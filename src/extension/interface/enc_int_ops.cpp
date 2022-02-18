@@ -56,7 +56,7 @@ int enc_int_mod(EncInt* left, EncInt* right, EncInt* res)
 
 int enc_int_cmp(EncInt* left, EncInt* right, int* res)
 {
-    auto *req = new CmpRequest<EncInt>(left, right, res);
+    auto *req = new CmpRequest<EncInt, CMD_INT_CMP>(left, right, res);
     TEEInvoker *invoker = TEEInvoker::getInstance();
     int resp = invoker->sendRequest(req);
     return resp;
@@ -64,7 +64,7 @@ int enc_int_cmp(EncInt* left, EncInt* right, int* res)
 
 int enc_int_encrypt(int pSrc, EncInt* pDst)
 {   
-    auto *req = new EncRequest<int, EncInt>(&pSrc, pDst);
+    auto *req = new EncRequest<int, EncInt, CMD_INT_ENC>(&pSrc, pDst);
     TEEInvoker *invoker = TEEInvoker::getInstance();
     int resp = invoker->sendRequest(req);
     return resp;
@@ -72,7 +72,7 @@ int enc_int_encrypt(int pSrc, EncInt* pDst)
 
 int enc_int_decrypt(EncInt* pSrc, int* pDst)
 {
-    auto *req = new DecRequest<EncInt,int>(pSrc, pDst);
+    auto *req = new DecRequest<EncInt,int, CMD_INT_DEC>(pSrc, pDst);
     TEEInvoker *invoker = TEEInvoker::getInstance();
     int resp = invoker->sendRequest(req);
     return resp;

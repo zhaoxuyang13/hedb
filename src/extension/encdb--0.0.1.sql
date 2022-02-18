@@ -125,7 +125,7 @@ CREATE TYPE enc_int4 (
     OUTPUT         = pg_enc_int4_out,
 --    RECEIVE        = pg_enc_int4_recv,
 --    SEND           = pg_enc_int4_send,
-    INTERNALLENGTH = 32,
+    INTERNALLENGTH = 32, -- 4 + 12 + 16
     ALIGNMENT      = int4,
     STORAGE        = PLAIN
 );
@@ -423,7 +423,7 @@ CREATE TYPE enc_text (
 --    CATEGORY = 'S',
 --    PREFERRED = false
     ALIGNMENT      = int4,
-    STORAGE        = EXTENDED
+    STORAGE        = PLAIN
 );
 COMMENT ON TYPE enc_text IS 'ENCRYPTED STRING';
 
@@ -844,7 +844,7 @@ CREATE TYPE enc_timestamp (
     INPUT          = pg_enc_timestamp_in,
     OUTPUT         = pg_enc_timestamp_out,
     -- INTERNALLENGTH = 49,
-    INTERNALLENGTH = 8,
+    INTERNALLENGTH = 36,
     ALIGNMENT      = int4,
     STORAGE        = PLAIN
 );

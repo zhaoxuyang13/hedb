@@ -3,6 +3,14 @@
 #include <stdafx.hpp>
 #include <enc_types.h>
 
+//variable length text.  this type is for storage 
+// 4 byte length + flexible length.
+typedef struct varlena EncText;
+typedef struct {
+    int32_t size;
+    char data[FLEXIBLE_ARRAY_MEMBER];
+} lentext;
+
 #define DatumGetEncInt(X)  ((EncInt *) DatumGetPointer(X))
 #define PG_GETARG_ENCINT(n) DatumGetEncInt(PG_GETARG_DATUM(n))
 
@@ -12,8 +20,10 @@
 #define DatumGetEncTimestamp(X)  ((EncTimestamp *) DatumGetPointer(X))
 #define PG_GETARG_ENCTimestamp(n) DatumGetEncTimestamp(PG_GETARG_DATUM(n))
 
-#define DatumGetEncStr(X)  ((EncStr *) DatumGetPointer(X))
-#define PG_GETARG_ENCStr(n) DatumGetEncStr(PG_GETARG_DATUM(n))
+// #define DatumGetEncStr(X)  ((EncStr *) DatumGetPointer(X))
+#define PG_GETARG_ENCTEXT_P(n) ((EncText *)PG_DETOAST_DATUM(PG_GETARG_DATUM(n)))
 
-//variable length text. 
-typedef struct varlena EncText;
+
+#ifndef PG_FUNCTION_ARGS	
+#define PG_FUNCTION_ARGS FunctionCallInfo fcinfo
+#endif

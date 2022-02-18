@@ -2,6 +2,7 @@
 #include <request_types.h>
 int handle_ops(BaseRequest *base_req)
 {
+    // DMSG("\n -------------------\nops: %d", base_req->reqType);
     switch (base_req->reqType)
     {
     case CMD_INT_PLUS:
@@ -31,6 +32,7 @@ int handle_ops(BaseRequest *base_req)
                                   (uint8_t*)&req->plaintext, sizeof(req->plaintext));
         break;
     }
+
     /* FLOATs */
 
     case CMD_FLOAT_PLUS:
@@ -64,9 +66,52 @@ int handle_ops(BaseRequest *base_req)
         break;
     }
 
+    /* timestamp*/
+    case CMD_TIMESTAMP_CMP: 
+        base_req->resp = enc_timestamp_cmp((EncTimestampCmpRequestData *)base_req);
+        break;
+    case CMD_TIMESTAMP_ENC:{
+        EncTimestampEncRequestData *req = (EncTimestampEncRequestData *) base_req;
+        req->common.resp = encrypt_bytes((uint8_t*) &req->plaintext, sizeof(req->plaintext), 
+                                        (uint8_t *) &req->ciphertext, sizeof(req->ciphertext));
+        break;
+    }
+    case CMD_TIMESTAMP_DEC:{
+        EncTimestampDecRequestData *req = (EncTimestampDecRequestData *) base_req;
+        req->common.resp = decrypt_bytes((uint8_t *) &req->ciphertext, sizeof(req->ciphertext),
+                                        (uint8_t*) &req->plaintext, sizeof(req->plaintext));
+        break;
+    }
 
+    /* text */
 
-
+    case CMD_STRING_SUBSTRING: 
+        base_req->resp = enc_text_substring((SubstringRequestData *)base_req);
+        break;
+    case CMD_STRING_CONCAT: // like use calc data, because return enctext value.
+    
+        base_req->resp = enc_text_concatenate((EncStrCalcRequestData *)base_req);
+        break;
+    case CMD_STRING_LIKE: // like use cmp data, because return boolean value.
+        base_req->resp = enc_text_like((EncStrCmpRequestData *)base_req);
+        break;
+    case CMD_STRING_CMP: 
+        base_req->resp = enc_text_cmp((EncStrCmpRequestData *)base_req);
+        break;
+    case CMD_STRING_ENC:{
+        EncStrEncRequestData *req = (EncStrEncRequestData *) base_req;
+        req->ciphertext.len = req->plaintext.len + IV_SIZE + TAG_SIZE;
+        req->common.resp = encrypt_bytes((uint8_t*) &req->plaintext.data, req->plaintext.len, 
+                                        (uint8_t *) &req->ciphertext.enc_cstr, req->ciphertext.len);
+        break;
+    }
+    case CMD_STRING_DEC:{
+        EncStrDecRequestData *req = (EncStrDecRequestData *) base_req;
+        req->plaintext.len = req->ciphertext.len - IV_SIZE - TAG_SIZE;
+        req->common.resp = decrypt_bytes((uint8_t *) &req->ciphertext.enc_cstr, req->ciphertext.len,
+                                        (uint8_t*) &req->plaintext.data, req->plaintext.len);
+        break;
+    }
     default:
         break;
     }

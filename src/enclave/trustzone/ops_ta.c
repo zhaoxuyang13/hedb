@@ -180,7 +180,7 @@ static TEE_Result dec_value(uint32_t param_types,
 	if (param_types != exp_param_types)
 		return TEE_ERROR_BAD_PARAMETERS;
 	BaseRequest *req = (BaseRequest *)params[0].memref.buffer; 
-	DMSG("req->reqtype: %d", req->reqType, req->status);
+	// DMSG("req->reqtype: %d", req->reqType, req->status);
 	assert(params[0].memref.size == sizeof(EncIntBulkRequestData));
 	int counter = 0;
 	
@@ -247,7 +247,8 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 	
 	// _print_hex("dec ", pSrc, src_len);
 
-	int dst_len = exp_dst_len, resp = 0;
+	size_t dst_len = 0;
+	int resp = 0;
 	// DMSG("before dec %x %d %x %d",pSrc,src_len, pDst, dst_len);
 
 	// uint64_t duration =0,timer = 0;
@@ -257,8 +258,16 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 
 	// for (size_t i = 0; i < 1000; i++)
 	// {
-
-
+	// uint8_t *iv_pos = pSrc;
+	// uint8_t *tag_pos = pSrc+IV_SIZE;
+	// uint8_t *data_pos = pSrc+IV_SIZE+TAG_SIZE;
+	// _print_hex("dec--enc-iv: ", (void *)iv_pos, IV_SIZE);
+	// _print_hex("dec--enc-tag: ", (void *)tag_pos, TAG_SIZE);
+	// _print_hex("dec--enc-txt: ", (void *)data_pos, exp_dst_len);
+	if(src_len <= IV_SIZE + TAG_SIZE ){
+		DMSG("error src len");
+		return -1;
+	}
 	resp = gcm_decrypt(pSrc, src_len, pDst, &dst_len);
 	// DMSG("after dec");
 	assert(dst_len == exp_dst_len);
@@ -275,7 +284,7 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 	// memcpy(pDst, pSrc, dst_len);
 	if (resp !=0)
 	{
-		_print_hex("dec from", pSrc, src_len);
+		_print_hex("dec from ", pSrc, src_len);
 		_print_hex("dec to ", pDst, dst_len);
 	}
 	
@@ -295,7 +304,8 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 int encrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_len)
 {
 
-	int dst_len = exp_dst_len, resp = 0;
+	size_t dst_len = exp_dst_len;
+	int resp = 0;
 
 	// uint64_t duration =0,timer = 0;
 	// uint64_t start,end;
@@ -310,21 +320,20 @@ int encrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 	// DMSG("after enc");
 	assert(dst_len == exp_dst_len);
 
-	// }
-
 	// end= read_cntpct();
-	// duration = (end - start) * 1000000 / freq;
+	// duration = (end - start) * 1000000 / freq;:""
 	// timer += duration;
 	// DMSG("1000 enc duration in us %d",duration);
 
 	/*uncomment below to disable encryption*/
 	// memset(pDst, 0, dst_len);
 	// memcpy(pDst, pSrc, src_len);	
-	if (resp !=0)
+	if (resp != 0)
 	{
 		_print_hex("enc ", pSrc, src_len);
 		_print_hex("enc to  ", pDst, dst_len);
-	}
+	}	
+	
 	return resp;
 }
 

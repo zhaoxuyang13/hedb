@@ -88,7 +88,6 @@ void *call_ta(void *arg){
 /* --------------------------------------------- */
 void *getSharedBuffer(size_t size)
 {
-    // void *buffer = malloc(size);
 
 	pthread_t thread_id;
 	pthread_create(&thread_id, NULL, &call_ta, 0);  //创建线程
