@@ -4,6 +4,7 @@
 #include <extension.hpp>
 #include <extension_helper.hpp>
 #include <enc_text_ops.hpp>
+#include <enc_int_ops.hpp>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -327,15 +328,22 @@ Datum
     substring(PG_FUNCTION_ARGS)
 {
     // NOT BE INVOKED
-    // char* str = PG_GETARG_CSTRING(0);
-    // char* from = PG_GETARG_CSTRING(1);
-    // char* to = PG_GETARG_CSTRING(2);
-    // int f, t;
-    // bytearray2int(from, &f, INT32_LENGTH);
-    // bytearray2int(to, &t, INT32_LENGTH);
-    // char* result = palloc0((t-f+1) * sizeof(char));
-    // result = SubText(str, f, t);
-    PG_RETURN_CSTRING("NOT IMPL");
+    EncText* s = PG_GETARG_ENCTEXT_P(0);
+    EncInt* from = PG_GETARG_ENCINT(1);
+    EncInt* to = PG_GETARG_ENCINT(2);
+
+    int f,t;
+    enc_int_decrypt(from, &f);
+    enc_int_decrypt(to, &t);
+    int len = t - f + 1;
+    EncStr* str = (EncStr *) VARDATA(s);
+    
+    EncText*res = (EncText *) palloc0(ENCSTRLEN(len) + VARHDRSZ);
+    EncStr *estr = (EncStr *) VARDATA(res); 
+    SET_VARSIZE(res, ENCSTRLEN(len) + VARHDRSZ);
+    int resp = enc_text_substring(str, from, to, estr); 
+
+    PG_RETURN_CSTRING(res);
 }
 
 // The input function converts a string to an enc_text element.

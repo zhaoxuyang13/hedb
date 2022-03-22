@@ -30,7 +30,7 @@ typedef unsigned long DWORD; //4bytes
 #define ENC_STRING_OPE_LENGTH 0 // TODO: CHANGE to correct value
 #define ENC_STRING_LENGTH (ENC_STRING_GCD_LENGTH + ENC_STRING_OPE_LENGTH) 
 
-#define BULK_SIZE 256
+#define BULK_SIZE (256)  //256
 
 // errors
 #define ENCLAVE_IS_NOT_RUNNING -2

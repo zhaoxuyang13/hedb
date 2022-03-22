@@ -34,7 +34,7 @@ PG_FUNCTION_INFO_V1(pg_enc_int4_max);
 PG_FUNCTION_INFO_V1(pg_enc_int4_min);
 PG_FUNCTION_INFO_V1(pg_enc_int4_sum_bulk);
 // PG_FUNCTION_INFO_V1(pg_enc_int4_avgfinal);
-// PG_FUNCTION_INFO_V1(pg_enc_int4_avg_bulk);
+PG_FUNCTION_INFO_V1(pg_enc_int4_avg_bulk);
 PG_FUNCTION_INFO_V1(pg_enc_int4_min_bulk);
 PG_FUNCTION_INFO_V1(pg_enc_int4_max_bulk);
 PG_FUNCTION_INFO_V1(pg_int4_to_enc_int4);

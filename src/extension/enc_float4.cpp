@@ -4,7 +4,7 @@
 #include <extension.hpp>
 #include <string.h>
 #include <enc_float_ops.hpp>
-
+#include <extension_helper.hpp>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -14,6 +14,7 @@ PG_FUNCTION_INFO_V1(pg_enc_float4_encrypt);
 PG_FUNCTION_INFO_V1(pg_enc_float4_decrypt);
 PG_FUNCTION_INFO_V1(pg_enc_float4_sum_bulk);
 PG_FUNCTION_INFO_V1(pg_enc_float4_avg_bulk);
+PG_FUNCTION_INFO_V1(pg_enc_float4_avg_simple);
 PG_FUNCTION_INFO_V1(pg_enc_float4_min);
 PG_FUNCTION_INFO_V1(pg_enc_float4_max);
 PG_FUNCTION_INFO_V1(pg_enc_float4_add);
@@ -305,6 +306,7 @@ Datum pg_enc_float4_avg_bulk(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
+    print_info("avg bulk");
     ArrayType *v = PG_GETARG_ARRAYTYPE_P(0);
     bool isnull;
     Datum value;
@@ -339,10 +341,44 @@ Datum pg_enc_float4_avg_bulk(PG_FUNCTION_ARGS)
     }
     enc_float_encrypt(nitems*1.0, &num);
     enc_float_div(sum, &num,res);
-    free(sum);
+    pfree(sum);
     PG_RETURN_POINTER(res);
 }
 
+
+Datum pg_enc_float4_avg_simple(PG_FUNCTION_ARGS)
+{
+#ifdef ENABLE_COUNTER
+    before_invoke_function(__func__);
+#endif
+    print_info("avg simple");
+    ArrayType *v = PG_GETARG_ARRAYTYPE_P(0);
+    bool isnull;
+    Datum value;
+    int ndims1 = ARR_NDIM(v); // array dimension
+    int *dims1 = ARR_DIMS(v);
+    int nitems = ArrayGetNItems(ndims1, dims1); // number of items in array
+
+    EncFloat *sum = (EncFloat *) palloc0(sizeof(EncFloat));
+    EncFloat *res = (EncFloat *) palloc0(sizeof(EncFloat));
+    EncFloat num,tmp;
+
+    ArrayMetaState *my_extra = (ArrayMetaState *)fcinfo->flinfo->fn_extra;
+    ArrayIterator array_iterator = array_create_iterator(v, 0, my_extra);
+
+    array_iterate(array_iterator, &value, &isnull);
+    *sum = *DatumGetEncFloat(value); 
+    while (array_iterate(array_iterator, &value, &isnull))
+    {
+        tmp = *DatumGetEncFloat(value); 
+        enc_float_add(sum, &tmp ,sum); 
+    }
+
+    enc_float_encrypt(nitems*1.0, &num);
+    enc_float_div(sum, &num,res);
+    pfree(sum);
+    PG_RETURN_POINTER(res);
+}
 /*
  * return the less between the two.
  */

@@ -637,6 +637,11 @@ RETURNS enc_float4
 AS 'MODULE_PATHNAME'
 LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
+CREATE FUNCTION pg_enc_float4_avg_simple(enc_float4[])
+RETURNS enc_float4
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
+
 CREATE FUNCTION pg_enc_float4_mod(enc_float4, enc_float4)
 RETURNS enc_float4
 AS 'MODULE_PATHNAME'
@@ -778,7 +783,7 @@ CREATE AGGREGATE avg_simple (enc_float4)
 (
    sfunc = array_append,
    stype = enc_float4[],
-   finalfunc = pg_enc_float4_avg_bulk
+   finalfunc = pg_enc_float4_avg_simple
 );
 
 CREATE AGGREGATE max (enc_float4)
