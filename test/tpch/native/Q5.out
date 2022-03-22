@@ -1,0 +1,16 @@
+ enable_debug_mode 
+-------------------
+                 0
+(1 row)
+
+Timing is on.
+          n_name           |   revenue    
+---------------------------+--------------
+ PERU                      | 5493348.8481
+ ARGENTINA                 | 5398716.3254
+ CANADA                    | 5142436.9960
+ BRAZIL                    | 4744950.5650
+ UNITED STATES             | 3695431.4964
+(5 rows)
+
+Time: 1684.607 ms (00:01.685)

@@ -1,0 +1,12 @@
+ enable_debug_mode 
+-------------------
+                 0
+(1 row)
+
+Timing is on.
+ s_suppkey |       s_name       |      s_address       |     s_phone     | total_revenue  
+-----------+--------------------+----------------------+-----------------+----------------
+       996 | Supplier#000000996 | Wx4dQwOAwWjfSCGupfrM | 17-447-811-3282 | 1607793.625000
+(1 row)
+
+Time: 4082.146 ms (00:04.082)

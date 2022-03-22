@@ -1,0 +1,16 @@
+ enable_debug_mode 
+-------------------
+                 0
+(1 row)
+
+Timing is on.
+ o_orderpriority | order_count 
+-----------------+-------------
+ 1-URGENT        |        1051
+ 2-HIGH          |        1082
+ 3-MEDIUM        |        1049
+ 4-NOT SPECIFIED |        1055
+ 5-LOW           |        1084
+(5 rows)
+
+Time: 3682.258 ms (00:03.682)

@@ -1,0 +1,132 @@
+terminal=0
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,299.750,13.065,2.324,11.040,12.072,14.715,16.192,17.500,21.212,41.938,"0.077
+"
+
+terminal=1
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,497.300,13.790,3.735,11.197,13.063,15.746,17.462,18.932,24.064,165.863,"0.073
+"
+
+terminal=2
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,527.500,15.526,2.602,11.650,13.635,17.184,20.580,23.603,42.316,292.795,"0.064
+"
+
+terminal=3
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,429.100,19.155,5.593,12.356,16.161,21.452,28.235,34.945,63.749,657.655,"0.052
+"
+
+terminal=4
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,462.800,20.696,3.948,12.447,15.840,21.585,31.257,40.067,90.608,2013.652,"0.048
+"
+
+terminal=5
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,162.150,46.597,2.737,15.321,26.258,47.875,96.875,138.413,314.532,2615.927,"0.021
+"
+
+terminal=6
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,58.000,130.737,6.178,33.946,65.307,151.928,312.318,429.696,852.043,2682.218,"0.008
+"
+
+terminal=7
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,152.050,62.721,6.156,19.071,34.832,68.639,139.054,196.017,359.874,1827.448,"0.016
+"
+
+terminal=8
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,106.600,93.326,6.611,27.563,53.057,117.372,209.438,298.896,503.981,1895.233,"0.011
+"
+
+terminal=9
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,98.050,112.821,5.351,24.829,56.035,132.437,256.636,384.619,734.091,2547.824,"0.009
+"
+
+terminal=10
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,164.950,76.767,5.410,17.647,38.560,86.508,166.435,248.037,574.798,3130.965,"0.013
+"
+
+terminal=11
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,119.050,110.740,5.185,24.065,52.845,118.427,248.545,400.280,935.952,3206.648,"0.009
+"
+
+terminal=12
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,156.550,93.475,6.896,19.982,46.634,107.049,216.711,316.401,672.298,2350.524,"0.011
+"
+
+terminal=13
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,123.850,122.741,2.592,29.406,65.761,139.048,296.038,442.344,790.081,1969.005,"0.008
+"
+
+terminal=14
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,117.350,138.250,9.015,26.794,65.559,157.228,305.605,457.268,1101.753,4124.794,"0.007
+"
+
+terminal=15
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,121.700,143.131,4.937,29.737,73.325,163.360,329.752,485.199,1049.604,2849.345,"0.007
+"
+
+terminal=16
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,107.600,177.289,7.713,36.493,87.276,201.086,417.620,608.195,1311.926,3828.859,"0.006
+"
+
+terminal=17
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,93.950,223.845,8.735,47.447,115.280,276.050,537.013,732.103,1327.937,4607.647,"0.004
+"
+
+terminal=18
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,68.900,364.773,9.013,73.800,209.145,469.200,809.828,1176.367,2688.532,5567.989,"0.003
+"
+
+terminal=19
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,65.850,516.906,9.931,137.708,335.416,677.201,1103.949,1502.034,3075.823,5759.831,"0.002
+"
+
+terminal=20
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,32.350,1554.740,9.619,591.807,1230.135,2311.482,3191.386,3829.955,4931.198,6518.047,"0.001
+"
+
+terminal=21
+time(sec), throughput(req/sec), avg_lat(ms), min_lat(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms), 90th_lat(ms), 95th_lat(ms), 99th_lat(ms), max_lat(ms)," tp (req/s) scaled
+"
+0,23.200,3143.130,4.295,993.432,2176.825,4645.882,6609.876,8410.552,14164.512,18620.594,"0.000
+"
+

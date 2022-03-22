@@ -1,0 +1,13 @@
+ enable_debug_mode 
+-------------------
+                 0
+(1 row)
+
+Timing is on.
+ l_shipmode | high_line_count | low_line_count 
+------------+-----------------+----------------
+ REG AIR    |             626 |            949
+ TRUCK      |             645 |            912
+(2 rows)
+
+Time: 7813.307 ms (00:07.813)

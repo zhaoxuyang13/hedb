@@ -1,0 +1,11 @@
+ enable_debug_mode 
+-------------------
+                 0
+(1 row)
+
+Timing is on.
+ nation | o_year | sum_profit 
+--------+--------+------------
+(0 rows)
+
+Time: 49992.655 ms (00:49.993)
