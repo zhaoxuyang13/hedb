@@ -4,14 +4,15 @@ include config.mk
 
 all: build
 
-build: configure
+build: 
 	cmake --build build 
 
-configure:
+configure_sgx:
 	cmake -B build -S ./src -DTEE_TYPE=SGX
 
-
-
+configure_tz:
+	cmake -B build -S ./src -DTEE_TYPE=TZ
+ 
 install: 
 	sudo cmake --install build
 
