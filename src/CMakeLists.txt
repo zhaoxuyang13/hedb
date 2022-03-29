@@ -38,7 +38,7 @@ if ( ${TEE_TYPE} STREQUAL "SGX" )
                         LDSCRIPT enclave/sgx/enclave.lds)
     ## DE
     enclave_sign(enclave KEY enclave/sgx/Enclave_private.pem CONFIG enclave/sgx/enclave.config.xml)
-    target_compile_definitions(enclave TEE_SGX)
+    add_compile_definitions(TEE_SGX)
 
     file(GLOB U_SRCS extension/interface/sgx/sgx_interface.cpp)
     include_directories(extension/include extension/interface/sgx)

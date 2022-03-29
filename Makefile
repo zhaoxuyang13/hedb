@@ -8,7 +8,9 @@ build: configure
 	cmake --build build 
 
 configure:
-	cmake -B build -S ./src -DTEE_TYPE=TZ
+	cmake -B build -S ./src -DTEE_TYPE=SGX
+
+
 
 install: 
 	sudo cmake --install build
