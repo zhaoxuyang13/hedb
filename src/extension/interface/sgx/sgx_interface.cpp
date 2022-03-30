@@ -143,6 +143,7 @@ void enclaveThread(void *buffer)
     char ch[1000];
     sprintf(ch, "enclave process should not return %d", resp);
     print_info(ch);
+    exit(0);
 }
 
 /* --------------------------------------------- */
