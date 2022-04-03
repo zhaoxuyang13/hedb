@@ -23,13 +23,29 @@ double pow (double x, int y)
 int enc_int32_calc(EncIntCalcRequestData *req){
     int left,right,res;
     int resp = 0;
-    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
-    if (resp != 0)
+    // if request to get real EncInt, go to int_map and find int value, then encrypt
+    if (req->common.reqType == CMD_INT_GET_ENC) {
+        res = int_map_find(int_buf_p, req->left);
+        resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
         return resp;
-
-    resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(right));
-    if (resp != 0)
-        return resp;
+    }
+    // if left and right stores the key, go to int map and find int value instead of decrypt
+    if (req->left.iv == 0 && req->left.tag == 0) {
+        left = int_map_find(int_buf_p, req->left);
+    } else {
+        resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
+        if (resp != 0) {
+            return resp;
+        }
+    }
+    if (req->right.iv == 0 && req->right.tag == 0) {
+        left = int_map_find(int_buf_p, req->right);
+    } else {
+        resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right), (uint8_t*) &right, sizeof(right));
+        if (resp != 0) {
+            return resp;
+        }
+    }
     // printf("clac type %d, %f, %f, ", req->common.reqType, left, right);
     switch (req->common.reqType) /* req->common.op */
     {
@@ -55,11 +71,13 @@ int enc_int32_calc(EncIntCalcRequestData *req){
         break;
     }
 
-    int_map_insert(int_buf_p, res);
+    req->res = int_map_insert(int_buf_p, res);
 
-    resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
+    return 0;
 
-    return resp;
+    // resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
+
+    // return resp;
 }
 
 int enc_int32_cmp(EncIntCmpRequestData *req){

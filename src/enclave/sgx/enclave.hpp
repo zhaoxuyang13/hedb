@@ -16,6 +16,7 @@
 #include <request_types.h>
 #include <defs.h>
 #include <sync.h>
+#include <kv.h>
 
 #if defined(__cplusplus)
 extern "C"

@@ -1,5 +1,6 @@
 #pragma once 
 #include <enc_types.h>
+#include <sgx/enclave.hpp>
 #define TO_CPP_INT(a) (reinterpret_cast<IntMap *>(a))
 #define TO_C_INT(a)   (reinterpret_cast<int_map *>(a))
 
@@ -35,7 +36,7 @@ int int_map_find(int_map *m, EncInt enc_val);
 bool int_map_erase(int_map *m, EncInt enc_val);
 
 /* GLOBAL int buffer */
-int_map *int_buf_p;
+extern int_map *int_buf_p;
 
 #ifdef __cplusplus
 }

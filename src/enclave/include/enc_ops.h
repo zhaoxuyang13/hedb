@@ -4,6 +4,7 @@
 #include <enc_float_ops.h>
 #include <enc_timestamp_ops.h>
 #include <enc_text_ops.h>
+#include <enc_types.h>
 #include <request_types.h>
 #include <defs.h>
 

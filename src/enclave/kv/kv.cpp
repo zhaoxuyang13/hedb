@@ -1,6 +1,9 @@
 #include <kv.h>
 
+int_map *int_buf_p = TO_C_INT(new IntMap());
+
 EncInt IntMap::insert(int val) {
+  printf("IntMap::insert");
   kv_map[counter] = val;
   uint8_t *key_in_bits = reinterpret_cast<uint8_t *>(&counter);
   return EncInt {
@@ -11,6 +14,7 @@ EncInt IntMap::insert(int val) {
 }
 
 int IntMap::find(EncInt enc_val) {
+  printf("IntMap::find");
   size_t *key = reinterpret_cast<size_t *>(&enc_val.data);
   auto iter = kv_map.find(*key);
   if (iter == kv_map.end()) {
@@ -21,6 +25,7 @@ int IntMap::find(EncInt enc_val) {
 }
 
 bool IntMap::erase(EncInt enc_val) {
+  printf("IntMap::erase");
   size_t *key = reinterpret_cast<size_t *>(&enc_val.data);
   auto iter = kv_map.find(*key);
   if (iter != kv_map.end()) {

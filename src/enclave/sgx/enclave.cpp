@@ -5,7 +5,6 @@
 #include <stdarg.h>
 #include <stdio.h>      /* vsnprintf */
 #include <sync.h>
-#include <kv.h>
 
 void printf(const char *fmt, ...)
 {
@@ -196,7 +195,6 @@ int encrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t dst_len)
 int enclaveProcess(void* arg1)
 {
     // printf("enclave process called %p\n", arg1);
-    int_buf_p = TO_C_INT(new IntMap());
     if (arg1 == NULL)
         return -1;
     BaseRequest *req = (BaseRequest *)arg1; 
