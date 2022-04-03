@@ -1,4 +1,5 @@
 #include "enc_int_ops.h"
+#include "kv.h"
 
 #if defined(TEE_TZ)
 
@@ -54,6 +55,8 @@ int enc_int32_calc(EncIntCalcRequestData *req){
         break;
     }
 
+    int_map_insert(int_buf_p, res);
+
     resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
 
     return resp;
@@ -96,6 +99,8 @@ int enc_int32_bulk(EncIntBulkRequestData *req){
         }
         count ++;
     }
+
+    // int_map_insert(int_buf_p, res);
 
     resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
     return resp;
