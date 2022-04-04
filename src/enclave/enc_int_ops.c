@@ -30,7 +30,7 @@ int enc_int32_calc(EncIntCalcRequestData *req){
         return resp;
     }
     // if left and right stores the key, go to int map and find int value instead of decrypt
-    if (req->left.iv == 0 && req->left.tag == 0) {
+    if (memcmp(req->left.iv, &IV_GLOBAL, IV_SIZE) == 0 && memcmp(&req->left.iv, &TAG_GLOBAL, TAG_SIZE) == 0) {
         left = int_map_find(int_buf_p, req->left);
     } else {
         resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
@@ -38,15 +38,15 @@ int enc_int32_calc(EncIntCalcRequestData *req){
             return resp;
         }
     }
-    if (req->right.iv == 0 && req->right.tag == 0) {
-        left = int_map_find(int_buf_p, req->right);
+    if (memcmp(req->right.iv, &IV_GLOBAL, IV_SIZE) == 0 && memcmp(&req->right.iv, &TAG_GLOBAL, TAG_SIZE) == 0) {
+        right = int_map_find(int_buf_p, req->right);
     } else {
         resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right), (uint8_t*) &right, sizeof(right));
         if (resp != 0) {
             return resp;
         }
     }
-    // printf("clac type %d, %f, %f, ", req->common.reqType, left, right);
+    printf("clac type %d, %d, %d, ", req->common.reqType, left, right);
     switch (req->common.reqType) /* req->common.op */
     {
     case CMD_INT_PLUS:

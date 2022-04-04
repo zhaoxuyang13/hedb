@@ -1,5 +1,9 @@
 #include <enc_ops.h>
 #include <request_types.h>
+
+uint8_t IV_GLOBAL[IV_SIZE] = {0};
+uint8_t TAG_GLOBAL[TAG_SIZE] = {0};
+
 int handle_ops(BaseRequest *base_req)
 {
     // DMSG("\n -------------------\nops: %d", base_req->reqType);
@@ -11,6 +15,7 @@ int handle_ops(BaseRequest *base_req)
     case CMD_INT_DIV:
     case CMD_INT_EXP:
     case CMD_INT_MOD:
+    case CMD_INT_GET_ENC:
         base_req->resp = enc_int32_calc((EncIntCalcRequestData *)base_req);
         break; 
     case CMD_INT_CMP:

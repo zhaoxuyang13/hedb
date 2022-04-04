@@ -10,6 +10,9 @@
 #include <enc_float_ops.hpp>
 extern bool debugMode;
 
+uint8_t IV_GLOBAL[IV_SIZE] = {0};
+uint8_t TAG_GLOBAL[TAG_SIZE] = {0};
+
 #ifdef __cplusplus
 extern "C"{
 #endif
@@ -73,6 +76,11 @@ Datum
     pg_enc_int4_out(PG_FUNCTION_ARGS)
 {
     EncInt *in = PG_GETARG_ENCINT(0);
+    EncInt *in_real = PG_GETARG_ENCINT(0);
+    if (memcmp(in->iv, &IV_GLOBAL, IV_SIZE) == 0 && memcmp(&in->tag, &TAG_GLOBAL, TAG_SIZE) == 0) {
+        enc_int_get(in, in_real);
+        in = in_real;
+    }
     int out, resp;
     char *str = (char *) palloc0(sizeof(EncInt)); // this length is not really meaningful
     
