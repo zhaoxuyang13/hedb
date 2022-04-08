@@ -1,4 +1,5 @@
 ### Usage 
+
 1. 安装 Postgresql 
 
 ```shell
@@ -9,19 +10,82 @@ or
 build from source. https://www.postgresql.org/docs/current/install-short.html
 ```
 
-1. 安装 SGX driver, sdk, 
-2. 编译安装arm edb
+2. 安装OP-TEE  [ref]( https://optee.readthedocs.io/en/latest/building/gits/build.html)
 
-```shell
-make configure_sgx
-make 
-sudo make install 
-```
+   1. Install prerequisite
 
-4. 安装encdb 插件 
+      ```bash
+      sudo apt-get install android-tools-adb android-tools-fastboot autoconf \
+              automake bc bison build-essential ccache codespell \
+              cscope curl device-tree-compiler expect flex ftp-upload gdisk iasl \
+              libattr1-dev libcap-dev libcap-ng-dev \
+              libfdt-dev libftdi-dev libglib2.0-dev libgmp-dev libhidapi-dev \
+              libmpc-dev libncurses5-dev libpixman-1-dev libssl-dev libtool make \
+              mtools netcat ninja-build python3-crypto \
+              python3-pycryptodome python3-pyelftools python3-serial \
+              rsync unzip uuid-dev xdg-utils xterm xz-utils zlib1g-dev
+      ```
+
+   2. Install REPO
+
+      ```bash
+      mkdir ~/bin
+      PATH=~/bin:$PATH
+      curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+      chmod a+x ~/bin/repo
+      git config --global user.name "Your Name" #repo need git name/email config.
+      git config --global user.email "you@example.com" 
+      ```
+
+   3. Get source code 
+
+      ``` bash
+      mkdir <work-dir>
+      cd <work-dir>
+      repo init -u https://github.com/OP-TEE/manifest.git -m qemu_v8.xml
+      repo sync
+      # apply our own code.
+      mkdir -p share/edb
+      tar -xzf edb.tar.gz -C share/edb
+      cp share/edb/patch/qemu_v8.mk build/qemu_v8.mk
+      mkdir -p img
+      mv ramdisk img/ramdisk
+      ```
+
+   4. build and run OP-TEE
+
+      ```bash
+      cd build
+      make toolchains
+      make \
+      	QEMU_VIRTFS_ENABLE=y \
+        QEMU_USERNET_ENABLE=y \  # 用于共享文件夹
+        CFG_WITH_PAGER=y \  
+      	run
+      ```
+
+3. 编译安装EDB扩展（In Qemu ）
+
+   会弹出两个窗口，一个是secure ，一个是normal，在qemu侧输入c开始执行。
+
+   在normal侧输入root登陆
+
+   ```bash
+   mkdir mnt
+   mount /dev/vda mnt # 挂载准备的包含postgres的img
+   ./mnt/mnt.sh # chroot
+   ./init.sh 
+   cd edb
+   make configure_tz #选择trustzone作为TEE
+   make build 
+   sudo make install
+   ```
+
+4. 安装encdb 插件  (在Host机器上)
 
 ```bash
-psql -U postgres
+# qemu里，已经通过ssh将pg端口转发到host上54322端口
+psql -U postgres -p 54322 -h localhost
 ```
 
 ```psql
@@ -36,48 +100,18 @@ SELECT pg_enc_int4_decrypt(pg_enc_int4_encrypt(1) + pg_enc_int4_encrypt(2));
 
 5. TPCC benchmark （事务型）
 
-修改配置文件 benchmark/config/tpcc_config.xml中的DBUrl, username, password 为当前本机postgres的配置
-
-定义warehouse（数据量）和terminal（并发量）
-
 ```bash
-make load-tpcc
 cd benchmark 
+java -Dlog4j.configuration=log4j.properties -jar bin/oltp.jar -b tpcc -o output -s 100 --config config/tpcc_config.xml --load true --execute false
 java -Dlog4j.configuration=log4j.properties -jar bin/oltp.jar -b tpcc -o output -s 100 --config config/tpcc_config.xml --load false --execute true
-# 注意这里 -s 后面的数字和config.xml里面定义的time一样。
-# 输出结果到benchmark/results目录，
 ```
 
 6. TPCH benchmark （分析型）
 
 ```bash
-benchmark/tool/dbgen -s 2 # 指定warehouse大小
-make load-tpch
 cd benchmark 
+./tool/dbgen -s 2 # 指定warehouse大小
+java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 10 --config config/tpch_config.xml --load true --execute false
 java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 10 --config config/tpch_config.xml --load false --execute true
-# 和上面运行方式差不多
 ```
 
-整体是参考stealthdb写的，可以参考
-https://github.com/cryptograph/stealthdb/tree/master/
-https://github.com/cryptograph/stealthdb/tree/master/benchmark
-
-### 代码结构
-- Enclave : TEE中的代码
-  - 子目录SGX, TZ分别是对应不同平台的代码
-  - 其余是通用代码逻辑
-- extension：PG插件代码
-  - xxx.sql 声明四个加密类型和对应类型的各种函数
-  - enc_xxx.cpp 定义了每个函数（按照postgres的规范写的）
-  - Interface目录：调用TEE的一层接口
-    - 子目录SGX，TZ对应了调用不同平台的代码
-  - include 头文件
-    - enc_type和request_type定义了加密类型的数据结构，和传输的请求的数据结构。
-    - 使用C是因为trustzone的ta只能使用C编写，如果使用class的话没法兼容。（其实这一块实现的不好，为了贪图c++的方便，除了trustzone都想用c++，结果代码里c和c++混合在一起，代码不太优雅，但是能用就行）
-
-项目使用cmake + Makefile来编译（更方便的管理各种依赖）
-
-
-### Notes
-
-- SGX enclave sign key should be provided by user in production.
