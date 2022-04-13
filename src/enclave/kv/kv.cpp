@@ -3,7 +3,7 @@
 int_map *int_buf_p = TO_C_INT(new IntMap());
 
 EncInt IntMap::insert(int val) {
-  printf("IntMap::insert, key: %d val: %d kv_addr: %p", counter, val, int_buf_p);
+  // printf("IntMap::insert, key: %d val: %d", counter, val);
   kv_map[counter] = val;
   uint8_t *key_in_bits = reinterpret_cast<uint8_t *>(&counter);
   EncInt ret {
@@ -18,18 +18,20 @@ EncInt IntMap::insert(int val) {
 
 int IntMap::find(EncInt enc_val) {
   int *key = reinterpret_cast<int *>(&enc_val.data);
-  printf("IntMap::find, key: %d kv_addr: %p", *key, int_buf_p);
+  // printf("IntMap::find, key: %d", *key);
   auto iter = kv_map.find(*key);
   if (iter == kv_map.end()) {
     printf("IntMap: key not found!");
     return 0;
   }
-  return iter->second;
+  int ret = iter->second;
+  kv_map.erase(iter);
+  return ret;
 }
 
 bool IntMap::erase(EncInt enc_val) {
-  printf("IntMap::erase");
   size_t *key = reinterpret_cast<size_t *>(&enc_val.data);
+  // printf("IntMap::erase key: %d", *key);
   auto iter = kv_map.find(*key);
   if (iter != kv_map.end()) {
     kv_map.erase(iter);

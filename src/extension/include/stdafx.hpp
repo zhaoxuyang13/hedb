@@ -25,6 +25,8 @@ extern "C" {
 #include <utils/datetime.h>
 #include <utils/timestamp.h>
 #include <c.h>
+#include <commands/trigger.h>
+
 #ifdef __cplusplus
 }
 #endif

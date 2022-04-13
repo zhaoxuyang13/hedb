@@ -18,6 +18,8 @@ extern "C"{
 #endif
 PG_FUNCTION_INFO_V1(pg_enc_int4_in);
 PG_FUNCTION_INFO_V1(pg_enc_int4_out);
+PG_FUNCTION_INFO_V1(pg_enc_int4_get);
+PG_FUNCTION_INFO_V1(pg_enc_int4_trigget);
 PG_FUNCTION_INFO_V1(pg_enc_int4_add);
 PG_FUNCTION_INFO_V1(pg_enc_int4_sub);
 PG_FUNCTION_INFO_V1(pg_enc_int4_mult);
@@ -94,6 +96,55 @@ Datum
     }
 
     PG_RETURN_CSTRING(str);
+}
+
+/**
+ * The function gets the actual EncInt from the key, stored in EncInt *key.
+ * @input: key
+ * @return: actual EncInt
+ * output format: BASE64(iv[12 bytes]||AES-GCM(s1+s2)[4 bytes]||AUTHTAG[16bytes])
+ */
+Datum
+    pg_enc_int4_get(PG_FUNCTION_ARGS)
+{
+    int resp = 0;
+    EncInt* key = PG_GETARG_ENCINT(0);
+    EncInt* result = (EncInt*)palloc0(sizeof(EncInt));
+
+    resp = enc_int_get(key, result);
+
+    PG_RETURN_POINTER(result);
+}
+
+/**
+ * This is a sample trigger function
+ * Usage:
+ * CREATE TRIGGER trigger_name
+ *   BEFORE INSERT OR UPDATE ON courses
+ *   FOR EACH ROW
+ *   EXECUTE PROCEDURE pg_enc_int4_trigget();
+ * @return Datum 
+ */
+Datum
+    pg_enc_int4_trigget(PG_FUNCTION_ARGS)
+{
+    ereport(INFO, (errmsg("Trigget called!")));
+    TriggerData *trigdata = (TriggerData *) fcinfo->context;
+    HeapTuple tuple;
+    if (!CALLED_AS_TRIGGER(fcinfo)) {
+        ereport(INFO, (errmsg("Trigget: not called from trigger!")));
+    }
+    // get the tuple depending on trigger event
+    if (TRIGGER_FIRED_BY_INSERT(trigdata->tg_event)) {
+        tuple = trigdata->tg_trigtuple;
+    }
+    else if (TRIGGER_FIRED_BY_UPDATE(trigdata->tg_event)) {
+        tuple = trigdata->tg_newtuple;
+    }
+    else {
+        ereport(INFO, (errmsg("Trigget: triggered by neither insert nor update!")));
+    }
+    return PointerGetDatum(tuple);
 }
 
 /*
