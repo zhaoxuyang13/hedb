@@ -39,20 +39,30 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
 {
     float left,right,res;
     int resp = 0;
-    // if request to get real EncFloat, go to int_map and find float value, then encrypt
-    // if (req->common.reqType == CMD_INT_GET_ENC) {
-    //     res = int_map_find(float_buf_p, req->left);
-    //     resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
-    //     return resp;
-    // }
-    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
-    if (resp != 0)
+    // if request to get real EncFloat, go to float_map and find float value, then encrypt
+    if (req->common.reqType == CMD_FLOAT_GET_ENC) {
+        res = float_map_find(float_buf_p, req->left);
+        resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
         return resp;
-
-    resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(right));
-    if (resp != 0)
-        return resp;
-    // printf("clac type %d, %f, %f, ", req->common.reqType, left, right);
+    }
+    // if left and right stores the key, go to float map and find float value instead of decrypt
+    if (memcmp(req->left.iv, &IV_GLOBAL_ZERO, IV_SIZE) == 0) {
+        left = float_map_find(float_buf_p, req->left);
+    } else {
+        resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
+        if (resp != 0) {
+            return resp;
+        }
+    }
+    if (memcmp(req->right.iv, &IV_GLOBAL_ZERO, IV_SIZE) == 0) {
+        right = float_map_find(float_buf_p, req->right);
+    } else {
+        resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(right));
+        if (resp != 0) {
+            return resp;
+        }
+    }
+    printf("clac type %d, %f, %f, ", req->common.reqType, left, right);
     switch (req->common.reqType) /* req->common.op */
     {
     case CMD_FLOAT_PLUS:
@@ -77,9 +87,13 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
         break;
     }
 
-    resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
+    req->res = float_map_insert(float_buf_p, res);
 
-    return resp;
+    return 0;
+
+    // resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
+
+    // return resp;
 }
 
 

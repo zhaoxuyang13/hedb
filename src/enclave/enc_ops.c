@@ -55,6 +55,7 @@ int handle_ops(BaseRequest *base_req)
     case CMD_FLOAT_DIV:
     case CMD_FLOAT_EXP: 
     case CMD_FLOAT_MOD:
+    case CMD_FLOAT_GET_ENC:
         base_req->resp = enc_float32_calc((EncFloatCalcRequestData *)base_req);
         break;
     

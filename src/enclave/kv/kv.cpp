@@ -5,7 +5,7 @@ float_map *float_buf_p = (float_map *)(new BufferMap<float, EncFloat>());
 
 template<typename PlainType, typename EncType>
 EncType BufferMap<PlainType, EncType>::insert(PlainType val) {
-  printf("BufferMap::insert, key: %d val: %d", counter, val);
+  printf("BufferMap::insert, key: %d val: %f", counter, val);
   kv_map[counter] = val;
   uint8_t *key_in_bits = reinterpret_cast<uint8_t *>(&counter);
   // set IV, data to 0

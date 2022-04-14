@@ -64,3 +64,11 @@ int enc_float_sum_bulk(size_t bulk_size, EncFloat *bulk_data, EncFloat *res) {
     int resp = invoker->sendRequest(req);
     return resp;
 }
+
+int enc_float_get(EncFloat* key, EncFloat* res)
+{
+    auto *req = new CalcRequest<EncFloat>(CMD_FLOAT_GET_ENC, key, key, res);
+    TEEInvoker *invoker = TEEInvoker::getInstance();
+    int resp = invoker->sendRequest(req);
+    return resp;
+}
