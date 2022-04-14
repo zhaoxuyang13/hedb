@@ -1,23 +1,26 @@
 #include <kv.h>
 
 int_map *int_buf_p = TO_C_INT(new IntMap());
+int_map *float_buf_p = TO_C_INT(new IntMap());
 
 EncInt IntMap::insert(int val) {
   // printf("IntMap::insert, key: %d val: %d", counter, val);
   kv_map[counter] = val;
   uint8_t *key_in_bits = reinterpret_cast<uint8_t *>(&counter);
+  // set IV, data to 0
   EncInt ret {
     {0},
     {0},
     {0},
   };
-  memcpy(ret.data, key_in_bits, INT32_LENGTH);
+  // store uint64_t key in tag
+  memcpy(ret.tag, key_in_bits, INT32_LENGTH);
   counter++;
   return ret;
 }
 
 int IntMap::find(EncInt enc_val) {
-  int *key = reinterpret_cast<int *>(&enc_val.data);
+  uint64_t *key = reinterpret_cast<uint64_t *>(&enc_val.tag);
   // printf("IntMap::find, key: %d", *key);
   auto iter = kv_map.find(*key);
   if (iter == kv_map.end()) {
@@ -32,7 +35,7 @@ int IntMap::find(EncInt enc_val) {
 }
 
 bool IntMap::erase(EncInt enc_val) {
-  size_t *key = reinterpret_cast<size_t *>(&enc_val.data);
+  uint64_t *key = reinterpret_cast<uint64_t *>(&enc_val.tag);
   // printf("IntMap::erase key: %d", *key);
   auto iter = kv_map.find(*key);
   if (iter != kv_map.end()) {

@@ -8,8 +8,7 @@
 #include <request_types.h>
 #include <defs.h>
 
-extern uint8_t IV_GLOBAL[IV_SIZE];
-extern uint8_t TAG_GLOBAL[TAG_SIZE];
+extern uint8_t IV_GLOBAL_ZERO[IV_SIZE];
 
 #ifdef __cplusplus 
 extern "C" {

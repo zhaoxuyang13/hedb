@@ -10,8 +10,7 @@
 #include <enc_float_ops.hpp>
 extern bool debugMode;
 
-uint8_t IV_GLOBAL[IV_SIZE] = {0};
-uint8_t TAG_GLOBAL[TAG_SIZE] = {0};
+uint8_t IV_GLOBAL_ZERO[IV_SIZE] = {0};
 
 #ifdef __cplusplus
 extern "C"{
@@ -79,7 +78,7 @@ Datum
 {
     EncInt *in = PG_GETARG_ENCINT(0);
     EncInt *in_real = PG_GETARG_ENCINT(0);
-    if (memcmp(in->iv, &IV_GLOBAL, IV_SIZE) == 0 && memcmp(&in->tag, &TAG_GLOBAL, TAG_SIZE) == 0) {
+    if (memcmp(in->iv, &IV_GLOBAL_ZERO, IV_SIZE) == 0) {
         enc_int_get(in, in_real);
         in = in_real;
     }

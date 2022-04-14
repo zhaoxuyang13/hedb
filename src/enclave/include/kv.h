@@ -9,8 +9,8 @@
 
 class IntMap {
  private:
-  std::map<size_t, int> kv_map {};
-  int counter = 0;
+  std::map<uint64_t, int> kv_map {};
+  uint64_t counter = 0;
  public:
   IntMap() = default;
   ~IntMap() = default;
@@ -35,8 +35,9 @@ EncInt int_map_insert(int_map *m, int val);
 int int_map_find(int_map *m, EncInt enc_val);
 bool int_map_erase(int_map *m, EncInt enc_val);
 
-/* GLOBAL int buffer */
+/* GLOBAL int and float buffer */
 extern int_map *int_buf_p;
+extern int_map *float_buf_p;
 
 #ifdef __cplusplus
 }

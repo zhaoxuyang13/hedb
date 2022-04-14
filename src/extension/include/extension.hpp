@@ -3,8 +3,7 @@
 #include <stdafx.hpp>
 #include <enc_types.h>
 
-extern uint8_t IV_GLOBAL[IV_SIZE];
-extern uint8_t TAG_GLOBAL[TAG_SIZE];
+extern uint8_t IV_GLOBAL_ZERO[IV_SIZE];
 
 //variable length text.  this type is for storage 
 // 4 byte length + flexible length.

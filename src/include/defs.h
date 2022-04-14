@@ -68,6 +68,7 @@ typedef unsigned long DWORD; //4bytes
 #define CMD_FLOAT_EXP 108
 #define CMD_FLOAT_MOD 109
 #define CMD_FLOAT_SUM_BULK 110
+#define CMD_FLOAT_GET_ENC 111   // get the real encrypted float from kv buffer
 
 #define CMD_STRING_CMP 201
 #define CMD_STRING_ENC 202

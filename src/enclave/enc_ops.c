@@ -2,8 +2,7 @@
 #include <request_types.h>
 // #include <kv.h>
 
-uint8_t IV_GLOBAL[IV_SIZE] = {0};
-uint8_t TAG_GLOBAL[TAG_SIZE] = {0};
+uint8_t IV_GLOBAL_ZERO[IV_SIZE] = {0};
 
 int handle_ops(BaseRequest *base_req)
 {
