@@ -24,9 +24,11 @@ int IntMap::find(EncInt enc_val) {
     printf("IntMap: key not found!");
     return 0;
   }
-  int ret = iter->second;
-  kv_map.erase(iter);
-  return ret;
+  // DELETE kv after find
+  // int ret = iter->second;
+  // kv_map.erase(iter);
+  // return ret;
+  return iter->second;
 }
 
 bool IntMap::erase(EncInt enc_val) {

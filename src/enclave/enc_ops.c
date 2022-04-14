@@ -1,5 +1,6 @@
 #include <enc_ops.h>
 #include <request_types.h>
+// #include <kv.h>
 
 uint8_t IV_GLOBAL[IV_SIZE] = {0};
 uint8_t TAG_GLOBAL[TAG_SIZE] = {0};
@@ -26,10 +27,19 @@ int handle_ops(BaseRequest *base_req)
         break;
 
     case CMD_INT_ENC:{
+        /* ==================== DO THE ENCRYPTION =================== */
         EncIntEncRequestData *req = (EncIntEncRequestData *) base_req;
         base_req->resp = encrypt_bytes((uint8_t*) &req->plaintext, sizeof(req->plaintext),
                                   (uint8_t*) &req->ciphertext, sizeof(req->ciphertext));
         break;
+        
+        /* ============== FAKE encryption, insert into KV ============ */
+        /* This won't work if we load data for benchmark, since kv is destroyed after worker exits.*/
+        // EncIntEncRequestData *req = (EncIntEncRequestData *) base_req;
+        // req->ciphertext = int_map_insert(int_buf_p, req->plaintext);
+        // base_req->resp = 0;
+        // break;
+
     }
     case CMD_INT_DEC:{
         EncIntDecRequestData *req = (EncIntDecRequestData *) base_req;
