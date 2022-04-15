@@ -1,5 +1,5 @@
 select enable_debug_mode(1);
-\timing
+\timing on
 select
     cntrycode,
     count(*) as numcust,

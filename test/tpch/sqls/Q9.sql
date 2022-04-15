@@ -1,5 +1,5 @@
 select enable_debug_mode(1);
-\timing
+\timing on
 select
     nation,
     o_year,sum(amount) as sum_profit 

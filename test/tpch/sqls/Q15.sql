@@ -1,5 +1,5 @@
 select enable_debug_mode(1);
-\timing
+\timing on
 WITH revenue (supplier_no, total_revenue) as (
     SELECT
         l_suppkey,SUM(l_extendedprice * ('1'-l_discount))

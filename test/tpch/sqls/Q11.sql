@@ -1,5 +1,5 @@
 select enable_debug_mode(1);
-\timing
+\timing on
 select
     ps_partkey,sum(ps_supplycost * ps_availqty) as value 
 from

@@ -1,5 +1,5 @@
 select enable_debug_mode(1);
-\timing
+\timing on
 select
     p_brand,p_type,p_size,
     count(distinct ps_suppkey) as supplier_cnt
