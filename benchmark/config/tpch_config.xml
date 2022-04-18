@@ -4,7 +4,7 @@
     <!-- Connection details -->
     <dbtype>postgres</dbtype>
     <driver>org.postgresql.Driver</driver>
-    <DBUrl>jdbc:postgresql://localhost:54322/test</DBUrl>
+    <DBUrl>jdbc:postgresql://localhost:5432/test</DBUrl>
     <username>postgres</username>
     <password>password</password>
     <isolation>TRANSACTION_READ_COMMITTED</isolation>
@@ -18,7 +18,7 @@
     <terminals>1</terminals>
     <works>
         <work>
-          <time>600</time>
+          <time>30</time>
           <ratelimited>false</ratelimited>
           <rate>10000000</rate>
           <weights>3, 2, 3, 2 , 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5</weights>
