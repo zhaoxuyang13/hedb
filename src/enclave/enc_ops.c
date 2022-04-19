@@ -1,6 +1,6 @@
 #include <enc_ops.h>
 #include <request_types.h>
-// #include <kv.h>
+#include <kv.h>
 
 uint8_t IV_GLOBAL_ZERO[IV_SIZE] = {0};
 
@@ -16,6 +16,7 @@ int handle_ops(BaseRequest *base_req)
     case CMD_INT_EXP:
     case CMD_INT_MOD:
     case CMD_INT_GET_ENC:
+    case CMD_INT_DUMP:
         base_req->resp = enc_int32_calc((EncIntCalcRequestData *)base_req);
         break; 
     case CMD_INT_CMP:
@@ -56,6 +57,7 @@ int handle_ops(BaseRequest *base_req)
     case CMD_FLOAT_EXP: 
     case CMD_FLOAT_MOD:
     case CMD_FLOAT_GET_ENC:
+    case CMD_FLOAT_DUMP:
         base_req->resp = enc_float32_calc((EncFloatCalcRequestData *)base_req);
         break;
     

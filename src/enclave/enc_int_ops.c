@@ -23,30 +23,24 @@ double pow (double x, int y)
 int enc_int32_calc(EncIntCalcRequestData *req){
     int left,right,res;
     int resp = 0;
-    // if request to get real EncInt, go to int_map and find int value, then encrypt
-    if (req->common.reqType == CMD_INT_GET_ENC) {
-        res = int_map_find(int_buf_p, req->left);
-        resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
+    // print buffer to file
+    if (req->common.reqType == CMD_INT_DUMP) {
+        printf("DUMP");
+        int_map_dump(int_buf_p);
+        return 0;
+    }
+    // get decrypted left, right
+    // int_map_insert(int_buf_p, req->left.data);
+    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
+    if (resp != 0) {
         return resp;
     }
-    // if left and right stores the key, go to int map and find int value instead of decrypt
-    if (memcmp(req->left.iv, &IV_GLOBAL_ZERO, IV_SIZE) == 0) {
-        left = int_map_find(int_buf_p, req->left);
-    } else {
-        resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
-        if (resp != 0) {
-            return resp;
-        }
+    // int_map_insert(int_buf_p, req->right.data);
+    resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right), (uint8_t*) &right, sizeof(right));
+    if (resp != 0) {
+        return resp;
     }
-    if (memcmp(req->right.iv, &IV_GLOBAL_ZERO, IV_SIZE) == 0) {
-        right = int_map_find(int_buf_p, req->right);
-    } else {
-        resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right), (uint8_t*) &right, sizeof(right));
-        if (resp != 0) {
-            return resp;
-        }
-    }
-    // printf("clac type %d, %d, %d, ", req->common.reqType, left, right);
+    printf("clac type %d, %d, %d, ", req->common.reqType, left, right);
     switch (req->common.reqType) /* req->common.op */
     {
     case CMD_INT_PLUS:
@@ -71,21 +65,22 @@ int enc_int32_calc(EncIntCalcRequestData *req){
         break;
     }
 
-    req->res = int_map_insert(int_buf_p, res);
+    resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
 
-    return 0;
-
-    // resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
-
-    // return resp;
+    return resp;
 }
 
 int enc_int32_cmp(EncIntCmpRequestData *req){
     int left,right ;
     int resp = 0;
+
+    // int_map_insert(int_buf_p, req->left.data);
+
     resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left),(uint8_t*) &left, sizeof(left));
     if (resp != 0)
         return resp;
+
+    // int_map_insert(int_buf_p, req->right.data);
 
     resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(right));
     if (resp != 0)
@@ -103,6 +98,8 @@ int enc_int32_bulk(EncIntBulkRequestData *req){
     int count = 0, resp = 0;
     while (count < bulk_size)
     {
+        // int_map_insert(int_buf_p, array[count].data);
+
         resp = decrypt_bytes((uint8_t *) &array[count], sizeof(EncInt), (uint8_t*) &tmp, sizeof(tmp));    
         if (resp != 0)
             return resp;
@@ -118,7 +115,6 @@ int enc_int32_bulk(EncIntBulkRequestData *req){
         count ++;
     }
 
-    // int_map_insert(int_buf_p, res);
 
     resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
     return resp;

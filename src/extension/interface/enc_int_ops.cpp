@@ -96,3 +96,13 @@ int enc_int_get(EncInt* key, EncInt* res)
     int resp = invoker->sendRequest(req);
     return resp;
 }
+
+int enc_int_dump()
+{
+    // ereport(INFO, (errmsg("GET")));
+    EncInt null_enc_int = EncInt {};
+    auto *req = new CalcRequest<EncInt>(CMD_INT_DUMP, &null_enc_int, &null_enc_int, &null_enc_int);
+    TEEInvoker *invoker = TEEInvoker::getInstance();
+    int resp = invoker->sendRequest(req);
+    return resp;
+}

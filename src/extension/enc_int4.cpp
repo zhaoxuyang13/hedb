@@ -18,6 +18,7 @@ extern "C"{
 PG_FUNCTION_INFO_V1(pg_enc_int4_in);
 PG_FUNCTION_INFO_V1(pg_enc_int4_out);
 PG_FUNCTION_INFO_V1(pg_enc_int4_get);
+PG_FUNCTION_INFO_V1(pg_enc_int4_dump);
 PG_FUNCTION_INFO_V1(pg_enc_int4_trigget);
 PG_FUNCTION_INFO_V1(pg_enc_int4_add);
 PG_FUNCTION_INFO_V1(pg_enc_int4_sub);
@@ -77,11 +78,6 @@ Datum
     pg_enc_int4_out(PG_FUNCTION_ARGS)
 {
     EncInt *in = PG_GETARG_ENCINT(0);
-    EncInt *in_real = PG_GETARG_ENCINT(0);
-    if (memcmp(in->iv, &IV_GLOBAL_ZERO, IV_SIZE) == 0) {
-        enc_int_get(in, in_real);
-        in = in_real;
-    }
     int out, resp;
     char *str = (char *) palloc0(sizeof(EncInt)); // this length is not really meaningful
     
@@ -106,6 +102,7 @@ Datum
 Datum
     pg_enc_int4_get(PG_FUNCTION_ARGS)
 {
+    // ereport(INFO, errmsg("GET"));
     int resp = 0;
     EncInt* key = PG_GETARG_ENCINT(0);
     EncInt* result = (EncInt*)palloc0(sizeof(EncInt));
@@ -113,6 +110,13 @@ Datum
     resp = enc_int_get(key, result);
 
     PG_RETURN_POINTER(result);
+}
+
+Datum
+    pg_enc_int4_dump(PG_FUNCTION_ARGS)
+{
+    int resp = enc_int_dump();
+    PG_RETURN_VOID();
 }
 
 /**

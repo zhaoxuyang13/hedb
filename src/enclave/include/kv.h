@@ -4,18 +4,23 @@
 
 #ifdef __cplusplus
 #include <map>
+#include <string>
 
-template<typename PlainType, typename EncType>
+/**
+ * @brief std::map<key, val>
+ * key: SHA256 value of EncType.data
+ * val: number of accesses
+ */
 class BufferMap {
  private:
-  std::map<uint64_t, PlainType> kv_map {};
-  uint64_t counter = 0;
+  std::map<std::string, int> kv_map {};
+  int data_length;
  public:
-  BufferMap() = default;
+  BufferMap(int data_length): data_length(data_length) {};
   ~BufferMap() = default;
-  EncType insert(PlainType val);
-  PlainType find(EncType enc_val);
-  bool erase(EncType enc_val);
+  int insert(uint8_t *data);
+  bool find(uint8_t *data);
+  void dump();
 };
 
 #else
@@ -29,21 +34,23 @@ extern "C"
 
 typedef struct int_map_ int_map;
 typedef struct float_map_ float_map;
+typedef struct time_map_ time_map;
+typedef struct text_map_ text_map;
 
-/* ================== INT ================== */
-int_map *int_map_new(void);
-EncInt int_map_insert(int_map *m, int val);
-int int_map_find(int_map *m, EncInt enc_val);
-bool int_map_erase(int_map *m, EncInt enc_val);
-/* ================= FLOAT ================= */
-float_map *float_map_new(void);
-EncFloat float_map_insert(float_map *m, float val);
-float float_map_find(float_map *m, EncFloat enc_val);
-bool float_map_erase(float_map *m, EncFloat enc_val);
+int int_map_insert(int_map *m, uint8_t *data);
+void int_map_dump(int_map *m);
+int float_map_insert(float_map *m, uint8_t *data);
+void float_map_dump(float_map *m);
+int time_map_insert(time_map *m, uint8_t *data);
+void time_map_dump(time_map *m);
+int text_map_insert(text_map *m, uint8_t *data);
+void text_map_dump(text_map *m);
 
 /* GLOBAL int and float buffers */
 extern int_map *int_buf_p;
 extern float_map *float_buf_p;
+extern time_map *time_buf_p;
+extern text_map *text_buf_p;
 
 #ifdef __cplusplus
 }

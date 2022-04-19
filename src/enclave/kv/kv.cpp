@@ -1,79 +1,72 @@
 #include <kv.h>
+#include <fstream>
 
-int_map *int_buf_p = (int_map *)(new BufferMap<int, EncInt>());
-float_map *float_buf_p = (float_map *)(new BufferMap<float, EncFloat>());
+int_map *int_buf_p = (int_map *)(new BufferMap(4));
+float_map *float_buf_p = (float_map *)(new BufferMap(4));
+time_map *time_buf_p = (time_map *)(new BufferMap(8));
+text_map *text_buf_p = (text_map *)(new BufferMap(1024));
 
-template<typename PlainType, typename EncType>
-EncType BufferMap<PlainType, EncType>::insert(PlainType val) {
-  printf("BufferMap::insert, key: %d val: %f", counter, val);
-  kv_map[counter] = val;
-  uint8_t *key_in_bits = reinterpret_cast<uint8_t *>(&counter);
-  // set IV, data to 0
-  EncType ret {
-    {0},
-    {0},
-    {0},
-  };
-  // store uint64_t key in tag
-  memcpy(ret.tag, key_in_bits, sizeof(uint64_t));
-  counter++;
-  return ret;
+int BufferMap::insert(uint8_t *data) {
+  sgx_sha256_hash_t key;
+  sgx_status_t hash_status = sgx_sha256_msg(data, data_length, &key);
+  std::string key_str = std::string(reinterpret_cast<char *>(key));
+  auto iter = kv_map.find(key_str);
+  if (iter == kv_map.end())
+    kv_map[key_str] = 1;
+  else
+    kv_map[key_str] = iter->second + 1;
+  printf("Value is: %d", kv_map[key_str]);
+  return kv_map[key_str];
 }
 
-template<typename PlainType, typename EncType>
-PlainType BufferMap<PlainType, EncType>::find(EncType enc_val) {
-  uint64_t *key = reinterpret_cast<uint64_t *>(&enc_val.tag);
-  printf("BufferMap::find, key: %d", *key);
-  auto iter = kv_map.find(*key);
-  if (iter == kv_map.end()) {
-    printf("BufferMap: key not found!");
-    return 0;
+bool BufferMap::find(uint8_t *data) {
+  sgx_sha256_hash_t key;
+  sgx_status_t hash_status = sgx_sha256_msg(data, data_length, &key);
+  std::string key_str = std::string(reinterpret_cast<char *>(key));
+  auto iter = kv_map.find(key_str);
+  if (iter == kv_map.end())
+    return false;
+  return true;
+}
+
+void BufferMap::dump() {
+  printf("DUMP");
+  std::string result = "";
+  for (auto iter: kv_map) {
+    result = result + std::to_string(iter.second) + ',';
   }
-  // DELETE kv after find
-  int ret = iter->second;
-  kv_map.erase(iter);
-  return ret;
-  // return iter->second;
+  printf("Len: %d, %s", result.length(), result.c_str());
+  return;
 }
 
-template<typename PlainType, typename EncType>
-bool BufferMap<PlainType, EncType>::erase(EncType enc_val) {
-  uint64_t *key = reinterpret_cast<uint64_t *>(&enc_val.tag);
-  printf("BufferMap::erase key: %d", *key);
-  auto iter = kv_map.find(*key);
-  if (iter != kv_map.end()) {
-    kv_map.erase(iter);
-    return true;
-  }
-  return false;
+int int_map_insert(int_map *m, uint8_t *data) {
+  return ((BufferMap *)m)->insert(data);
 }
 
-int_map *int_map_new(void) {
-  return (int_map *)(new BufferMap<int, EncInt>());
+void int_map_dump(int_map *m) {
+  return ((BufferMap *)m)->dump();
 }
 
-EncInt int_map_insert(int_map *m, int val) {
-  return ((BufferMap<int, EncInt> *)m)->insert(val);
+int float_map_insert(float_map *m, uint8_t *data) {
+  return ((BufferMap *)m)->insert(data);
 }
 
-int int_map_find(int_map *m, EncInt enc_val) {
-  return ((BufferMap<int, EncInt> *)m)->find(enc_val);
+void float_map_dump(float_map *m) {
+  return ((BufferMap *)m)->dump();
 }
 
-bool int_map_erase(int_map *m, EncInt enc_val) {
-  return ((BufferMap<int, EncInt> *)m)->erase(enc_val);
+int time_map_insert(time_map *m, uint8_t *data) {
+  return ((BufferMap *)m)->insert(data);
 }
 
-float_map *float_map_new(void) {
-  return (float_map *)(new BufferMap<float, EncFloat>());
+void time_map_dump(time_map *m) {
+  return ((BufferMap *)m)->dump();
 }
 
-EncFloat float_map_insert(float_map *m, float val) {
-  return ((BufferMap<float, EncFloat> *)m)->insert(val);
+int text_map_insert(text_map *m, uint8_t *data) {
+  return ((BufferMap *)m)->insert(data);
 }
-float float_map_find(float_map *m, EncFloat enc_val) {
-  return ((BufferMap<float, EncFloat> *)m)->find(enc_val);
-}
-bool float_map_erase(float_map *m, EncFloat enc_val) {
-  return ((BufferMap<float, EncFloat> *)m)->erase(enc_val);
+
+void text_map_dump(text_map *m) {
+  return ((BufferMap *)m)->dump();
 }

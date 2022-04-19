@@ -16,3 +16,4 @@ int enc_int_decrypt(EncInt *pSrc, int *pDst);
 int enc_int_sum_bulk(size_t bulk_size, EncInt *arg1, EncInt *res);
 int enc_int_get(EncInt* key, EncInt* res);
 Datum pg_enc_int4_trigget();
+int enc_int_dump();

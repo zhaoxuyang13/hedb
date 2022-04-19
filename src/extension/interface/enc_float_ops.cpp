@@ -72,3 +72,12 @@ int enc_float_get(EncFloat* key, EncFloat* res)
     int resp = invoker->sendRequest(req);
     return resp;
 }
+
+int enc_float_dump()
+{
+    EncFloat null_enc_float = EncFloat {};
+    auto *req = new CalcRequest<EncFloat>(CMD_FLOAT_DUMP, &null_enc_float, &null_enc_float, &null_enc_float);
+    TEEInvoker *invoker = TEEInvoker::getInstance();
+    int resp = invoker->sendRequest(req);
+    return resp;
+}

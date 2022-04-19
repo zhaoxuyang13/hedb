@@ -10,6 +10,7 @@ extern "C" {
 #endif
 PG_FUNCTION_INFO_V1(pg_enc_float4_in);
 PG_FUNCTION_INFO_V1(pg_enc_float4_out);
+PG_FUNCTION_INFO_V1(pg_enc_float4_dump);
 PG_FUNCTION_INFO_V1(pg_enc_float4_encrypt);
 PG_FUNCTION_INFO_V1(pg_enc_float4_decrypt);
 PG_FUNCTION_INFO_V1(pg_enc_float4_sum_bulk);
@@ -152,6 +153,12 @@ Datum pg_enc_float4_out(PG_FUNCTION_ARGS)
     enc_float_decrypt(s, &ans);
     sprintf(str, "%f", ans);
     PG_RETURN_POINTER(str);
+}
+
+Datum pg_enc_float4_dump(PG_FUNCTION_ARGS)
+{
+    int resp = enc_float_dump();
+    PG_RETURN_VOID();
 }
 
 
