@@ -23,17 +23,17 @@ EncType BufferMap<PlainType, EncType>::insert(PlainType val) {
 template<typename PlainType, typename EncType>
 PlainType BufferMap<PlainType, EncType>::find(EncType enc_val) {
   uint64_t *key = reinterpret_cast<uint64_t *>(&enc_val.tag);
-  printf("BufferMap::find, key: %d", *key);
   auto iter = kv_map.find(*key);
   if (iter == kv_map.end()) {
-    printf("BufferMap: key not found!");
+    printf("BufferMap: key not found! key: %d", *key);
     return 0;
   }
   // DELETE kv after find
-  int ret = iter->second;
-  kv_map.erase(iter);
-  return ret;
-  // return iter->second;
+  printf("BufferMap::find, key: %d, val: %f", *key, iter->second);
+  // int ret = iter->second;
+  // kv_map.erase(iter);
+  // return ret;
+  return iter->second;
 }
 
 template<typename PlainType, typename EncType>
