@@ -1,3 +1,5 @@
+SET max_parallel_workers = 0;
+SET max_parallel_workers_per_gather = 0;
 select enable_debug_mode(1);
 \timing on
 select
