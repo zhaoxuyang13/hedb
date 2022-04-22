@@ -11,3 +11,4 @@ where
 and l_shipdate < date '1995-01-01' + interval '1' year 
 and l_discount between '0.07' and '0.09' 
 and l_quantity < '24';
+select pg_enc_print_stats(true);

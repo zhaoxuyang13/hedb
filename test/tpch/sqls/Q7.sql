@@ -30,3 +30,4 @@ order by
     supp_nation,
     cust_nation,
     l_year;
+select pg_enc_print_stats(true);

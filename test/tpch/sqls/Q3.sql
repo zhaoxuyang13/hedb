@@ -21,3 +21,4 @@ group by
 order by
     revenue desc,
     o_orderdate;
+select pg_enc_print_stats(true);

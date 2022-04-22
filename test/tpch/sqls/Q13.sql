@@ -16,3 +16,4 @@ group by
     c_count 
 order by
     custdist desc,c_count desc;
+select pg_enc_print_stats(true);

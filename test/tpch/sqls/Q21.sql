@@ -29,3 +29,4 @@ group by
     s_name
 order by
     numwait desc,s_name;
+select pg_enc_print_stats(true);

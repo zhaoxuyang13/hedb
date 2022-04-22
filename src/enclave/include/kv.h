@@ -45,6 +45,22 @@ bool float_map_erase(float_map *m, EncFloat enc_val);
 extern int_map *int_buf_p;
 extern float_map *float_buf_p;
 
+/* GLOBAL calc counters */
+extern int int_comp_count;
+extern int int_calc_count;
+extern int int_bulk_count;
+extern int int_bulk_dec_count;
+extern int float_comp_count;
+extern int float_calc_count;
+extern int float_bulk_count;
+extern int float_bulk_dec_count;
+extern int timestamp_comp_count;
+extern int text_comp_count;
+extern int text_like_count;
+extern int text_cat_count;
+extern int text_substr_count;
+
+
 #ifdef __cplusplus
 }
 #endif

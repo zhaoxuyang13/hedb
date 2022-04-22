@@ -1,5 +1,6 @@
 
 #include <enc_text_ops.h>
+#include <kv.h>
 // #include <string.h>
 
 static int MatchText(char *t, int tlen, char *p, int plen)
@@ -39,6 +40,7 @@ void SubText(char *dst, char *str, int from, int to)
 }
 
 int enc_text_cmp(EncStrCmpRequestData *req){
+    text_comp_count++;
     Str left,right;
     int resp = 0 ;
     left.len = req->left.len - IV_SIZE - TAG_SIZE;
@@ -59,7 +61,7 @@ int enc_text_cmp(EncStrCmpRequestData *req){
 
 }
 int enc_text_like(EncStrLikeRequestData *req){
-
+    text_like_count++;
     Str left,right;
     int resp = 0 ;
     left.len = req->left.len - IV_SIZE - TAG_SIZE;
@@ -79,7 +81,7 @@ int enc_text_like(EncStrLikeRequestData *req){
     return resp;
 }
 int enc_text_concatenate(EncStrCalcRequestData *req){
-
+    text_cat_count++;
     Str left,right;
     int resp = 0 ;
     left.len = req->left.len - IV_SIZE - TAG_SIZE;
@@ -103,7 +105,7 @@ int enc_text_concatenate(EncStrCalcRequestData *req){
     return resp;
 }
 int enc_text_substring(SubstringRequestData *req){
-    
+    text_substr_count++;
     Str str,sub;
     int begin ,end;
     int resp = 0 ;

@@ -27,3 +27,4 @@ from
         ) as all_nations
 group by o_year 
 order by o_year;
+select pg_enc_print_stats(true);

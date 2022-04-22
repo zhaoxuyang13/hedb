@@ -18,3 +18,4 @@ where
     c_name,c_custkey,o_orderkey,o_orderdate,o_totalprice
  order by
     o_totalprice desc,o_orderdate;
+select pg_enc_print_stats(true);

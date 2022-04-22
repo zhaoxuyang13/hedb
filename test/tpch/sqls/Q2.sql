@@ -30,3 +30,4 @@ where
     n_name,
     s_name,
     p_partkey;
+select pg_enc_print_stats(true);

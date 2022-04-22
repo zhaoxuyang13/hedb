@@ -16,6 +16,7 @@ int handle_ops(BaseRequest *base_req)
     case CMD_INT_EXP:
     case CMD_INT_MOD:
     case CMD_INT_GET_ENC:
+    case CMD_INT_PRINT_STATS:
         base_req->resp = enc_int32_calc((EncIntCalcRequestData *)base_req);
         break; 
     case CMD_INT_CMP:

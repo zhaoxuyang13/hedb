@@ -23,3 +23,4 @@ where
    and s_nationkey = n_nationkey
    and n_name = 'JAPAN' 
 order by s_name;
+select pg_enc_print_stats(true);

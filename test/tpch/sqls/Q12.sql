@@ -22,3 +22,4 @@ where
     and l_receiptdate < date '1995-01-01' + interval '1' year
 group by l_shipmode
 order by l_shipmode;
+select pg_enc_print_stats(true);

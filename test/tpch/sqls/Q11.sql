@@ -20,3 +20,4 @@ having
     and s_nationkey = n_nationkey 
     and n_name = 'JAPAN')
 order by value desc;
+select pg_enc_print_stats(true);

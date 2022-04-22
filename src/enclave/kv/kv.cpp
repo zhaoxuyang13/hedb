@@ -3,6 +3,20 @@
 int_map *int_buf_p = (int_map *)(new BufferMap<int, EncInt>());
 float_map *float_buf_p = (float_map *)(new BufferMap<float, EncFloat>());
 
+int int_comp_count = 0;
+int int_calc_count = 0;
+int int_bulk_count = 0;
+int int_bulk_dec_count = 0;
+int float_comp_count = 0;
+int float_calc_count = 0;
+int float_bulk_count = 0;
+int float_bulk_dec_count = 0;
+int timestamp_comp_count = 0;
+int text_comp_count = 0;
+int text_like_count = 0;
+int text_cat_count = 0;
+int text_substr_count = 0;
+
 template<typename PlainType, typename EncType>
 EncType BufferMap<PlainType, EncType>::insert(PlainType val) {
   printf("BufferMap::insert, key: %d val: %f", counter, val);

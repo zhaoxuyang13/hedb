@@ -21,3 +21,4 @@ WHERE
     SELECT MAX(total_revenue)FROM revenue)
 ORDER BY
     s_suppkey;
+select pg_enc_print_stats(true);

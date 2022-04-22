@@ -25,3 +25,4 @@ group by
     nation,o_year
 order by
     nation, o_year desc;
+select pg_enc_print_stats(true);

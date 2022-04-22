@@ -23,30 +23,50 @@ double pow (double x, int y)
 int enc_int32_calc(EncIntCalcRequestData *req){
     int left,right,res;
     int resp = 0;
+
+    if (req->common.reqType == CMD_INT_PRINT_STATS) {
+        printf("int_comp_count: %d", int_comp_count);
+        printf("int_calc_count: %d", int_calc_count);
+        printf("int_bulk_count: %d", int_bulk_count);
+        printf("int_bulk_dec_count: %d", int_bulk_dec_count);
+        printf("float_comp_count: %d", float_comp_count);
+        printf("float_calc_count: %d", float_calc_count);
+        printf("float_bulk_count: %d", float_bulk_count);
+        printf("float_bulk_dec_count: %d", float_bulk_dec_count);
+        printf("timestamp_comp_count: %d", timestamp_comp_count);
+        printf("text_comp_count: %d", text_comp_count);
+        printf("text_like_count: %d", text_like_count);
+        printf("text_cat_count: %d", text_cat_count);
+        printf("text_substr_count: %d", text_substr_count);
+        return 0;
+    }
     // if request to get real EncInt, go to int_map and find int value, then encrypt
-    if (req->common.reqType == CMD_INT_GET_ENC) {
-        res = int_map_find(int_buf_p, req->left);
-        resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
+    // if (req->common.reqType == CMD_INT_GET_ENC) {
+    //     res = int_map_find(int_buf_p, req->left);
+    //     resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
+    //     return resp;
+    // }
+    // if left and right stores the key, go to int map and find int value instead of decrypt
+
+    // if (memcmp(req->left.iv, &IV_GLOBAL_ZERO, IV_SIZE) == 0) {
+    //     left = int_map_find(int_buf_p, req->left);
+    // } else {
+    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
+    if (resp != 0) {
         return resp;
     }
-    // if left and right stores the key, go to int map and find int value instead of decrypt
-    if (memcmp(req->left.iv, &IV_GLOBAL_ZERO, IV_SIZE) == 0) {
-        left = int_map_find(int_buf_p, req->left);
-    } else {
-        resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
-        if (resp != 0) {
-            return resp;
-        }
+    // }
+    // if (memcmp(req->right.iv, &IV_GLOBAL_ZERO, IV_SIZE) == 0) {
+    //     right = int_map_find(int_buf_p, req->right);
+    // } else {
+        
+    resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right), (uint8_t*) &right, sizeof(right));
+    if (resp != 0) {
+        return resp;
     }
-    if (memcmp(req->right.iv, &IV_GLOBAL_ZERO, IV_SIZE) == 0) {
-        right = int_map_find(int_buf_p, req->right);
-    } else {
-        resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right), (uint8_t*) &right, sizeof(right));
-        if (resp != 0) {
-            return resp;
-        }
-    }
-    printf("clac type %d, %d, %d, ", req->common.reqType, left, right);
+
+    // }
+    // printf("clac type %d, %d, %d, ", req->common.reqType, left, right);
     switch (req->common.reqType) /* req->common.op */
     {
     case CMD_INT_PLUS:
@@ -71,13 +91,15 @@ int enc_int32_calc(EncIntCalcRequestData *req){
         break;
     }
 
-    req->res = int_map_insert(int_buf_p, res);
+    // req->res = int_map_insert(int_buf_p, res);
 
-    return 0;
+    // return 0;
 
-    // resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
+    resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
 
-    // return resp;
+    int_calc_count++;
+
+    return resp;
 }
 
 int enc_int32_cmp(EncIntCmpRequestData *req){
@@ -92,6 +114,8 @@ int enc_int32_cmp(EncIntCmpRequestData *req){
         return resp;
 
     req->cmp = (left == right) ? 0 : (left < right) ? -1 : 1;
+
+    int_comp_count++;
 
     return resp;
 }
@@ -118,9 +142,10 @@ int enc_int32_bulk(EncIntBulkRequestData *req){
         count ++;
     }
 
-    // int_map_insert(int_buf_p, res);
-
     resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
+
+    int_bulk_count++;
+
     return resp;
 }
 

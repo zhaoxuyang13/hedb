@@ -30,3 +30,4 @@ or(
     and p_size between '1' and '15'
     and l_shipmode in ('AIR', 'AIR REG')
     and l_shipinstruct = 'DELIVER IN PERSON');
+select pg_enc_print_stats(true);

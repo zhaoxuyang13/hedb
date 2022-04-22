@@ -19,3 +19,4 @@ group by
     c_custkey,c_name,c_acctbal,c_phone,n_name,c_address,c_comment
 order by
     revenue desc;
+select pg_enc_print_stats(true);

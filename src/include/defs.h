@@ -58,6 +58,8 @@ typedef unsigned long DWORD; //4bytes
 #define CMD_INT_SUM_BULK 10
 #define CMD_INT_GET_ENC 11     // get the real encrypted int from kv buffer
 
+#define CMD_INT_PRINT_STATS 13
+
 #define CMD_FLOAT_PLUS 101
 #define CMD_FLOAT_MINUS 102
 #define CMD_FLOAT_MULT 103

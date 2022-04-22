@@ -18,3 +18,4 @@ where
         where
             l_partkey = p_partkey
     );
+select pg_enc_print_stats(true);

@@ -23,3 +23,4 @@ group by
 order by
     l_returnflag,
     l_linestatus;
+select pg_enc_print_stats(true);

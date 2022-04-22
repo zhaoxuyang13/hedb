@@ -43,6 +43,7 @@ PG_FUNCTION_INFO_V1(pg_enc_int4_min_bulk);
 PG_FUNCTION_INFO_V1(pg_enc_int4_max_bulk);
 PG_FUNCTION_INFO_V1(pg_int4_to_enc_int4);
 PG_FUNCTION_INFO_V1(pg_int8_to_enc_int4);
+PG_FUNCTION_INFO_V1(pg_enc_print_stats);
 #ifdef __cplusplus
 }
 #endif
@@ -77,11 +78,11 @@ Datum
     pg_enc_int4_out(PG_FUNCTION_ARGS)
 {
     EncInt *in = PG_GETARG_ENCINT(0);
-    EncInt *in_real = PG_GETARG_ENCINT(0);
-    if (memcmp(in->iv, &IV_GLOBAL_ZERO, IV_SIZE) == 0) {
-        enc_int_get(in, in_real);
-        in = in_real;
-    }
+    // EncInt *in_real = PG_GETARG_ENCINT(0);
+    // if (memcmp(in->iv, &IV_GLOBAL_ZERO, IV_SIZE) == 0) {
+    //     enc_int_get(in, in_real);
+    //     in = in_real;
+    // }
     int out, resp;
     char *str = (char *) palloc0(sizeof(EncInt)); // this length is not really meaningful
     
@@ -711,4 +712,12 @@ Datum
     resp = enc_int_encrypt(in, out);
     //ereport(LOG, (errmsg("function encrypt, output: %s", ans)));
     PG_RETURN_CSTRING(out);
+}
+
+Datum
+    pg_enc_print_stats(PG_FUNCTION_ARGS)
+{
+    bool clear = PG_GETARG_BOOL(0);
+    enc_print_stats();
+    PG_RETURN_VOID();
 }

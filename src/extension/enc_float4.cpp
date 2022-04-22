@@ -142,11 +142,11 @@ Datum pg_enc_float4_out(PG_FUNCTION_ARGS)
     before_invoke_function(__func__);
 #endif
     EncFloat *s = PG_GETARG_ENCFlOAT(0);
-    EncFloat *s_real = PG_GETARG_ENCFlOAT(0);
-    if (memcmp(s->iv, &IV_GLOBAL_ZERO, IV_SIZE) == 0) {
-        enc_float_get(s, s_real);
-        s = s_real;
-    }
+    // EncFloat *s_real = PG_GETARG_ENCFlOAT(0);
+    // if (memcmp(s->iv, &IV_GLOBAL_ZERO, IV_SIZE) == 0) {
+    //     enc_float_get(s, s_real);
+    //     s = s_real;
+    // }
     char *str = (char *)palloc0(sizeof(EncFloat));
     float ans;
     enc_float_decrypt(s, &ans);

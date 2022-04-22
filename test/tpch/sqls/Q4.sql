@@ -17,3 +17,4 @@ group by
     o_orderpriority
 order by
     o_orderpriority;
+select pg_enc_print_stats(true);

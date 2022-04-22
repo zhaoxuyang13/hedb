@@ -20,3 +20,4 @@ group by
     n_name
 order by
     revenue desc;
+select pg_enc_print_stats(true);

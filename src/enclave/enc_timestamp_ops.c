@@ -1,7 +1,9 @@
 #include "enc_timestamp_ops.h"
+#include "kv.h"
 
 int enc_timestamp_cmp(EncTimestampCmpRequestData *req)
 {
+    timestamp_comp_count++;
     int resp = 0;
 
     TIMESTAMP left, right;
