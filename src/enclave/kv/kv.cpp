@@ -91,3 +91,9 @@ float float_map_find(float_map *m, EncFloat enc_val) {
 bool float_map_erase(float_map *m, EncFloat enc_val) {
   return ((BufferMap<float, EncFloat> *)m)->erase(enc_val);
 }
+
+uint64_t rdtsc(){
+  unsigned int lo,hi;
+  __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
+  return ((uint64_t)hi << 32) | lo;
+}

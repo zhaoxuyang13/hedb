@@ -3,12 +3,12 @@
 #include <sgx/enclave.hpp>
 
 #ifdef __cplusplus
-#include <map>
+#include <unordered_map>
 
 template<typename PlainType, typename EncType>
 class BufferMap {
  private:
-  std::map<uint64_t, PlainType> kv_map {};
+  std::unordered_map<uint64_t, PlainType> kv_map {};
   uint64_t counter = 0;
  public:
   BufferMap() = default;
@@ -40,6 +40,9 @@ float_map *float_map_new(void);
 EncFloat float_map_insert(float_map *m, float val);
 float float_map_find(float_map *m, EncFloat enc_val);
 bool float_map_erase(float_map *m, EncFloat enc_val);
+
+// rdtsc
+uint64_t rdtsc();
 
 /* GLOBAL int and float buffers */
 extern int_map *int_buf_p;

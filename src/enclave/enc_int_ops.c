@@ -38,6 +38,25 @@ int enc_int32_calc(EncIntCalcRequestData *req){
         printf("text_like_count: %d", text_like_count);
         printf("text_cat_count: %d", text_cat_count);
         printf("text_substr_count: %d", text_substr_count);
+        // uint64_t begin = rdtsc();
+        // uint8_t src[1052] = {0}, dest[1024] = {0};
+        // for (int i = 0; i < 10000; ++i) {
+        //     decrypt_bytes((uint8_t *) src, sizeof(src), (uint8_t *) dest, sizeof(res));
+        // }
+        // uint64_t end = rdtsc();
+        // printf("Time: %llu", end-begin);
+
+        for (int i = 0; i < 50; ++i) {
+            int_map_insert(int_buf_p, i);
+        }
+        EncInt key = int_map_insert(int_buf_p, 50);
+        for (int i = 51; i < 100; ++i) {
+            int_map_insert(int_buf_p, i);
+        }
+        uint64_t begin = rdtsc();
+        int_map_find(int_buf_p, key);
+        uint64_t end = rdtsc();
+        printf("Time: %llu", end-begin);
         return 0;
     }
     // if request to get real EncInt, go to int_map and find int value, then encrypt
