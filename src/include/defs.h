@@ -11,12 +11,12 @@ typedef unsigned long DWORD; //4bytes
 
 #define INT32_LENGTH sizeof(int)
 #define ENC_INT32_GCD_LENGTH (INT32_LENGTH + IV_SIZE + TAG_SIZE)
-#define ENC_INT32_OPE_LENGTH 0 
+#define ENC_INT32_OPE_LENGTH sizeof(int) // fake OPE, actually int
 #define ENC_INT32_LENGTH (ENC_INT32_OPE_LENGTH + ENC_INT32_GCD_LENGTH)
 
 #define FLOAT4_LENGTH sizeof(float)
 #define ENC_FLOAT4_GCD_LENGTH (FLOAT4_LENGTH + IV_SIZE + TAG_SIZE)
-#define ENC_FLOAT4_OPE_LENGTH 0
+#define ENC_FLOAT4_OPE_LENGTH sizeof(float) // fake OPE, actually float
 #define ENC_FLOAT4_LENGTH (ENC_FLOAT4_GCD_LENGTH + ENC_FLOAT4_OPE_LENGTH)
 
 
@@ -27,7 +27,7 @@ typedef unsigned long DWORD; //4bytes
 
 #define STRING_LENGTH 1024
 #define ENC_STRING_GCD_LENGTH (STRING_LENGTH + IV_SIZE + TAG_SIZE)
-#define ENC_STRING_OPE_LENGTH 0 // TODO: CHANGE to correct value
+#define ENC_STRING_OPE_LENGTH 1024 // fake OPE, actually string
 #define ENC_STRING_LENGTH (ENC_STRING_GCD_LENGTH + ENC_STRING_OPE_LENGTH) 
 
 #define BULK_SIZE (256)  //256

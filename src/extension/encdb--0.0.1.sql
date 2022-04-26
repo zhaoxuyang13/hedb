@@ -125,7 +125,7 @@ CREATE TYPE enc_int4 (
     OUTPUT         = pg_enc_int4_out,
 --    RECEIVE        = pg_enc_int4_recv,
 --    SEND           = pg_enc_int4_send,
-    INTERNALLENGTH = 32, -- 4 + 12 + 16
+    INTERNALLENGTH = 36, -- 4 + 12 + 16
     ALIGNMENT      = int4,
     STORAGE        = PLAIN
 );

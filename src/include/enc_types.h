@@ -11,6 +11,7 @@ typedef struct {            \
     uint8_t iv[IV_SIZE];    \
     uint8_t tag[TAG_SIZE];  \
     uint8_t data[data_size]; \
+    uint8_t ope[data_size]; \
 } type_name;
  
 /* enc_int type */

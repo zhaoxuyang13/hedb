@@ -22,11 +22,11 @@ double pow (double x, int y)
 int enc_int32_calc(EncIntCalcRequestData *req){
     int left,right,res;
     int resp = 0;
-    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
+    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, ENC_INT32_GCD_LENGTH);
     if (resp != 0)
         return resp;
 
-    resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(right));
+    resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, ENC_INT32_GCD_LENGTH);
     if (resp != 0)
         return resp;
     // printf("clac type %d, %f, %f, ", req->common.reqType, left, right);
@@ -54,7 +54,7 @@ int enc_int32_calc(EncIntCalcRequestData *req){
         break;
     }
 
-    resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
+    resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, ENC_INT32_GCD_LENGTH);
 
     return resp;
 }
@@ -62,11 +62,11 @@ int enc_int32_calc(EncIntCalcRequestData *req){
 int enc_int32_cmp(EncIntCmpRequestData *req){
     int left,right ;
     int resp = 0;
-    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left),(uint8_t*) &left, sizeof(left));
+    resp = decrypt_bytes((uint8_t *) &req->left, ENC_INT32_GCD_LENGTH, (uint8_t*) &left, sizeof(left));
     if (resp != 0)
         return resp;
 
-    resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(right));
+    resp = decrypt_bytes((uint8_t *) &req->right, ENC_INT32_GCD_LENGTH, (uint8_t*) &right, sizeof(right));
     if (resp != 0)
         return resp;
 
@@ -82,7 +82,7 @@ int enc_int32_bulk(EncIntBulkRequestData *req){
     int count = 0, resp = 0;
     while (count < bulk_size)
     {
-        resp = decrypt_bytes((uint8_t *) &array[count], sizeof(EncInt), (uint8_t*) &tmp, sizeof(tmp));    
+        resp = decrypt_bytes((uint8_t *) &array[count], ENC_INT32_GCD_LENGTH, (uint8_t*) &tmp, sizeof(tmp));    
         if (resp != 0)
             return resp;
 
@@ -97,7 +97,7 @@ int enc_int32_bulk(EncIntBulkRequestData *req){
         count ++;
     }
 
-    resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
+    resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, ENC_INT32_GCD_LENGTH);
     return resp;
 }
 

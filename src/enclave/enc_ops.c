@@ -11,25 +11,31 @@ int handle_ops(BaseRequest *base_req)
     case CMD_INT_DIV:
     case CMD_INT_EXP:
     case CMD_INT_MOD:
+        printf("CALC");
         base_req->resp = enc_int32_calc((EncIntCalcRequestData *)base_req);
         break; 
     case CMD_INT_CMP:
+        printf("CMP");
         base_req->resp = enc_int32_cmp((EncIntCmpRequestData *)base_req);
         break;
     case CMD_INT_SUM_BULK:
+        printf("BULK");
         base_req->resp = enc_int32_bulk((EncIntBulkRequestData *)base_req);
         break;
 
     case CMD_INT_ENC:{
+        printf("ENC");
         EncIntEncRequestData *req = (EncIntEncRequestData *) base_req;
         base_req->resp = encrypt_bytes((uint8_t*) &req->plaintext, sizeof(req->plaintext),
-                                  (uint8_t*) &req->ciphertext, sizeof(req->ciphertext));
+                                  (uint8_t*) &req->ciphertext, ENC_INT32_GCD_LENGTH);
+        memcpy(req->ciphertext.ope, (void *)&req->plaintext, 4);
         break;
     }
     case CMD_INT_DEC:{
+        printf("DEC");
         EncIntDecRequestData *req = (EncIntDecRequestData *) base_req;
         base_req->resp = decrypt_bytes((uint8_t*)&req->ciphertext, sizeof(req->ciphertext),
-                                  (uint8_t*)&req->plaintext, sizeof(req->plaintext));
+                                  (uint8_t*)&req->plaintext, ENC_INT32_GCD_LENGTH);
         break;
     }
 

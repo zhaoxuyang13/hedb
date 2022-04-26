@@ -215,11 +215,21 @@ Datum
     pg_enc_int4_cmp(PG_FUNCTION_ARGS)
 {
     int resp = 0;
-    EncInt* left = PG_GETARG_ENCINT(0);
-    EncInt* right = PG_GETARG_ENCINT(1);
+    EncInt* left_enc = PG_GETARG_ENCINT(0);
+    EncInt* right_enc = PG_GETARG_ENCINT(1);
     int res;
+    bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    int left = *((int *)left_enc->ope);
+    int right = *((int *)right_enc->ope);
+
+    if (left == right) {
+        res = 0;
+    } else if (left < right) {
+        res = -1;
+    } else {
+        res = 1;
+    }
 
     PG_RETURN_INT32(res);
 }
@@ -236,19 +246,15 @@ Datum
     pg_enc_int4_eq(PG_FUNCTION_ARGS)
 {
     int resp = 0;
-    EncInt* left = PG_GETARG_ENCINT(0);
-    EncInt* right = PG_GETARG_ENCINT(1);
+    EncInt* left_enc = PG_GETARG_ENCINT(0);
+    EncInt* right_enc = PG_GETARG_ENCINT(1);
     int res;
     bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    int left = *((int *)left_enc->ope);
+    int right = *((int *)right_enc->ope);
 
-    if (res == 0)
-        cmp = true;
-    else
-        cmp = false;
-
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_BOOL(left == right);
 }
 
 /*
@@ -263,19 +269,15 @@ Datum
     pg_enc_int4_ne(PG_FUNCTION_ARGS)
 {
     int resp = 0;
-    EncInt* left = PG_GETARG_ENCINT(0);
-    EncInt* right = PG_GETARG_ENCINT(1);
+    EncInt* left_enc = PG_GETARG_ENCINT(0);
+    EncInt* right_enc = PG_GETARG_ENCINT(1);
     int res;
     bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    int left = *((int *)left_enc->ope);
+    int right = *((int *)right_enc->ope);
 
-    if (res == 0)
-        cmp = false;
-    else
-        cmp = true;
-
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_BOOL(left != right);
 }
 
 /*
@@ -290,19 +292,15 @@ Datum
     pg_enc_int4_lt(PG_FUNCTION_ARGS)
 {
     int resp = 0;
-    EncInt* left = PG_GETARG_ENCINT(0);
-    EncInt* right = PG_GETARG_ENCINT(1);
+    EncInt* left_enc = PG_GETARG_ENCINT(0);
+    EncInt* right_enc = PG_GETARG_ENCINT(1);
     int res;
     bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    int left = *((int *)left_enc->ope);
+    int right = *((int *)right_enc->ope);
 
-    if (res == -1)
-        cmp = true;
-    else
-        cmp = false;
-
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_BOOL(left < right);
 }
 
 /*
@@ -317,19 +315,15 @@ Datum
     pg_enc_int4_le(PG_FUNCTION_ARGS)
 {
     int resp = 0;
-    EncInt* left = PG_GETARG_ENCINT(0);
-    EncInt* right = PG_GETARG_ENCINT(1);
+    EncInt* left_enc = PG_GETARG_ENCINT(0);
+    EncInt* right_enc = PG_GETARG_ENCINT(1);
     int res;
     bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    int left = *((int *)left_enc->ope);
+    int right = *((int *)right_enc->ope);
 
-    if ((res == -1) || (res == 0))
-        cmp = true;
-    else
-        cmp = false;
-
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_BOOL(left <= right);
 }
 
 /*
@@ -344,19 +338,15 @@ Datum
     pg_enc_int4_gt(PG_FUNCTION_ARGS)
 {
     int resp = 0;
-    EncInt* left = PG_GETARG_ENCINT(0);
-    EncInt* right = PG_GETARG_ENCINT(1);
+    EncInt* left_enc = PG_GETARG_ENCINT(0);
+    EncInt* right_enc = PG_GETARG_ENCINT(1);
     int res;
     bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    int left = *((int *)left_enc->ope);
+    int right = *((int *)right_enc->ope);
 
-    if (res == 1)
-        cmp = true;
-    else
-        cmp = false;
-
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_BOOL(left > right);
 }
 
 /*
@@ -371,18 +361,15 @@ Datum
     pg_enc_int4_ge(PG_FUNCTION_ARGS)
 {
     int resp = 0;
-    EncInt* left = PG_GETARG_ENCINT(0);
-    EncInt* right = PG_GETARG_ENCINT(1);
+    EncInt* left_enc = PG_GETARG_ENCINT(0);
+    EncInt* right_enc = PG_GETARG_ENCINT(1);
     int res;
     bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    int left = *((int *)left_enc->ope);
+    int right = *((int *)right_enc->ope);
 
-    if (res == 0 || res == 1)
-        cmp = true;
-    else
-        cmp = false;
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_BOOL(left >= right);
 }
 
 // DEBUG FUNCTION, WILL BE DELETED IN THE PRODUCT
