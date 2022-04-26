@@ -62,12 +62,13 @@ int handle_ops(BaseRequest *base_req)
     case CMD_FLOAT_ENC:{
         EncFloatEncRequestData *req = (EncFloatEncRequestData *) base_req;
         req->common.resp = encrypt_bytes((uint8_t*) &req->plaintext, sizeof(req->plaintext), 
-                                        (uint8_t *) &req->ciphertext, sizeof(req->ciphertext));
+                                        (uint8_t *) &req->ciphertext, ENC_FLOAT4_GCD_LENGTH);
+        memcpy(req->ciphertext.ope, (void *)&req->plaintext, 4);
         break;
     }
     case CMD_FLOAT_DEC:{
         EncFloatDecRequestData *req = (EncFloatDecRequestData *) base_req;
-        req->common.resp = decrypt_bytes((uint8_t *) &req->ciphertext, sizeof(req->ciphertext),
+        req->common.resp = decrypt_bytes((uint8_t *) &req->ciphertext, ENC_FLOAT4_GCD_LENGTH,
                                         (uint8_t*) &req->plaintext, sizeof(req->plaintext));
         break;
     }

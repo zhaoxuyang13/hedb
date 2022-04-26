@@ -8,11 +8,11 @@ int enc_float32_cmp(EncFloatCmpRequestData *req)
 {
     float left,right ;
     int resp = 0;
-    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left),(uint8_t*) &left, sizeof(float));
+    resp = decrypt_bytes((uint8_t *) &req->left, ENC_FLOAT4_GCD_LENGTH, (uint8_t*) &left, sizeof(float));
     if (resp != 0)
         return resp;
 
-    resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(float));
+    resp = decrypt_bytes((uint8_t *) &req->right, ENC_FLOAT4_GCD_LENGTH ,(uint8_t*) &right, sizeof(float));
     if (resp != 0)
         return resp;
 
@@ -38,11 +38,11 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
 {
     float left,right,res;
     int resp = 0;
-    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
+    resp = decrypt_bytes((uint8_t *) &req->left, ENC_FLOAT4_GCD_LENGTH, (uint8_t*) &left, sizeof(left));
     if (resp != 0)
         return resp;
 
-    resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(right));
+    resp = decrypt_bytes((uint8_t *) &req->right, ENC_FLOAT4_GCD_LENGTH, (uint8_t*) &right, sizeof(right));
     if (resp != 0)
         return resp;
     // printf("clac type %d, %f, %f, ", req->common.reqType, left, right);
@@ -70,7 +70,7 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
         break;
     }
 
-    resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
+    resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, ENC_FLOAT4_GCD_LENGTH);
 
     return resp;
 }
@@ -87,7 +87,7 @@ int enc_float32_bulk(EncFloatBulkRequestData *req)
     int count = 0, resp = 0;
     while (count < bulk_size)
     {
-        resp = decrypt_bytes((uint8_t *) &array[count], sizeof(EncFloat), (uint8_t*) &tmp, sizeof(float));    
+        resp = decrypt_bytes((uint8_t *) &array[count], ENC_FLOAT4_GCD_LENGTH, (uint8_t*) &tmp, sizeof(float));    
         if (resp != 0)
             return resp;
 
@@ -102,6 +102,6 @@ int enc_float32_bulk(EncFloatBulkRequestData *req)
         count ++;
     }
 
-    resp = encrypt_bytes((uint8_t*) &res, sizeof(float),(uint8_t*) &req->res, sizeof(req->res));
+    resp = encrypt_bytes((uint8_t*) &res, sizeof(float),(uint8_t*) &req->res, ENC_FLOAT4_GCD_LENGTH);
     return resp;
 }

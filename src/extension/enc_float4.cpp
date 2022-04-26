@@ -541,13 +541,10 @@ Datum pg_enc_float4_eq(PG_FUNCTION_ARGS)
 #endif
     EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
     EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
-    int cmp,ret; 
-
-    enc_float_cmp(f1,f2,&cmp);
-
-    ret = cmp == 0;
-
-    PG_RETURN_BOOL(ret);
+    float left, right;
+    left = *((float *)f1->ope);
+    right = *((float *)f2->ope);
+    PG_RETURN_BOOL(left == right);
 }
 
 /*
@@ -564,13 +561,10 @@ Datum pg_enc_float4_ne(PG_FUNCTION_ARGS)
 #endif
     EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
     EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
-    int cmp,ret; 
-
-    enc_float_cmp(f1,f2,&cmp);
-
-    ret = cmp != 0;
-
-    PG_RETURN_BOOL(ret);
+    float left, right;
+    left = *((float *)f1->ope);
+    right = *((float *)f2->ope);
+    PG_RETURN_BOOL(left != right);
 }
 
 /*
@@ -587,13 +581,10 @@ Datum pg_enc_float4_lt(PG_FUNCTION_ARGS)
 #endif
     EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
     EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
-    int cmp,ret; 
-
-    enc_float_cmp(f1,f2,&cmp);
-
-    ret = cmp == -1;
-
-    PG_RETURN_BOOL(ret);
+    float left, right;
+    left = *((float *)f1->ope);
+    right = *((float *)f2->ope);
+    PG_RETURN_BOOL(left < right);
 }
 
 /*
@@ -610,13 +601,10 @@ Datum pg_enc_float4_le(PG_FUNCTION_ARGS)
 #endif
     EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
     EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
-    int cmp,ret; 
-
-    enc_float_cmp(f1,f2,&cmp);
-
-    ret = cmp <= 0;
-
-    PG_RETURN_BOOL(ret);
+    float left, right;
+    left = *((float *)f1->ope);
+    right = *((float *)f2->ope);
+    PG_RETURN_BOOL(left <= right);
 }
 
 /*
@@ -633,13 +621,10 @@ Datum pg_enc_float4_gt(PG_FUNCTION_ARGS)
 #endif
     EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
     EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
-    int cmp,ret; 
-
-    enc_float_cmp(f1,f2,&cmp);
-
-    ret = cmp == 1;
-
-    PG_RETURN_BOOL(ret);
+    float left, right;
+    left = *((float *)f1->ope);
+    right = *((float *)f2->ope);
+    PG_RETURN_BOOL(left > right);
 }
 
 /*
@@ -656,13 +641,10 @@ Datum pg_enc_float4_ge(PG_FUNCTION_ARGS)
 #endif
     EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
     EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
-    int cmp,ret; 
-
-    enc_float_cmp(f1,f2,&cmp);
-
-    ret = cmp >= 0;
-
-    PG_RETURN_BOOL(ret);
+    float left, right;
+    left = *((float *)f1->ope);
+    right = *((float *)f2->ope);
+    PG_RETURN_BOOL(left >= right);
 }
 
 /*
@@ -677,12 +659,19 @@ Datum pg_enc_float4_cmp(PG_FUNCTION_ARGS)
 #endif
     EncFloat *f1 = PG_GETARG_ENCFlOAT(0);
     EncFloat *f2 = PG_GETARG_ENCFlOAT(1);
-    int cmp; 
+    float left, right;
+    int res;
+    left = *((float *)f1->ope);
+    right = *((float *)f2->ope);
+        if (left == right) {
+        res = 0;
+    } else if (left < right) {
+        res = -1;
+    } else {
+        res = 1;
+    }
 
-    enc_float_cmp(f1,f2,&cmp);
-
-
-    PG_RETURN_INT32(cmp);
+    PG_RETURN_INT32(res);
 }
 
 
