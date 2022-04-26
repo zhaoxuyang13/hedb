@@ -59,7 +59,7 @@ Datum
 
     int in = pg_atoi(pIn, INT32_LENGTH, '\0');
     status = enc_int_encrypt(in, result);
-    // ereport(INFO, (errmsg("encrypt return")));
+    // ereport(INFO, (errmsg("encrypt return %d", status)));
 
     PG_RETURN_POINTER(result);
 }
