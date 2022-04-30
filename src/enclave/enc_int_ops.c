@@ -46,11 +46,11 @@ int enc_int32_calc(EncIntCalcRequestData *req){
         // uint64_t end = rdtsc();
         // printf("Time: %llu", end-begin);
 
-        for (int i = 0; i < 50; ++i) {
+        for (int i = 0; i < 50000; ++i) {
             int_map_insert(int_buf_p, i);
         }
-        EncInt key = int_map_insert(int_buf_p, 50);
-        for (int i = 51; i < 100; ++i) {
+        EncInt key = int_map_insert(int_buf_p, 50000);
+        for (int i = 50001; i < 200000; ++i) {
             int_map_insert(int_buf_p, i);
         }
         uint64_t begin = rdtsc();
