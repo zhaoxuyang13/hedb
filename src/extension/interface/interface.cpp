@@ -60,3 +60,47 @@ TEEInvoker::TEEInvoker() {
     // print_info("buffer got");
     atexit(exit_handler);
 }
+
+Cryptor *Cryptor::cryptor_ptr = nullptr;
+Cryptor::Cryptor() {
+    if (sodium_init() == -1) {
+        print_error("error: sodium init");
+        atexit(exit_handler);
+    }
+    if (crypto_aead_aes256gcm_is_available() == 0) {
+        print_error("error: aes256gcm unavailable"); /* Not available on this CPU */
+        atexit(exit_handler);
+    }
+    crypto_aead_aes256gcm_keygen(this->key);
+    randombytes_buf(this->nonce, sizeof(this->nonce));
+}
+
+Cryptor *Cryptor::getInstance() {
+    if (cryptor_ptr == nullptr) {
+        cryptor_ptr = new Cryptor();
+    }
+    return cryptor_ptr;
+}
+
+void Cryptor::encrypt(const uint8_t *message, uint64_t mlen, uint8_t *ciphertxt, uint64_t *clen) {
+    unsigned long long result;
+    crypto_aead_aes256gcm_encrypt(ciphertxt, &result,
+                            message, mlen,
+                            ADDITIONAL_DATA, ADDITIONAL_DATA_LEN,
+                            NULL, nonce, key);
+    *clen = (uint64_t)result;
+}
+
+void Cryptor::decrypt(uint8_t *message, uint64_t *mlen, const uint8_t *ciphertext, const uint64_t clen) {
+    unsigned long long result;
+    if (crypto_aead_aes256gcm_decrypt(message, &result,
+                                    NULL,
+                                    ciphertext, clen,
+                                    ADDITIONAL_DATA,
+                                    ADDITIONAL_DATA_LEN,
+                                    nonce, key) != 0 || clen < crypto_aead_aes256gcm_ABYTES) {
+        print_error("error: decrypt failed: %ul", clen);
+        atexit(exit_handler);
+    }
+    *mlen = (uint64_t)result;
+}

@@ -392,7 +392,7 @@ Datum
     EncInt* out = (EncInt *) palloc0(sizeof(EncInt));
     int in = PG_GETARG_INT32(0), resp = 0;
     resp = enc_int_encrypt(in, out);
-    //ereport(LOG, (errmsg("function encrypt, output: %s", ans)));
+    // ereport(LOG, (errmsg("function encrypt, output: %s", ans)));
     PG_RETURN_CSTRING(out);
 }
 

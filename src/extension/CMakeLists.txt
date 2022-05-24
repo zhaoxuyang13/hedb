@@ -1,4 +1,5 @@
 find_package(PostgreSQL REQUIRED)
+find_package(Sodium REQUIRED)
 
 set(CMAKE_CXX_STANDARD 14)
 include_directories(${PostgreSQL_INCLUDE_DIRS}
@@ -24,6 +25,7 @@ add_postgresql_extension(
 # extension depend on enclave interface to be build first. (enclave_u.* files)
 if ( ${TEE_TYPE} STREQUAL "SGX" )
   add_dependencies(encdb SGXInterface)
+  target_link_libraries(encdb sodium)
   target_link_libraries(encdb SGXInterface)
 elseif ( ${TEE_TYPE} STREQUAL "TZ" )
   add_dependencies(encdb TZInterface)

@@ -4,6 +4,7 @@ extern "C"
 #include <defs.h>
 #include <enc_types.h>
 #include <request_types.h>
+#include <math.h>
 }
 
 #include <extension_helper.hpp>
