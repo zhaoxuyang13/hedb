@@ -30,7 +30,7 @@ bool BufferMap::find(uint8_t *data) {
 }
 
 void BufferMap::dump() {
-  printf("DUMP");
+  // printf("DUMP");
   std::string result = "";
   for (auto iter: kv_map) {
     result = result + std::to_string(iter.second) + ',';
@@ -69,4 +69,10 @@ int text_map_insert(text_map *m, uint8_t *data) {
 
 void text_map_dump(text_map *m) {
   return ((BufferMap *)m)->dump();
+}
+
+uint64_t rdtsc(){
+  unsigned int lo,hi;
+  __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
+  return ((uint64_t)hi << 32) | lo;
 }

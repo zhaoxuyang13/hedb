@@ -32,6 +32,8 @@ extern "C"
 {
 #endif
 
+uint64_t rdtsc();
+
 typedef struct int_map_ int_map;
 typedef struct float_map_ float_map;
 typedef struct time_map_ time_map;

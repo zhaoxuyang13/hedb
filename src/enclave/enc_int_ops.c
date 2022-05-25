@@ -25,8 +25,41 @@ int enc_int32_calc(EncIntCalcRequestData *req){
     int resp = 0;
     // print buffer to file
     if (req->common.reqType == CMD_INT_DUMP) {
-        printf("DUMP");
-        int_map_dump(int_buf_p);
+        // printf("DUMP");
+        // int_map_dump(int_buf_p);
+        size_t MLEN = 40960;
+        void *m[2000];
+        unsigned char cipher[40960];
+        uint64_t avg = 0, begin = 0, end = 0;
+        printf("BEFORE");
+        for (int i = 0; i < 2000; ++i) {
+            m[i] = malloc(MLEN);
+            sgx_read_rand(m[i], MLEN);
+        }
+        printf("ReadRand Complete");
+        void *mm = malloc(2000);
+        memcpy(mm, m[0], 2000);
+        encrypt_bytes(m[0], 20, cipher, 20+IV_SIZE+TAG_SIZE);
+        begin = rdtsc();
+        decrypt_bytes(cipher, 20+IV_SIZE+TAG_SIZE, m[0], 20);
+        end = rdtsc();
+        printf("MEMCMP: %d", memcmp(mm, m[0], 20));
+        printf("TIME: %lu", end - begin);
+        
+        for (int i = 2; i < 2000; ++i) {
+            avg = 0;
+            for (int j = 0; j < 300; ++j) {
+                // begin = rdtsc();
+                encrypt_bytes(m[j], i, cipher, i+IV_SIZE+TAG_SIZE);
+                // end = rdtsc();
+                begin = rdtsc();
+                decrypt_bytes(cipher, i+IV_SIZE+TAG_SIZE,m[j],i);
+                end = rdtsc();
+                if (j >= 100)
+                    avg += end - begin;
+            }
+            printf("%d, %lu", i, avg/200);
+        }
         return 0;
     }
     // get decrypted left, right
