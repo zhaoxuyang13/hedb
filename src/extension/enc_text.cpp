@@ -104,8 +104,9 @@ Datum
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
     int ans = 0;
-    int resp = enc_text_cmp(str1, str2, &ans);
-
+    // int resp = enc_text_cmp(str1, str2, &ans);
+    int32_t textlen = Max(str1->len, str2->len);
+    ans = memcmp(s1, s2, sizeof(int32_t) + textlen);
     if (ans == 0)
         cmp = true;
 

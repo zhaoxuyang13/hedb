@@ -12,7 +12,7 @@
     <fileFormat>tbl</fileFormat> <!--Format of the files that contain the tpch data, csv or tbl-->
 
     <!-- Scale factor is the number of warehouses in TPCC -->
-   <scalefactor>0.1</scalefactor>
+   <scalefactor>1</scalefactor>
 
     <!-- The workload -->
     <terminals>1</terminals>
