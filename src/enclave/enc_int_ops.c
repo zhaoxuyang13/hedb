@@ -46,7 +46,7 @@ int enc_int32_calc(EncIntCalcRequestData *req){
             return resp;
         }
     }
-    printf("clac type %d, %d, %d, ", req->common.reqType, left, right);
+    // printf("clac type %d, %d, %d, ", req->common.reqType, left, right);
     switch (req->common.reqType) /* req->common.op */
     {
     case CMD_INT_PLUS:

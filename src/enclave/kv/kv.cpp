@@ -5,7 +5,7 @@ float_map *float_buf_p = (float_map *)(new BufferMap<float, EncFloat>());
 
 template<typename PlainType, typename EncType>
 EncType BufferMap<PlainType, EncType>::insert(PlainType val) {
-  printf("BufferMap::insert, key: %d val: %f", counter, val);
+  // printf("BufferMap::insert, key: %d val: %f", counter, val);
   kv_map[counter] = val;
   uint8_t *key_in_bits = reinterpret_cast<uint8_t *>(&counter);
   // set IV, data to 0
@@ -29,7 +29,7 @@ PlainType BufferMap<PlainType, EncType>::find(EncType enc_val) {
     return 0;
   }
   // DELETE kv after find
-  printf("BufferMap::find, key: %d, val: %f", *key, iter->second);
+  // printf("BufferMap::find, key: %d, val: %f", *key, iter->second);
   // int ret = iter->second;
   // kv_map.erase(iter);
   // return ret;
@@ -39,7 +39,7 @@ PlainType BufferMap<PlainType, EncType>::find(EncType enc_val) {
 template<typename PlainType, typename EncType>
 bool BufferMap<PlainType, EncType>::erase(EncType enc_val) {
   uint64_t *key = reinterpret_cast<uint64_t *>(&enc_val.tag);
-  printf("BufferMap::erase key: %d", *key);
+  // printf("BufferMap::erase key: %d", *key);
   auto iter = kv_map.find(*key);
   if (iter != kv_map.end()) {
     kv_map.erase(iter);

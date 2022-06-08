@@ -62,7 +62,7 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
             return resp;
         }
     }
-    printf("clac type %d, %f, %f, ", req->common.reqType, left, right);
+    // printf("clac type %d, %f, %f, ", req->common.reqType, left, right);
     switch (req->common.reqType) /* req->common.op */
     {
     case CMD_FLOAT_PLUS:
