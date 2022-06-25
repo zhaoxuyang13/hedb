@@ -7,6 +7,7 @@
 #endif
 
 #include <request_types.h>
+#include <kv.h>
 
 typedef union {
     float val;
