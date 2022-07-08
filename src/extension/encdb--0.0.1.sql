@@ -180,7 +180,7 @@ CREATE OPERATOR = (
   NEGATOR = '<>',
   RESTRICT = eqsel,
   JOIN = eqjoinsel,
-  HASHES, MERGES
+  MERGES
 );
 
 CREATE OPERATOR <> (
@@ -435,7 +435,7 @@ CREATE OPERATOR = (
   NEGATOR = '<>',
   RESTRICT = eqsel,
   JOIN = eqjoinsel,
-  HASHES, MERGES
+  MERGES
 );
 
 CREATE OPERATOR <> (
@@ -655,7 +655,7 @@ CREATE OPERATOR = (
   NEGATOR = '<>',
   RESTRICT = eqsel,
   JOIN = eqjoinsel,
-  HASHES, MERGES
+  MERGES
 );
 
 CREATE OPERATOR <> (
@@ -912,7 +912,7 @@ CREATE OPERATOR = (
   NEGATOR = '<>',
   RESTRICT = eqsel,
   JOIN = eqjoinsel,
-  HASHES, MERGES
+  MERGES
 );
 
 CREATE OPERATOR <> (
