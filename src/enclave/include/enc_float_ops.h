@@ -17,3 +17,4 @@ typedef union {
 int enc_float32_calc(EncFloatCalcRequestData *req);
 int enc_float32_cmp(EncFloatCmpRequestData *req);
 int enc_float32_bulk(EncFloatBulkRequestData *req);
+int enc_float32_eval_expr(EncFloatEvalExprRequestData *req);

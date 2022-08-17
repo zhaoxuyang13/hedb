@@ -31,6 +31,8 @@ typedef unsigned long DWORD; //4bytes
 #define ENC_STRING_LENGTH (ENC_STRING_GCD_LENGTH + ENC_STRING_OPE_LENGTH) 
 
 #define BULK_SIZE (256)  //256
+#define EXPR_MAX_SIZE (8) //32
+#define EXPR_STACK_MAX_SIZE (16) //256
 
 // errors
 #define ENCLAVE_IS_NOT_RUNNING -2
@@ -67,6 +69,7 @@ typedef unsigned long DWORD; //4bytes
 #define CMD_FLOAT_EXP 108
 #define CMD_FLOAT_MOD 109
 #define CMD_FLOAT_SUM_BULK 110
+#define CMD_FLOAT_EVAL_EXPR 111
 
 #define CMD_STRING_CMP 201
 #define CMD_STRING_ENC 202

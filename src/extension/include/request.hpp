@@ -115,7 +115,7 @@ public:
                                                                                 bulk_size(bulkSize), items(items),
                                                                                 res(res) {}
 
-    void serializeTo(void *buffer) const override  {
+    void serializeTo(void *buffer) const override {
         auto *req = (EncTypeBulkRequestData *)buffer;
         req->common.reqType = bulk_type;
         req->bulk_size = bulk_size;
@@ -124,6 +124,36 @@ public:
 
     void copyResultFrom(void *buffer)const override  {
         auto *req = (EncTypeBulkRequestData *)buffer;
+        *res = req->res;
+    }
+};
+
+template<typename EncType>
+class EvalExprRequest : public Request {
+public:
+    DEFINE_ENCTYPE_EVALEXPR_ReqData(EncType)
+    int eval_type;
+    int arg_cnt;
+    Str expr;
+    EncType **items;
+    EncType *res;
+
+    EvalExprRequest(int eval_type, int argCnt, Str expr, EncType **items, EncType *res) : eval_type(eval_type), arg_cnt(argCnt),
+                                                                            expr(expr), items(items),
+                                                                            res(res) {}
+
+    void serializeTo(void *buffer) const override {
+        auto *req = (EncTypeEvalExprRequestData *)buffer;
+        req->common.reqType = eval_type;
+        req->arg_cnt = arg_cnt;
+        for (int i = 0; i < arg_cnt; ++i) {
+            memcpy(&(req->items[i]), items[i], sizeof(EncType));
+        }
+        memcpy(&(req->expr), &expr, sizeof(expr));
+    }
+
+    void copyResultFrom(void *buffer)const override  {
+        auto *req = (EncTypeEvalExprRequestData *)buffer;
         *res = req->res;
     }
 };

@@ -53,6 +53,9 @@ int handle_ops(BaseRequest *base_req)
         base_req->resp = enc_float32_bulk((EncFloatBulkRequestData *) base_req);
         break;
 
+    case CMD_FLOAT_EVAL_EXPR:
+        base_req->resp = enc_float32_eval_expr((EncFloatEvalExprRequestData *)base_req);
+
     case CMD_FLOAT_ENC:{
         EncFloatEncRequestData *req = (EncFloatEncRequestData *) base_req;
         req->common.resp = encrypt_bytes((uint8_t*) &req->plaintext, sizeof(req->plaintext), 
