@@ -16,6 +16,7 @@ int enc_timestamp_cmp(EncTimestampCmpRequestData *req)
 
     req->cmp = (left == right) ? 0 : (left < right) ? -1 : 1;
 
+    printf("%d, %d, %d, %d\n",req->common.reqType, left,right,req->cmp);
     return resp;
 }
 

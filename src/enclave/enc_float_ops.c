@@ -17,6 +17,7 @@ int enc_float32_cmp(EncFloatCmpRequestData *req)
         return resp;
 
     req->cmp = (left == right) ? 0 : (left < right) ? -1 : 1;
+    printf("%d, %f, %f, %d\n",req->common.reqType, left,right,req->cmp);
 
     return resp;
 }
@@ -69,6 +70,7 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
     default:
         break;
     }
+    printf("%d, %f, %f, %f\n",req->common.reqType, left,right, res);
 
     resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
 

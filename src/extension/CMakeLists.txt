@@ -8,10 +8,20 @@ include_directories(${PostgreSQL_INCLUDE_DIRS}
                     )
 # include(CTest)
 
+if ( ${TEE_TYPE} STREQUAL "SGX" )
+  set(interface SGXInterface)
+elseif ( ${TEE_TYPE} STREQUAL "TZ" )
+  set(interface TZInterface)
+endif()
+
+
+
+
 file(GLOB SRC
   "interface/*.cpp"
   "*.cpp"
-  "../utils/*.c")
+  "../utils/*.c"
+  )
 
 add_postgresql_extension(
     encdb
@@ -22,10 +32,9 @@ add_postgresql_extension(
   )
 
 # extension depend on enclave interface to be build first. (enclave_u.* files)
-if ( ${TEE_TYPE} STREQUAL "SGX" )
-  add_dependencies(encdb SGXInterface)
-  target_link_libraries(encdb SGXInterface)
-elseif ( ${TEE_TYPE} STREQUAL "TZ" )
-  add_dependencies(encdb TZInterface)
-  target_link_libraries(encdb TZInterface)
-endif()
+add_dependencies(encdb ${interface})
+target_link_libraries(encdb ${interface})
+
+
+add_subdirectory(test)
+

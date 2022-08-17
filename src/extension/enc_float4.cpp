@@ -306,7 +306,7 @@ Datum pg_enc_float4_avg_bulk(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    print_info("avg bulk");
+    // print_info("avg bulk");
     ArrayType *v = PG_GETARG_ARRAYTYPE_P(0);
     bool isnull;
     Datum value;
