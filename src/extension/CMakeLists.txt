@@ -12,6 +12,8 @@ if ( ${TEE_TYPE} STREQUAL "SGX" )
   set(interface SGXInterface)
 elseif ( ${TEE_TYPE} STREQUAL "TZ" )
   set(interface TZInterface)
+elseif(${TEE_TYPE} STREQUAL "SIM" )
+  set(interface SimInterface)
 endif()
 
 

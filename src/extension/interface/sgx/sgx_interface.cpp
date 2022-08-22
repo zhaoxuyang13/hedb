@@ -21,20 +21,20 @@ bool status = false;
 // # define ENCLAVE_FILENAME "enclave.signed.so"  already defined in CMakefile, in install path.
 // #define  DATA_FILENAME "hedb.data" already defined in CMakefile, in install path
 
-FILE *plain_file = 0;
+// FILE *plain_file = 0;
 void ocall_print_string(const char *str)
 {   
     printf(str);
     return;
-    if (plain_file == 0)
-    {
-        pid_t pid = getpid();
-        char filename[100];
-        sprintf(filename, "plain-%d.log", pid);
-        print_info(filename);
-        plain_file = fopen(filename,"w+"); 
-    }
-    fprintf(plain_file, "%s", str);
+    // if (plain_file == 0)
+    // {
+    //     pid_t pid = getpid();
+    //     char filename[100];
+    //     sprintf(filename, "plain-%d.log", pid);
+    //     print_info(filename);
+    //     plain_file = fopen(filename,"w+"); 
+    // }
+    // fprintf(plain_file, "%s", str);
 }
 
 void sgxErrorHandler(int code)

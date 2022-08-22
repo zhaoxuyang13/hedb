@@ -12,6 +12,9 @@ configure_sgx:
 
 configure_tz:
 	cmake -B build -S ./src -DTEE_TYPE=TZ
+
+configure_sim:
+	cmake -B build -S ./src -DTEE_TYPE=SIM
  
 install: 
 	sudo cmake --install build

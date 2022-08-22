@@ -392,9 +392,6 @@ int ToBase64Fast(const unsigned char* pSrc, int nLenSrc, char* pDst, int nLenDst
 
 #define ENC_FLOAT4_LENGTH_B64 45
 
-
-
-
 TEEInvoker::~TEEInvoker() {
     freeBuffer(req_buffer);
 }
@@ -481,8 +478,9 @@ void exit_handler(){
     delete invoker;
     if(write_ptr != 0)
         fclose(write_ptr);
-    if(plain_file != 0)
-       fclose(plain_file); 
+
+    // if(plain_file != 0)
+    //    fclose(plain_file); 
 }
 
 

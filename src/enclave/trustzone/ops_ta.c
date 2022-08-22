@@ -307,33 +307,13 @@ int encrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 	size_t dst_len = exp_dst_len;
 	int resp = 0;
 
-	// uint64_t duration =0,timer = 0;
-	// uint64_t start,end;
-	// uint32_t freq = read_cntfrq();
-	// start = read_cntpct();
 
-	// for (size_t i = 0; i < 1000; i++)
-	// {
-
-		// DMSG("before enc %x %d %x %d",pSrc,src_len, pDst, dst_len);
 	resp = gcm_encrypt(pSrc, src_len, pDst, &dst_len);
 	// DMSG("after enc");
 	assert(dst_len == exp_dst_len);
 
-	// end= read_cntpct();
-	// duration = (end - start) * 1000000 / freq;:""
-	// timer += duration;
-	// DMSG("1000 enc duration in us %d",duration);
 
-	/*uncomment below to disable encryption*/
-	// memset(pDst, 0, dst_len);
-	// memcpy(pDst, pSrc, src_len);	
-	if (resp != 0)
-	{
-		_print_hex("enc ", pSrc, src_len);
-		_print_hex("enc to  ", pDst, dst_len);
-	}	
-	
+
 	return resp;
 }
 
