@@ -80,7 +80,7 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
 
     resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
 
-    float_map_insert(f_map_p, (EncFloat *) &req->res, res);
+    float_map_insert(f_map_p, (EncFloat *) &req->res, &res);
 
     return resp;
 }
