@@ -28,6 +28,47 @@ PG_FUNCTION_INFO_V1(varchar_to_enc_text);
 }
 #endif
 
+
+void _print_hex(const char *what, const void *v, const unsigned long l)
+{
+    const unsigned char *p = (const unsigned char *)v;
+    unsigned long x, y = 0, z;
+    printf("%s contents: \n", what);
+    for (x = 0; x < l;)
+    {
+        printf("%02x ", p[x]);
+        if (!(++x % 16) || x == l)
+        {
+            if ((x % 16) != 0)
+            {
+                z = 16 - (x % 16);
+                if (z >= 8)
+                    printf(" ");
+                for (; z != 0; --z)
+                {
+                    printf("   ");
+                }
+            }
+            printf(" | ");
+            for (; y < x; y++)
+            {
+                if ((y % 8) == 0)
+                    printf(" ");
+                if (isgraph(p[y]))
+                    printf("%c", p[y]);
+                else
+                    printf(".");
+            }
+            printf("\n");
+        }
+        else if ((x % 8) == 0)
+        {
+            printf(" ");
+        }
+    }
+}
+
+
 /*
  * cstring_to_text_with_len
  *
@@ -83,7 +124,6 @@ Datum
     EncText* s = PG_GETARG_ENCTEXT_P(0);
     EncStr  *estr = (EncStr *) VARDATA(s);
     Str *str = (Str *) palloc0(sizeof(Str));
-    
     // print_info("out before dec");
     enc_text_decrypt(estr, str);
     // print_info("out after dec");/
@@ -103,11 +143,12 @@ Datum
     EncStr* str1 = (EncStr *) VARDATA(s1);
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
-    int ans = 0;
-    int resp = enc_text_cmp(str1, str2, &ans);
 
-    if (ans == 0)
+    if (str1->len != str2->len) {
+        cmp = false;
+    } else if (memcmp(&str1->enc_cstr, &str2->enc_cstr, str1->len) == 0) {
         cmp = true;
+    }
 
     PG_RETURN_BOOL(cmp);
 }
@@ -123,12 +164,13 @@ Datum
     EncStr* str1 = (EncStr *) VARDATA(s1);
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
-    int ans = 0;
-    int resp = enc_text_cmp(str1, str2, &ans);
-
-
-    if (ans != 0)
+    if (str1->len != str2->len) {
         cmp = true;
+    } else if (memcmp(&str1->enc_cstr, &str2->enc_cstr, str1->len) == 0) {
+        cmp = false;
+    } else {
+        cmp = true;
+    }
 
     PG_RETURN_BOOL(cmp);
 }

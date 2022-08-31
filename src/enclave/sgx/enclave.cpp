@@ -159,10 +159,11 @@ int decrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t dst_len)
 int encrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t dst_len)
 {
     unsigned char* nonce = new unsigned char[SGX_AESGCM_IV_SIZE];
-
-    int resp = sgx_read_rand(nonce, SGX_AESGCM_IV_SIZE);
-    if (resp != SGX_SUCCESS)
-        return resp;
+    int resp;
+    // int resp = sgx_read_rand(nonce, SGX_AESGCM_IV_SIZE);
+    // if (resp != SGX_SUCCESS)
+    //     return resp;
+    memset(nonce, 0, SGX_AESGCM_IV_SIZE);
 
     uint8_t *iv_pos = pDst;
 	uint8_t *tag_pos = pDst+IV_SIZE;
