@@ -19,8 +19,16 @@ struct enc_hash {
   std::size_t operator() (const EncType &enc_val) const {
     // return abs((enc_val.data[0] + enc_val.data[1] << 4 + enc_val.data[2] << 8 + enc_val.data[3] << 12) % CACHE_SIZE);
     size_t hash = 1;
+    uint8_t data_first;
+    if (typeid(EncType) == typeid(EncStr)) {
+      const EncStr *enc_str = reinterpret_cast<const EncStr *>(&enc_val);
+      data_first = enc_str->enc_cstr.data[0];
+    } else {
+      const EncFloat *enc_f = reinterpret_cast<const EncFloat *>(&enc_val);
+      data_first = enc_f->data[0];
+    }
     for (size_t i = 0; i < 4; ++i) {
-      hash = hash * 31 + enc_val.data[0];
+      hash = hash * 31 + data_first;
     }
     return abs(hash % CACHE_SIZE);
   }
@@ -54,8 +62,8 @@ typedef struct buffer_map_ buffer_map;
 void float_map_insert(buffer_map *m, const EncFloat *enc_val, const float *plain_val);
 float float_map_find(buffer_map *m, const EncFloat *enc_val, bool *found);
 /* ================= TEXT ================= */
-void text_map_insert(buffer_map *m, const EncCStr *enc_val, const Str *plain_val);
-Str text_map_find(buffer_map *m, const EncCStr *enc_val, bool *found);
+void text_map_insert(buffer_map *m, const EncStr *enc_val, const Str *plain_val);
+Str text_map_find(buffer_map *m, const EncStr *enc_val, bool *found);
 
 /* ================ Global ================= */
 extern buffer_map *f_map_p;

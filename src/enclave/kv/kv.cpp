@@ -1,7 +1,7 @@
 #include <kv.h>
 
 buffer_map *f_map_p = (buffer_map *)(new BufferMap<float, EncFloat>());
-buffer_map *t_map_p = (buffer_map *)(new BufferMap<Str, EncCStr>());
+buffer_map *t_map_p = (buffer_map *)(new BufferMap<Str, EncStr>());
 
 constexpr bool operator==(const EncFloat &lhs, const EncFloat &rhs) {
   return memcmp(&lhs, &rhs, sizeof(EncFloat)) == 0;
@@ -16,7 +16,15 @@ void BufferMap<PlainType, EncType>::insert(const EncType *enc_val, const PlainTy
 template<typename PlainType, typename EncType>
 PlainType BufferMap<PlainType, EncType>::find(const EncType *enc_val, bool *found) {
   size_t bucket = enc_hash()(*enc_val);
-  if (memcmp(enc_val, &arr_map[bucket].first, sizeof(EncType)) == 0) {
+  int memcmp_result;
+  if (typeid(EncType) == typeid(EncStr)) {
+    const EncStr *enc_str = reinterpret_cast<const EncStr *>(enc_val);
+    memcmp_result = memcmp(enc_str, &arr_map[bucket].first, enc_str->len + 4);
+  } else {
+    memcmp_result = memcmp(enc_val, &arr_map[bucket].first, sizeof(EncType));
+  }
+  if (memcmp_result == 0) {
+    // printf("FOUND!!!!!");
     *found = true;
     return arr_map[bucket].second;
   }
@@ -32,10 +40,10 @@ float float_map_find(buffer_map *m, const EncFloat *enc_val, bool *found) {
   return ((BufferMap<float, EncFloat> *)m)->find(enc_val, found);
 }
 
-void text_map_insert(buffer_map *m, const EncCStr *enc_val, const Str *plain_val) {
-  ((BufferMap<Str, EncCStr> *)m)->insert(enc_val, plain_val);
+void text_map_insert(buffer_map *m, const EncStr *enc_val, const Str *plain_val) {
+  ((BufferMap<Str, EncStr> *)m)->insert(enc_val, plain_val);
 }
 
-Str text_map_find(buffer_map *m, const EncCStr *enc_val, bool *found) {
-  return ((BufferMap<Str, EncCStr> *)m)->find(enc_val, found);
+Str text_map_find(buffer_map *m, const EncStr *enc_val, bool *found) {
+  return ((BufferMap<Str, EncStr> *)m)->find(enc_val, found);
 }

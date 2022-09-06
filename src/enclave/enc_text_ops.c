@@ -43,7 +43,7 @@ int enc_text_cmp(EncStrCmpRequestData *req){
     int resp = 0 ;
     bool found;
     //  decrypt left
-    left = text_map_find(t_map_p, &req->left.enc_cstr, &found);
+    left = text_map_find(t_map_p, &req->left, &found);
     if (found) {
         left.data[left.len] = '\0';
         // assert(left.len == req->left.len - IV_SIZE - TAG_SIZE);
@@ -53,11 +53,11 @@ int enc_text_cmp(EncStrCmpRequestData *req){
         if (resp != 0)
             return resp;
         left.data[left.len] = '\0';
-        text_map_insert(t_map_p, &req->left.enc_cstr, &left);
+        text_map_insert(t_map_p, &req->left, &left);
     }
 
     // decrypt right
-    right = text_map_find(t_map_p, &req->right.enc_cstr, &found);
+    right = text_map_find(t_map_p, &req->right, &found);
     if (found) {
         right.data[right.len] = '\0';
         // assert(right.len, req->right.len - IV_SIZE - TAG_SIZE);
@@ -67,7 +67,7 @@ int enc_text_cmp(EncStrCmpRequestData *req){
         if (resp != 0)
             return resp;
         right.data[right.len] = '\0';
-        text_map_insert(t_map_p, &req->right.enc_cstr, &right);
+        text_map_insert(t_map_p, &req->right, &right);
     }
 
     req->cmp = strcmp((const char*)left.data, (const char*)right.data);

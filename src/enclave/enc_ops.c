@@ -115,7 +115,7 @@ int handle_ops(BaseRequest *base_req)
     case CMD_STRING_DEC:{
         EncStrDecRequestData *req = (EncStrDecRequestData *) base_req;
         Str dec_res;
-        dec_res = text_map_find(t_map_p, &req->ciphertext.enc_cstr, &found);
+        dec_res = text_map_find(t_map_p, &req->ciphertext, &found);
         if (found) {
             dec_res.data[dec_res.len] = '\0';
             memcpy(&req->plaintext, &dec_res, sizeof(Str));
@@ -125,7 +125,7 @@ int handle_ops(BaseRequest *base_req)
             req->common.resp = decrypt_bytes((uint8_t *) &req->ciphertext.enc_cstr, req->ciphertext.len,
                                             (uint8_t*) &req->plaintext.data, req->plaintext.len);
             req->plaintext.data[req->plaintext.len] = '\0';
-            text_map_insert(t_map_p, &req->ciphertext.enc_cstr, &req->plaintext);
+            text_map_insert(t_map_p, &req->ciphertext, &req->plaintext);
         }
         break;
     }
