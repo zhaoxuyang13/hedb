@@ -20,17 +20,15 @@ int enc_float32_cmp(EncFloatCmpRequestData *req)
     float left,right ;
     int resp = 0;
     resp = decrypt_bytes_para((uint8_t *) &req->left, sizeof(req->left),(uint8_t*) &left, sizeof(float));
-    STORE_BARRIER;
-    decrypt_status = SENT;
+
     if (resp != 0)
         return resp;
 
     resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(float));
     if (resp != 0)
         return resp;
-    while(decrypt_status != DONE){
-        ;
-    }
+    decrypt_wait((uint8_t*) &left, sizeof(left));
+
     LOAD_BARRIER;    
 
     req->cmp = (left == right) ? 0 : (left < right) ? -1 : 1;
@@ -57,18 +55,15 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
     float left,right,res;
     int resp = 0;
     resp = decrypt_bytes_para((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
-    STORE_BARRIER;
-    decrypt_status = SENT;
+
     if (resp != 0)
         return resp;
 
     resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(right));
     if (resp != 0)
         return resp;
-    while(decrypt_status != DONE){
-        ;
-    }
-    LOAD_BARRIER;    
+        
+    decrypt_wait((uint8_t*) &left, sizeof(left));
 
     // printf("clac type %d, %f, %f, ", req->common.reqType, left, right);
     switch (req->common.reqType) /* req->common.op */

@@ -42,16 +42,20 @@ int enc_text_cmp(EncStrCmpRequestData *req){
     Str left,right;
     int resp = 0 ;
     left.len = req->left.len - IV_SIZE - TAG_SIZE;
+    
     resp = decrypt_bytes((uint8_t *) &req->left.enc_cstr, req->left.len,(uint8_t*) &left.data, left.len);
     if (resp != 0)
         return resp;
-    left.data[left.len] = '\0';
 
     right.len = req->right.len - IV_SIZE - TAG_SIZE;
     resp = decrypt_bytes((uint8_t *) &req->right.enc_cstr, req->right.len,(uint8_t*) &right.data, right.len);
     if (resp != 0)
-        return resp;
+        return resp;    
+    left.data[left.len] = '\0';
     right.data[right.len] = '\0';
+
+    // decrypt_wait((uint8_t*) &left, sizeof(left));
+
 
     req->cmp = strcmp((const char*)left.data, (const char*)right.data);
     // printf("%d, %s, %s, %d\n",req->common.reqType, left.data, right.data, req->cmp);

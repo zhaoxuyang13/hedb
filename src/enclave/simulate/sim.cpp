@@ -21,16 +21,18 @@
 #endif
 
 
-uint8_t *decrypt_src, *decrypt_dst;
+uint8_t *decrypt_dst;
 size_t decrypt_src_len, decrypt_dst_len;
 volatile int decrypt_status = DONE;
 
+uint8_t decrypt_buffer[sizeof(EncCStr) * 2];
+uint8_t plain_buffer[2048];
 void *decrypt_thread(void * arg){
 	while (1)
 	{
 		if(decrypt_status == SENT){
 			LOAD_BARRIER;
-			decrypt_bytes(decrypt_src, decrypt_src_len, decrypt_dst, decrypt_dst_len);
+			int resp = decrypt_bytes(decrypt_buffer, decrypt_src_len, plain_buffer, decrypt_dst_len);
 			STORE_BARRIER;
 			decrypt_status = DONE;
 		}else if(decrypt_status == EXIT){
@@ -53,11 +55,23 @@ int decrypt_bytes_para(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_
 		pthread_create(&thread, nullptr, decrypt_thread, nullptr);
 		inited = true;
 	}
-	decrypt_src = pSrc;
+	memcpy(decrypt_buffer, pSrc, src_len);
+	// decrypt_src = pSrc;
 	decrypt_src_len = src_len;
-	decrypt_dst = pDst;
+	// decrypt_dst = pDst;
 	decrypt_dst_len = exp_dst_len;
+	STORE_BARRIER;
+	decrypt_status = SENT;
 	return 0;
+}
+
+void decrypt_wait(uint8_t *pDst, size_t exp_dst_len){
+	while (decrypt_status != DONE)
+	{
+		YIELD_PROCESSOR;
+	}
+	LOAD_BARRIER;
+	memcpy(pDst, plain_buffer, exp_dst_len);
 }
 
 
@@ -101,6 +115,8 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 	// memcpy(pDst, pSrc, dst_len);
 	if (resp !=0)
 	{
+		static __thread pid_t tid = gettid();
+		printf("tid %d, resp %d\n", tid,  resp);
 		_print_hex("dec from ", pSrc, src_len);
 		_print_hex("dec to ", pDst, dst_len);
 	}
@@ -127,12 +143,16 @@ int encrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 	resp = gcm_encrypt(pSrc, src_len, pDst, &dst_len);
 	// printf("after enc");
 	assert(dst_len == exp_dst_len);
-
+	// {
+	// 	_print_hex("enc from ", pSrc, src_len);
+	// 	_print_hex("enc to ", pDst, dst_len);
+	// }
+	
 	return resp;
 }
 
 FILE *write_ptr = 0;
-#define printf(...) fprintf(write_ptr, __VA_ARGS__ )
+// #define printf(...) fprintf(write_ptr, __VA_ARGS__ )
 
 int shmid;
 void *shmaddr = NULL;
@@ -155,10 +175,10 @@ void exit_handler(){
 
 int main(int argc,char *argv[]){
     
-	key_t key = (key_t) 666;
+	key_t key = (key_t) 2333;
 	if(argc == 2)
 		key = (key_t) atoi(argv[1]);
-	else {
+	else if(argc > 2) {
 		printf("error argc\n");
 		exit(-1);
 	}

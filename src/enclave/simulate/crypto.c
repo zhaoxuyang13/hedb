@@ -42,9 +42,9 @@ void _print_hex(const char *what, const void *v, const unsigned long l)
 		}
 	}
 }
-static bool inited = false;
+static __thread bool inited = false;
 
-static mbedtls_gcm_context aes;
+static __thread mbedtls_gcm_context aes;
 
 /* encryption should gurantee that ciphertext locate at the end of out_text.
 to allow for cutting the data size short. */\
@@ -57,8 +57,6 @@ int gcm_encrypt(uint8_t *in,
 	{
 		// init the context...
 		mbedtls_gcm_init(&aes);
-		// printf("inited. %d\n", inited);	
-		// printf("location of mbedtls_gcm_setkey %x.\n", mbedtls_gcm_setkey );	
 		// Set the key. This next line could have CAMELLIA or ARIA as our GCM mode cipher...
 		res = mbedtls_gcm_setkey(&aes, MBEDTLS_CIPHER_ID_AES, (const unsigned char *)enc_key, sizeof(enc_key)*8);
 		inited = true;
@@ -112,12 +110,13 @@ int gcm_encrypt(uint8_t *in,
 int gcm_decrypt(uint8_t *in,
 				uint64_t in_sz, uint8_t *out, uint64_t *out_sz)
 {
+	int res = 0;
 	if (!inited)
 	{
 		// init the context...
 		mbedtls_gcm_init(&aes);
 		// Set the key. This next line could have CAMELLIA or ARIA as our GCM mode cipher...
-		mbedtls_gcm_setkey(&aes, MBEDTLS_CIPHER_ID_AES, (const unsigned char *)enc_key, strlen(enc_key) * 8);
+		res = mbedtls_gcm_setkey(&aes, MBEDTLS_CIPHER_ID_AES, (const unsigned char *)enc_key, sizeof(enc_key)*8);
 		inited = true;
 	}
 
@@ -125,11 +124,20 @@ int gcm_decrypt(uint8_t *in,
 	uint8_t *tag_pos = in+IV_SIZE;
 	uint8_t *data_pos = in+IV_SIZE+TAG_SIZE;
 
-	int res = 0;
+
 	uint32_t data_sz = in_sz - IV_SIZE - TAG_SIZE;	
 	*out_sz = data_sz;
 
+
 	res = mbedtls_gcm_auth_decrypt(&aes, data_sz, iv_pos, IV_SIZE, NULL, 0, tag_pos, TAG_SIZE, data_pos, out);
+	if(res != 0){
+		printf("decrypt res %d\n",res);
+	}
+	// _print_hex("enc-txt-plain: ", (void *)in, in_sz);
+	// _print_hex("enc-iv: ", (void *)iv_pos, IV_SIZE);
+	// _print_hex("enc-tag: ", (void *)tag_pos, TAG_SIZE);
+	// _print_hex("enc-txt: ", (void *)data_pos, in_sz);
+	
 
 	return res;
 }

@@ -456,6 +456,7 @@ int TEEInvoker::sendRequest(Request *req) {
 
 
     /* read-write barrier, no read move after this barrier, no write move before this barrier */
+    
     req_control->status = NONE;
     free(req); /* free req to avoid mem leak */ 
     // time.toc();
