@@ -98,21 +98,23 @@ elseif ( ${TEE_TYPE} STREQUAL "TZ" )
     install (TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 elseif ( ${TEE_TYPE} STREQUAL "SIM" )
+
+    add_compile_definitions(TEE_SIM) 
     file(GLOB SRCS 
         enclave/*.c  
         enclave/simulate/sim.cpp 
         enclave/simulate/crypto.c 
     )
-    
     # add_executable(sim_ops ${SRCS})
     add_executable(sim_ops ${SRCS})
     target_include_directories(sim_ops 
         PRIVATE extension/include
         PRIVATE enclave/include
-        PRIVATE enclave/simulate
-        PRIVATE include)
+        PRIVATE enclave
+        PRIVATE include
+        )
     # link_directories(enclave/simulate enclave/)
-    target_link_libraries(sim_ops mbedtls mbedcrypto)
+    target_link_libraries(sim_ops mbedtls mbedcrypto pthread)
     # install 
     SET(INSTALL_DIR "/usr/local/lib/hedb")
     install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/sim_ops DESTINATION ${INSTALL_DIR})

@@ -7,6 +7,8 @@
 #include <sgx/enclave.hpp>
 #elif defined(TEE_TZ) 
 #include <trustzone/ops_ta.h>
+#elif defined(TEE_SIM)
+#include <simulate/sim.hpp>
 #endif
 #include <request_types.h>
 

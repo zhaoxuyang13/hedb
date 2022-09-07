@@ -9,6 +9,7 @@
 #include "sync.h"
 #include "sim.hpp"
 #include "request_types.h"
+#include <pthread.h>
 
 /* this load barrier is only for arm */
 #ifdef __aarch64__
@@ -18,6 +19,47 @@
 	#define LOAD_BARRIER ;
 	#define STORE_BARRIER ;
 #endif
+
+
+uint8_t *decrypt_src, *decrypt_dst;
+size_t decrypt_src_len, decrypt_dst_len;
+volatile int decrypt_status = DONE;
+
+void *decrypt_thread(void * arg){
+	while (1)
+	{
+		if(decrypt_status == SENT){
+			LOAD_BARRIER;
+			decrypt_bytes(decrypt_src, decrypt_src_len, decrypt_dst, decrypt_dst_len);
+			STORE_BARRIER;
+			decrypt_status = DONE;
+		}else if(decrypt_status == EXIT){
+			break;
+		}else {
+			;
+		}
+	}
+	return 0;
+}
+
+int decrypt_bytes_para(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_len)
+{	
+	assert(decrypt_status == DONE);
+
+	static int inited = false;
+	if(!inited){
+		pid_t pid;
+		pthread_t thread;
+		pthread_create(&thread, nullptr, decrypt_thread, nullptr);
+		inited = true;
+	}
+	decrypt_src = pSrc;
+	decrypt_src_len = src_len;
+	decrypt_dst = pDst;
+	decrypt_dst_len = exp_dst_len;
+	return 0;
+}
+
 
 int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_len)
 {	
@@ -148,6 +190,7 @@ int main(int argc,char *argv[]){
 	while(1){
 		if (req->status == EXIT)
 		{
+			decrypt_status = EXIT;
 			printf("SIM-TA Exit %d\n", counter);
 			break;
 		}

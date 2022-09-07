@@ -1,5 +1,6 @@
 #include "enc_int_ops.h"
 
+// extern int decrypt_status; 
 #if defined(TEE_TZ)
 
 double pow (double x, int y)
@@ -18,17 +19,34 @@ double pow (double x, int y)
     }
 }
 #endif
+/* this load barrier is only for arm */
+#ifdef __aarch64__
+	#define LOAD_BARRIER asm volatile("dsb ld" ::: "memory")
+	#define STORE_BARRIER asm volatile("dsb st" ::: "memory")
+#elif __x86_64
+	#define LOAD_BARRIER ;
+	#define STORE_BARRIER ;
+#endif
 
 int enc_int32_calc(EncIntCalcRequestData *req){
+
     int left,right,res;
     int resp = 0;
-    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
+    resp = decrypt_bytes_para((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
+    STORE_BARRIER;
+    decrypt_status = SENT;
     if (resp != 0)
         return resp;
 
     resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(right));
     if (resp != 0)
         return resp;
+    
+    while(decrypt_status == SENT){
+        ;
+    }
+    LOAD_BARRIER;    
+    
     // printf("clac type %d, %f, %f, ", req->common.reqType, left, right);
     switch (req->common.reqType) /* req->common.op */
     {
@@ -61,13 +79,20 @@ int enc_int32_calc(EncIntCalcRequestData *req){
 int enc_int32_cmp(EncIntCmpRequestData *req){
     int left,right ;
     int resp = 0;
-    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left),(uint8_t*) &left, sizeof(left));
+
+    resp = decrypt_bytes_para((uint8_t *) &req->left, sizeof(req->left),(uint8_t*) &left, sizeof(left));
+    STORE_BARRIER;
+    decrypt_status = SENT;
     if (resp != 0)
         return resp;
 
     resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(right));
     if (resp != 0)
         return resp;
+    while(decrypt_status != DONE){
+        ;
+    }
+    LOAD_BARRIER;    
 
     req->cmp = (left == right) ? 0 : (left < right) ? -1 : 1;
     // printf("%d, %d, %d, %d\n",req->common.reqType, left, right, req->cmp);
