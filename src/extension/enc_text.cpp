@@ -22,6 +22,7 @@ PG_FUNCTION_INFO_V1(pg_enc_text_decrypt);
 PG_FUNCTION_INFO_V1(pg_enc_text_concatenate);
 PG_FUNCTION_INFO_V1(pg_enc_text_like);
 PG_FUNCTION_INFO_V1(pg_enc_text_notlike);
+PG_FUNCTION_INFO_V1(pg_enc_text_set_order);
 PG_FUNCTION_INFO_V1(substring);
 PG_FUNCTION_INFO_V1(varchar_to_enc_text);
 #ifdef __cplusplus
@@ -54,6 +55,7 @@ EncText *cstring_to_enctext_with_len(const char *s, uint32_t len){
     memcpy(str->data, s, len);
     
     EncStr *estr = (EncStr *) VARDATA(result);
+    estr->order = ORDER_NONE;
  
     enc_text_encrypt(str,estr); 
 
@@ -86,9 +88,9 @@ Datum
     
     // print_info("out before dec");
     enc_text_decrypt(estr, str);
-    // print_info("out after dec");/
+    // print_info("out after dec");
     str->data[str->len] = '\0';
-
+    // ereport(INFO, errmsg("out: order %d", estr->order));
     PG_RETURN_CSTRING(str->data);
 }
 
@@ -104,7 +106,17 @@ Datum
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
     int ans = 0;
-    int resp = enc_text_cmp(str1, str2, &ans);
+    int resp = 0;
+
+    if (str1->order != ORDER_NONE && str2->order != ORDER_NONE) {
+        if (str1->order == str2->order) {
+            PG_RETURN_BOOL(true);
+        } else {
+            PG_RETURN_BOOL(false);
+        }
+    }
+    
+    resp = enc_text_cmp(str1, str2, &ans);
 
     if (ans == 0)
         cmp = true;
@@ -124,7 +136,17 @@ Datum
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
     int ans = 0;
-    int resp = enc_text_cmp(str1, str2, &ans);
+    int resp = 0;
+
+    if (str1->order != ORDER_NONE && str2->order != ORDER_NONE) {
+        if (str1->order != str2->order) {
+            PG_RETURN_BOOL(true);
+        } else {
+            PG_RETURN_BOOL(false);
+        }
+    }
+    
+    resp = enc_text_cmp(str1, str2, &ans);
 
 
     if (ans != 0)
@@ -145,7 +167,17 @@ Datum
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
     int ans = 0;
-    int resp = enc_text_cmp(str1, str2, &ans);
+    int resp = 0;
+
+    if (str1->order != ORDER_NONE && str2->order != ORDER_NONE) {
+        if (str1->order <= str2->order) {
+            PG_RETURN_BOOL(true);
+        } else {
+            PG_RETURN_BOOL(false);
+        }
+    }
+    
+    resp = enc_text_cmp(str1, str2, &ans);
 
 
     if (ans <= 0)
@@ -166,7 +198,17 @@ Datum
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
     int ans = 0;
-    int resp = enc_text_cmp(str1, str2, &ans);
+    int resp = 0;
+
+    if (str1->order != ORDER_NONE && str2->order != ORDER_NONE) {
+        if (str1->order < str2->order) {
+            PG_RETURN_BOOL(true);
+        } else {
+            PG_RETURN_BOOL(false);
+        }
+    }
+    
+    resp = enc_text_cmp(str1, str2, &ans);
 
 
     if (ans < 0)
@@ -187,7 +229,17 @@ Datum
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
     int ans = 0;
-    int resp = enc_text_cmp(str1, str2, &ans);
+    int resp = 0;
+
+    if (str1->order != ORDER_NONE && str2->order != ORDER_NONE) {
+        if (str1->order >= str2->order) {
+            PG_RETURN_BOOL(true);
+        } else {
+            PG_RETURN_BOOL(false);
+        }
+    }
+    
+    resp = enc_text_cmp(str1, str2, &ans);
 
 
     if (ans >= 0)
@@ -208,7 +260,17 @@ Datum
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
     int ans = 0;
-    int resp = enc_text_cmp(str1, str2, &ans);
+    int resp = 0;
+
+    if (str1->order != ORDER_NONE && str2->order != ORDER_NONE) {
+        if (str1->order > str2->order) {
+            PG_RETURN_BOOL(true);
+        } else {
+            PG_RETURN_BOOL(false);
+        }
+    }
+    
+    resp = enc_text_cmp(str1, str2, &ans);
 
     if (ans > 0)
         cmp = true;
@@ -217,7 +279,7 @@ Datum
 }
 
 // @input: two strings
-// @return: -1, if s1 < s2,
+// @return: ORDER_NONE, if s1 < s2,
 //        0, if s1 = s2,
 //        1, if s1 > s2
 Datum
@@ -228,7 +290,22 @@ Datum
     EncStr* str1 = (EncStr *) VARDATA(s1);
     EncStr* str2 = (EncStr *) VARDATA(s2);
     int ans = 0;
-    int resp = enc_text_cmp(str1, str2, &ans);
+    int resp = 0;
+
+    if (str1->order != ORDER_NONE && str2->order != ORDER_NONE) {
+        if (str1->order < str2->order) {
+            ans = ORDER_NONE;
+        }
+        if (str1->order == str2->order) {
+            ans = 0;
+        }
+        if (str1->order > str2->order) {
+            ans = 1;
+        }
+        PG_RETURN_INT32(ans);
+    }
+    
+    resp = enc_text_cmp(str1, str2, &ans);
 
     PG_RETURN_INT32(ans);
 }
@@ -320,6 +397,21 @@ Datum
     int resp = enc_text_like(str,pattern, &result);
 
     PG_RETURN_BOOL(1 ^ result);
+}
+
+Datum
+    pg_enc_text_set_order(PG_FUNCTION_ARGS)
+{
+    EncText *s_in = PG_GETARG_ENCTEXT_P(0);
+    int32_t order = PG_GETARG_INT32(1);
+    EncStr *s_in_str = (EncStr *) VARDATA(s_in);
+    EncText *result = (EncText *) palloc0(ENCSTRLEN(s_in_str->len) + VARHDRSZ);
+    EncStr *s_out_str = (EncStr *) VARDATA(result);
+    memcpy(s_out_str, s_in_str, ENCSTRLEN(s_in_str->len));
+    s_out_str->order = order;
+    SET_VARSIZE(result, ENCSTRLEN(s_in_str->len) + VARHDRSZ);
+
+    PG_RETURN_POINTER(result);
 }
 
 // @input: string and two integers

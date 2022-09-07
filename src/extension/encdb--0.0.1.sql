@@ -405,6 +405,12 @@ RETURNS boolean
 AS 'MODULE_PATHNAME'
 LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
+-- sets the order in the text field in enc_text
+CREATE OR REPLACE FUNCTION pg_enc_text_set_order(enc_text, int4)
+RETURNS enc_text
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
+
 CREATE FUNCTION pg_enc_text_encrypt(cstring)
 RETURNS enc_text
 AS 'MODULE_PATHNAME'
@@ -986,3 +992,27 @@ CREATE OR REPLACE FUNCTION enc_timestamp(timestamp)
     LANGUAGE C STRICT IMMUTABLE ;
 
 CREATE CAST (timestamp AS enc_timestamp) WITH FUNCTION enc_timestamp(timestamp) AS ASSIGNMENT;
+
+-- sets order info in EncStr.order field
+-- if order info not available, order is set to -1, and comparison goes to TEE
+-- Usage: SELECT enc_text_add_order($COLUMN_NAME, $TABLE_NAME);
+-- Hash Join must be disabled, since no hash function available for type EncText
+--    (or maybe we should implement one?
+CREATE OR REPLACE FUNCTION enc_text_add_order(p_column text, p_table text)
+	RETURNS void
+AS
+$$
+BEGIN
+EXECUTE FORMAT(
+'SET enable_hashjoin=off;
+WITH o_res AS
+(SELECT s.%1$s, ROW_NUMBER() OVER (ORDER BY s.%1$s ASC) AS order 	
+    FROM (SELECT DISTINCT (%1$s) FROM %2$s) s)
+UPDATE %2$s r
+    SET %1$s = pg_enc_text_set_order(o_res.%1$s, o_res.order::int4)
+	FROM o_res
+    WHERE o_res.%1$s = r.%1$s;',
+p_column, p_table);
+END;
+$$
+LANGUAGE plpgsql;

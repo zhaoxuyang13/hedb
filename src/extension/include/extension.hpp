@@ -11,6 +11,8 @@ typedef struct {
     char data[FLEXIBLE_ARRAY_MEMBER];
 } lentext;
 
+#define ORDER_NONE -1
+
 #define DatumGetEncInt(X)  ((EncInt *) DatumGetPointer(X))
 #define PG_GETARG_ENCINT(n) DatumGetEncInt(PG_GETARG_DATUM(n))
 
