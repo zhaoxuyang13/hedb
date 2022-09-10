@@ -14,6 +14,7 @@ PG_FUNCTION_INFO_V1(pg_enc_float4_encrypt);
 PG_FUNCTION_INFO_V1(pg_enc_float4_decrypt);
 PG_FUNCTION_INFO_V1(pg_enc_float4_sum_bulk);
 PG_FUNCTION_INFO_V1(pg_enc_float4_avg_bulk);
+PG_FUNCTION_INFO_V1(pg_enc_float4_eval_expr);
 PG_FUNCTION_INFO_V1(pg_enc_float4_avg_simple);
 PG_FUNCTION_INFO_V1(pg_enc_float4_min);
 PG_FUNCTION_INFO_V1(pg_enc_float4_max);
@@ -342,6 +343,155 @@ Datum pg_enc_float4_avg_bulk(PG_FUNCTION_ARGS)
     enc_float_encrypt(nitems*1.0, &num);
     enc_float_div(sum, &num,res);
     pfree(sum);
+    PG_RETURN_POINTER(res);
+}
+
+char *remove_space(char *expr)
+{
+    int i, j;
+    char *expr_no_space = expr;
+    for (i = 0, j = 0; i < strlen(expr); i++, j++)
+    {
+        if (expr[i] != ' ')
+            expr_no_space[j] = expr[i];
+        else
+            j--;
+    }
+    expr_no_space[j] = '\0';
+    return expr_no_space;
+}
+
+int get_precedance(const int op) {
+    if (op == '+' || op == '-')
+        return 0;
+    if (op == '*' || op == '/' || op == '%')
+        return 1;
+    if (op == '^')
+        return 2;
+    return -1;
+}
+
+/**
+ * @brief implementation of shunting yard algorithm
+ * 
+ * @param expr 
+ * @param out_expr 
+ */
+void convert_expr(char *expr, char *out_expr) {
+    int num, op_top_pos = -1;
+    size_t i, out_len = 0;
+    char c, op_top;
+    char op_stack[EXPR_STACK_MAX_SIZE];
+    int8_t out_queue[EXPR_STACK_MAX_SIZE];
+    memset(out_queue, 0, (size_t)EXPR_STACK_MAX_SIZE);
+    memset(op_stack, 0, (size_t)EXPR_STACK_MAX_SIZE);
+    bool expect_op = false;
+    for (i = 0; i < strlen(expr); ++i) {
+        c = expr[i];
+        if (c >= '0' && c <= '9') {
+            num = c - '0';
+            if (i + 1 < strlen(expr)) {
+                while (expr[i+1] >= '0' && expr[i+1] <= '9') {
+                    num = 10 * num + expr[i+1] - '0';
+                    i++;
+                    if (i + 1 >= strlen(expr)) {
+                        break;
+                    }
+                }
+            }
+            out_queue[out_len] = (int8_t)num;
+            out_len++;
+            expect_op = true;
+        } else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '^') {
+            if (op_top_pos >= 0) {
+                op_top = op_stack[op_top_pos];
+                while (op_top != '(' && c != '^' && get_precedance(op_top) >= get_precedance(c) && op_top_pos >= 0) {
+                    out_queue[out_len] = (int8_t)-op_top;
+                    op_top_pos--;
+                    op_top = op_stack[op_top_pos];
+                    out_len++;
+                }
+            }
+            if (!expect_op && c == '-') {
+                c = '#';
+            }
+            op_top_pos++;
+            op_stack[op_top_pos] = c;
+            expect_op = false;
+        } else if (c == '(') {
+            op_top_pos++;
+            op_stack[op_top_pos] = c;
+            expect_op = false;
+        } else if (c == ')') {
+            do {
+                if (op_top_pos < 0) {
+                    printf("Mismatched parenthesis!\n");
+                    exit(0);
+                }
+                op_top = op_stack[op_top_pos];
+                if (op_top == '(') {
+                    op_top_pos--;
+                    break;
+                }
+                out_queue[out_len] = (int8_t)-op_top;
+                op_top_pos--;
+                out_len++;
+            } while (1);
+            expect_op = false;
+        }
+    }
+    while (op_top_pos >= 0) {
+        op_top = op_stack[op_top_pos];
+        if (op_top == '(') {
+            printf("Extra parenthesis!\n");
+            exit(0);
+        }
+        out_queue[out_len] = (int8_t)-op_top;
+        op_top_pos--;
+        out_len++;
+    }
+    memcpy(out_expr, out_queue, out_len+1);
+}
+
+Datum pg_enc_float4_eval_expr(PG_FUNCTION_ARGS)
+{
+#ifdef ENABLE_COUNTER
+    before_invoke_function(__func__);
+#endif
+    // print_info("eval expr");
+    Datum *args;
+    bool *nulls;
+    Oid *types;
+    int i;
+    EncFloat *arr[EXPR_MAX_SIZE];
+    EncFloat *res = (EncFloat *) palloc0(sizeof(EncFloat));
+    float tmp;
+    char* s, s_postfix[EXPR_STACK_MAX_SIZE];
+    Str *str = (Str *) palloc0(sizeof(Str));
+    memset(s_postfix, 0, (size_t)EXPR_STACK_MAX_SIZE);
+
+    int nargs = extract_variadic_args(fcinfo, 0, true, &args, &types, &nulls);
+
+    if (nargs < 0)
+        PG_RETURN_NULL();
+
+    // ereport(INFO, (errmsg("nargs: %d expr: %s", nargs, s)));
+    s = PG_GETARG_CSTRING(0);
+    s = remove_space(s);
+    convert_expr(s, s_postfix);
+
+    for (i = 1; i < nargs; i++)
+    {
+        arr[i-1] = DatumGetEncFloat(args[i]);
+        // enc_float_decrypt(arr[i-1], &tmp);
+        // ereport(INFO, (errmsg("%f", tmp)));
+    }
+    
+    str->len = strlen(s_postfix);
+    memcpy(str->data, s_postfix, str->len);
+
+    enc_float_eval_expr(nargs-1, *str, arr, res);
+    pfree(str);
     PG_RETURN_POINTER(res);
 }
 

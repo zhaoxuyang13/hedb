@@ -167,6 +167,10 @@ int encrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t dst_len)
     // if (resp != SGX_SUCCESS)
     //     return resp;
 
+    /* ope alternative */
+    memset(nonce, 0, SGX_AESGCM_IV_SIZE);
+    /* end ope alternative */
+
     uint8_t *iv_pos = pDst;
 	uint8_t *tag_pos = pDst+IV_SIZE;
 	uint8_t *data_pos = pDst+IV_SIZE+TAG_SIZE;

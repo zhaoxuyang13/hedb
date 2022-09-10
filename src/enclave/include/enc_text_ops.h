@@ -11,6 +11,7 @@
 #include <simulate/sim.hpp>
 #endif
 #include <request_types.h>
+#include <kv.h>
 
 
 int enc_text_cmp(EncStrCmpRequestData *req);

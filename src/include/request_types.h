@@ -84,6 +84,18 @@ typedef struct {                \
 DEFINE_ENCTYPE_BULK_ReqData(EncInt);
 DEFINE_ENCTYPE_BULK_ReqData(EncFloat);
 
+#define DEFINE_ENCTYPE_EVALEXPR_ReqData(enc_type) \
+typedef struct {                    \
+    BaseRequest common;             \
+    int arg_cnt;                    \
+    Str expr;                       \
+    enc_type items[EXPR_MAX_SIZE];  \
+    enc_type res;                   \
+} enc_type##EvalExprRequestData;
+
+DEFINE_ENCTYPE_EVALEXPR_ReqData(EncInt);
+DEFINE_ENCTYPE_EVALEXPR_ReqData(EncFloat);
+
 #define DEFINE_ENCTYPE_1ARG_ReqData(arg1_type, res_type, typename) \
 typedef struct {                \
     BaseRequest common;         \

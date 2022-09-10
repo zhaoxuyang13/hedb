@@ -17,6 +17,7 @@ extern "C" {
 #endif
 #include <postgres.h>
 #include <fmgr.h>
+#include <funcapi.h>
 #include <utils/array.h>
 #include <utils/arrayaccess.h>
 #include <utils/builtins.h>

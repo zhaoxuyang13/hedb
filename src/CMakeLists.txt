@@ -28,7 +28,7 @@ if ( ${TEE_TYPE} STREQUAL "SGX" )
 
     # file(GLOB T_SRCS LocalAttestationCode/*.c*)
     # add_trusted_library(LocalAttestationLib SRCS "${T_SRCS}" EDL LocalAttestationCode/LocalAttestationCode.edl EDL_SEARCH_PATHS ${EDL_SEARCH_PATHS})
-    file(GLOB E_SRCS enclave/sgx/*.cpp enclave/kv/*.c enclave/*.c)
+    file(GLOB E_SRCS enclave/sgx/*.cpp enclave/kv/*.cpp enclave/*.c)
    
     add_enclave_library(enclave
                         USE_PREFIX

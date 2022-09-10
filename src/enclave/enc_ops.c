@@ -2,6 +2,7 @@
 #include <request_types.h>
 int handle_ops(BaseRequest *base_req)
 {
+    bool found = false;
     // DMSG("\n -------------------\nops: %d", base_req->reqType);
 
     switch (base_req->reqType)
@@ -55,6 +56,9 @@ int handle_ops(BaseRequest *base_req)
         base_req->resp = enc_float32_bulk((EncFloatBulkRequestData *) base_req);
         break;
 
+    case CMD_FLOAT_EVAL_EXPR:
+        base_req->resp = enc_float32_eval_expr((EncFloatEvalExprRequestData *)base_req);
+
     case CMD_FLOAT_ENC:{
         EncFloatEncRequestData *req = (EncFloatEncRequestData *) base_req;
         req->common.resp = encrypt_bytes((uint8_t*) &req->plaintext, sizeof(req->plaintext), 
@@ -63,8 +67,11 @@ int handle_ops(BaseRequest *base_req)
     }
     case CMD_FLOAT_DEC:{
         EncFloatDecRequestData *req = (EncFloatDecRequestData *) base_req;
-        req->common.resp = decrypt_bytes((uint8_t *) &req->ciphertext, sizeof(req->ciphertext),
+        req->plaintext = float_map_find(f_map_p, &req->ciphertext, &found);
+        if (!found) {
+            req->common.resp = decrypt_bytes((uint8_t *) &req->ciphertext, sizeof(req->ciphertext),
                                         (uint8_t*) &req->plaintext, sizeof(req->plaintext));
+        }
         break;
     }
 
@@ -109,9 +116,19 @@ int handle_ops(BaseRequest *base_req)
     }
     case CMD_STRING_DEC:{
         EncStrDecRequestData *req = (EncStrDecRequestData *) base_req;
-        req->plaintext.len = req->ciphertext.len - IV_SIZE - TAG_SIZE;
-        req->common.resp = decrypt_bytes((uint8_t *) &req->ciphertext.enc_cstr, req->ciphertext.len,
-                                        (uint8_t*) &req->plaintext.data, req->plaintext.len);
+        Str dec_res;
+        dec_res = text_map_find(t_map_p, &req->ciphertext, &found);
+        if (found) {
+            dec_res.data[dec_res.len] = '\0';
+            memcpy(&req->plaintext, &dec_res, sizeof(Str));
+            // assert(dec_res.len == req->ciphertext.len - IV_SIZE - TAG_SIZE)
+        } else {
+            req->plaintext.len = req->ciphertext.len - IV_SIZE - TAG_SIZE;
+            req->common.resp = decrypt_bytes((uint8_t *) &req->ciphertext.enc_cstr, req->ciphertext.len,
+                                            (uint8_t*) &req->plaintext.data, req->plaintext.len);
+            req->plaintext.data[req->plaintext.len] = '\0';
+            text_map_insert(t_map_p, &req->ciphertext, &req->plaintext);
+        }
         break;
     }
     default:

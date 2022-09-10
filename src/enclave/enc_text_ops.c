@@ -41,21 +41,34 @@ void SubText(char *dst, char *str, int from, int to)
 int enc_text_cmp(EncStrCmpRequestData *req){
     Str left,right;
     int resp = 0 ;
-    left.len = req->left.len - IV_SIZE - TAG_SIZE;
-    
-    resp = decrypt_bytes((uint8_t *) &req->left.enc_cstr, req->left.len,(uint8_t*) &left.data, left.len);
-    if (resp != 0)
-        return resp;
+    bool found;
+    //  decrypt left
+    left = text_map_find(t_map_p, &req->left, &found);
+    if (found) {
+        left.data[left.len] = '\0';
+        // assert(left.len == req->left.len - IV_SIZE - TAG_SIZE);
+    } else  {
+        left.len = req->left.len - IV_SIZE - TAG_SIZE;
+        resp = decrypt_bytes((uint8_t *) &req->left.enc_cstr, req->left.len,(uint8_t*) &left.data, left.len);
+        if (resp != 0)
+            return resp;
+        left.data[left.len] = '\0';
+        text_map_insert(t_map_p, &req->left, &left);
+    }
 
-    right.len = req->right.len - IV_SIZE - TAG_SIZE;
-    resp = decrypt_bytes((uint8_t *) &req->right.enc_cstr, req->right.len,(uint8_t*) &right.data, right.len);
-    if (resp != 0)
-        return resp;    
-    left.data[left.len] = '\0';
-    right.data[right.len] = '\0';
-
-    // decrypt_wait((uint8_t*) &left, sizeof(left));
-
+    // decrypt right
+    right = text_map_find(t_map_p, &req->right, &found);
+    if (found) {
+        right.data[right.len] = '\0';
+        // assert(right.len, req->right.len - IV_SIZE - TAG_SIZE);
+    } else  {
+        right.len = req->right.len - IV_SIZE - TAG_SIZE;
+        resp = decrypt_bytes((uint8_t *) &req->right.enc_cstr, req->right.len,(uint8_t*) &right.data, right.len);
+        if (resp != 0)
+            return resp;
+        right.data[right.len] = '\0';
+        text_map_insert(t_map_p, &req->right, &right);
+    }
 
     req->cmp = strcmp((const char*)left.data, (const char*)right.data);
     // printf("%d, %s, %s, %d\n",req->common.reqType, left.data, right.data, req->cmp);
