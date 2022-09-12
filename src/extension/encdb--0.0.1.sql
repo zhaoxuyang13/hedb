@@ -232,12 +232,21 @@ CREATE OPERATOR >= (
   JOIN = scalargtjoinsel
 );
 
+-- CREATE AGGREGATE sum (enc_int4)
+-- (
+--    sfunc = pg_enc_int4_add,
+--    stype = enc_int4,
+--    PARALLEL = safe, 
+--    combinefunc = pg_enc_int4_add
+-- );
+
 CREATE AGGREGATE sum (enc_int4)
 (
-   sfunc = pg_enc_int4_add,
-   stype = enc_int4,
-   PARALLEL = safe, 
-   combinefunc = pg_enc_int4_add
+   sfunc = array_append,
+   stype = enc_int4[],
+   PARALLEL = SAFE,
+   COMBINEFUNC = array_cat,
+   finalfunc = pg_enc_int4_sum_bulk  
 );
 
 -- CREATE AGGREGATE avg (enc_int4)
