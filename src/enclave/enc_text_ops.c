@@ -71,7 +71,8 @@ int enc_text_cmp(EncStrCmpRequestData *req){
     }
 
     req->cmp = strcmp((const char*)left.data, (const char*)right.data);
-
+    // printf("%d, %s, %s, %d\n",req->common.reqType, left.data, right.data, req->cmp);
+    
     return resp;
 
 }
@@ -92,7 +93,8 @@ int enc_text_like(EncStrLikeRequestData *req){
     right.data[right.len] = '\0';
 
     req->cmp = MatchText((char *) left.data, left.len,(char *) right.data, right.len);
-
+    // printf("%d, %s, %s, %d\n",req->common.reqType, left.data, right.data,req->cmp);
+    
     return resp;
 }
 int enc_text_concatenate(EncStrCalcRequestData *req){
@@ -110,12 +112,18 @@ int enc_text_concatenate(EncStrCalcRequestData *req){
     if (resp != 0)
         return resp;
     right.data[right.len] = '\0';
+    // printf("%d, %s, %s, ",req->common.reqType, left.data,right.data);
 
     memcpy(left.data + left.len, right.data, right.len);
     left.len += right.len;
-    
+    left.data[left.len] = "\0";
+
+    // printf("%s\n",req->common.reqType, left.data); 
+
     req->res.len = left.len + IV_SIZE + TAG_SIZE;   
     resp = encrypt_bytes((uint8_t *) &left.data, left.len,(uint8_t*) &req->res.enc_cstr, req->res.len);
+
+    
 
     return resp;
 }

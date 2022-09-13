@@ -101,7 +101,7 @@ void *getSharedBuffer(size_t size)
 }
 void freeBuffer(void *buffer)
 {
-	((BaseRequest *)teec_shm.buffer)->status = 233; // TODO
+	((BaseRequest *)teec_shm.buffer)->status = EXIT; // TODO
 	TEEC_ReleaseSharedMemory(&teec_shm);
 	TEEC_CloseSession(&sess);
 	TEEC_FinalizeContext(&ctx);

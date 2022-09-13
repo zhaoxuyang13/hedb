@@ -53,9 +53,8 @@ int enc_int32_calc(EncIntCalcRequestData *req){
     default:
         break;
     }
-
+    // printf("%d, %d, %d, %d\n",req->common.reqType, left, right, res);
     resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
-
     return resp;
 }
 
@@ -71,6 +70,7 @@ int enc_int32_cmp(EncIntCmpRequestData *req){
         return resp;
 
     req->cmp = (left == right) ? 0 : (left < right) ? -1 : 1;
+    // printf("%d, %d, %d, %d\n",req->common.reqType, left, right, req->cmp);
 
     return resp;
 }

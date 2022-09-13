@@ -160,9 +160,12 @@ int encrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t dst_len)
 {
     unsigned char* nonce = new unsigned char[SGX_AESGCM_IV_SIZE];
 
-    int resp = sgx_read_rand(nonce, SGX_AESGCM_IV_SIZE);
-    if (resp != SGX_SUCCESS)
-        return resp;
+    /* set iv to same value. */
+    int resp;
+    memset(nonce, 0, SGX_AESGCM_IV_SIZE);
+    // int resp = sgx_read_rand(nonce, SGX_AESGCM_IV_SIZE);
+    // if (resp != SGX_SUCCESS)
+    //     return resp;
 
     /* ope alternative */
     memset(nonce, 0, SGX_AESGCM_IV_SIZE);
@@ -196,22 +199,36 @@ int encrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t dst_len)
     return resp;
 }
 
+
+uint64_t current_cycles()
+{
+    uint32_t low, high;
+    asm volatile("rdtsc" : "=a"(low), "=d"(high));
+    return ((uint64_t)low) | ((uint64_t)high << 32);
+}
+
 int enclaveProcess(void* arg1)
 {
     // printf("enclave process called %p\n", arg1);
     if (arg1 == NULL)
         return -1;
     BaseRequest *req = (BaseRequest *)arg1; 
+    uint64_t start, end;
+    uint64_t total_time = 0;
     while (true)
     {
         if (req->status != SENT)
             YIELD_PROCESSOR;
         else
         {
+            start = current_cycles();
             // printf("ops called %d", req->reqType);
             handle_ops(req);     
             // printf("req returned %d\n",req->reqType);
             req->status = DONE;
+            end = current_cycles();
+            total_time += end - start;
+            printf("time: %d\n",total_time);
         }
     }
 

@@ -25,9 +25,14 @@ extern "C"
     memcpy(STR_DATA(to),STR_DATA(from), STR_LEN(to)); }
 
 #define COPY(to, from) { \
-    if      (IS_STR(from)) {   COPY_PLAIN(to,from); }\
+    if      (IS_STR(from)) { COPY_PLAIN(to,from); } \
     else if (IS_ENCSTR(from)) {COPY_ENC(to, from);} \
     else    *to = *from; }
+
+#define TYPESIZE(a,size) { \
+    if      (IS_STR(a)) { size = sizeof(STR_LEN(a)) + STR_LEN(a); } \
+    else if (IS_ENCSTR(a)) { size = sizeof(ENCSTR_LEN(a)) + ENCSTR_LEN(a); } \
+    else    {size = sizeof(*a);} }
 
 class Request {
 public:
@@ -35,7 +40,8 @@ public:
 
     virtual void copyResultFrom(void *buffer) const = 0;
 
-    virtual inline int size() { return 0; };
+    // virtual void genLog(void *buffer) const = 0;
+    virtual inline int size()  const { return 0; };
 
 private:
 };
@@ -65,6 +71,15 @@ public:
         auto *req = (EncTypeCmpRequestData *) buffer;
         *cmp = req->cmp;
     }
+
+    inline int size() const override{
+        int size;
+        TYPESIZE(left,size);
+        return sizeof(BaseRequest) + 2 * size + sizeof(int);
+    };
+    // void genLog(void *buffer) const override{
+    
+    // }
 };
 
 
@@ -92,6 +107,12 @@ public:
         COPY(res, &req->res);
         // *res = req->res;
     }
+
+    inline int size() const override {
+        int size;
+        TYPESIZE(left,size);
+        return sizeof(BaseRequest) + sizeof(op) + 3 * size;
+    };
 };
 // template<>  // specialization
 // void CalcRequest<EncStr>::copyResultFrom(void *buffer) const override1{
@@ -126,6 +147,9 @@ public:
         auto *req = (EncTypeBulkRequestData *)buffer;
         *res = req->res;
     }
+    inline int size() const override {
+        return sizeof(BaseRequest) + sizeof(int) * 2 + (bulk_size + 1) * sizeof(EncType);
+    };
 };
 
 template<typename EncType>
@@ -185,20 +209,16 @@ public:
     }
 
     void copyResultFrom(void *buffer)const override {
-        // if(reqType == CMD_STRING_ENC){
-        //     char ch[100];
-        //     sprintf(ch, "before copy result %d", ((Str *) plaintext)->len);
-        //     print_info(ch);
-        // }
         auto *req = (EncTypeEncRequestData *) buffer;
         COPY(res, &req->ciphertext);
-        // *res = req->ciphertext;
-        // if(reqType == CMD_STRING_ENC){
-        //     char ch[100];
-        //     sprintf(ch, "after copy result %d", ((Str *) plaintext)->len);
-        //     print_info(ch);
-        // }
+
     }
+    inline int size() const override {
+        int size1,size2;
+        TYPESIZE(plaintext,size1);
+        TYPESIZE(res,size2);
+        return sizeof(BaseRequest) + size1 + size2;
+    };
 };
 
 template<typename EncType,typename PlainType,int reqType>
@@ -224,6 +244,12 @@ public:
         COPY(res, &req->plaintext);
         // *res = req->plaintext;
     }
+    inline int size() const override {
+        int size1,size2;
+        TYPESIZE(ciphertext,size1);
+        TYPESIZE(res,size2);
+        return sizeof(BaseRequest) + size1 + size2;
+    };
 };
 
 template<typename Type1, typename Type2,int reqType>
@@ -245,6 +271,9 @@ public:
         auto *req = (OneArgRequestData *) buffer;
         *res = req->res;
     }
+    inline int size() const override {
+        return sizeof(BaseRequest) + sizeof(Type1) + sizeof(Type2);
+    };
 };
 
 
@@ -278,4 +307,9 @@ public:
         COPY(res, &req->res);
         // *res = req->res;
     }
+    inline int size() const override {
+        int size;
+        TYPESIZE(arg1,size);
+        return sizeof(BaseRequest) + size + sizeof(Type2) + sizeof(Type3) + sizeof(res);  
+    };
 };

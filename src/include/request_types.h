@@ -9,7 +9,8 @@ typedef enum ReqStatus
 {
     NONE,
     SENT,
-    DONE
+    DONE,
+    EXIT
 } ReqStat;
 typedef struct
 {

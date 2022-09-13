@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 project(extension)
 
-set(TEE_TYPE "" CACHE STRING "Type of TEE (SGX, TZ, etc)")
+set(TEE_TYPE "" CACHE STRING "Type of TEE (SGX, TZ, SIM, etc)")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wunused-variable -Wunused-but-set-variable")
 
@@ -97,6 +97,34 @@ elseif ( ${TEE_TYPE} STREQUAL "TZ" )
 
     install (TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 
+elseif ( ${TEE_TYPE} STREQUAL "SIM" )
+    file(GLOB SRCS 
+        enclave/*.c  
+        enclave/simulate/sim.cpp 
+        enclave/simulate/crypto.c 
+    )
+    
+    # add_executable(sim_ops ${SRCS})
+    add_executable(sim_ops ${SRCS})
+    target_include_directories(sim_ops 
+        PRIVATE extension/include
+        PRIVATE enclave/include
+        PRIVATE enclave/simulate
+        PRIVATE include)
+    # link_directories(enclave/simulate enclave/)
+    target_link_libraries(sim_ops mbedtls mbedcrypto)
+    # install 
+    SET(INSTALL_DIR "/usr/local/lib/hedb")
+    install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/sim_ops DESTINATION ${INSTALL_DIR})
+    install(CODE "execute_process(COMMAND chown postgres:postgres ${INSTALL_DIR}/sim_ops )")
+
+    set (USRC extension/interface/simulate/sim_interface.cpp)
+    add_library(SimInterface ${USRC}) 
+    target_include_directories(SimInterface
+        PRIVATE extension/include 
+        PRIVATE extension/interface/simulate
+        PRIVATE include
+        )
 
 else()
     message( FATAL_ERROR "TEE_TYPE ${TEE_TYPE} not specified (SGX/TZ). CMake wil exit.")
@@ -104,3 +132,5 @@ endif()
 
 ## for extension 
 add_subdirectory(extension)
+# ## for test
+# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../test/ops-micro ${CMAKE_CURRENT_BINARY_DIR}/)

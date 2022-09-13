@@ -4,6 +4,7 @@ int handle_ops(BaseRequest *base_req)
 {
     bool found = false;
     // DMSG("\n -------------------\nops: %d", base_req->reqType);
+
     switch (base_req->reqType)
     {
     case CMD_INT_PLUS:
@@ -23,6 +24,7 @@ int handle_ops(BaseRequest *base_req)
 
     case CMD_INT_ENC:{
         EncIntEncRequestData *req = (EncIntEncRequestData *) base_req;
+        // printf("enc request %d\n", req->plaintext);
         base_req->resp = encrypt_bytes((uint8_t*) &req->plaintext, sizeof(req->plaintext),
                                   (uint8_t*) &req->ciphertext, sizeof(req->ciphertext));
         break;

@@ -10,7 +10,8 @@
 #include <fstream>
 #include <thread>
 #include <extension_helper.hpp>
-
+#include <unistd.h>
+#include <iostream>
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
 
@@ -19,9 +20,21 @@ bool status = false;
 // # define TOKEN_FILENAME  "enclave.token"   not impl.
 // # define ENCLAVE_FILENAME "enclave.signed.so"  already defined in CMakefile, in install path.
 // #define  DATA_FILENAME "hedb.data" already defined in CMakefile, in install path
+
+// FILE *plain_file = 0;
 void ocall_print_string(const char *str)
-{
-    print_info(str);
+{   
+    printf(str);
+    return;
+    // if (plain_file == 0)
+    // {
+    //     pid_t pid = getpid();
+    //     char filename[100];
+    //     sprintf(filename, "plain-%d.log", pid);
+    //     print_info(filename);
+    //     plain_file = fopen(filename,"w+"); 
+    // }
+    // fprintf(plain_file, "%s", str);
 }
 
 void sgxErrorHandler(int code)
@@ -29,7 +42,7 @@ void sgxErrorHandler(int code)
     size_t i;
     size_t ttl = sizeof(sgx_errlist) / sizeof(sgx_errlist[0]);
     char ch[1000];
-    sprintf(ch,"error code %d", code);
+    sprintf(ch,"error code %d\n", code);
     print_info(ch);
     if ((code > 1) || (code < -6))
     {
@@ -73,6 +86,7 @@ int generateKey()
     std::fstream data_file;
     data_file.open(DATA_FILENAME,
                    std::fstream::in | std::fstream::out | std::fstream::binary);
+    // std::cout << DATA_FILENAME;
     if (data_file)
     {
         data_file.seekg(0, data_file.end);
@@ -133,13 +147,16 @@ int launch_enclave()
     int updated = 0;
     int resp = sgx_create_enclave(
         ENCLAVE_FILENAME, SGX_DEBUG_FLAG, &token, &updated, &global_eid, NULL);
+    // print_info(ENCLAVE_FILENAME);
     return resp;
 }
 
 void enclaveThread(void *buffer)
 {
     int resp = 0;
+    // print_info("into enclave thread\n");
     resp = enclaveProcess(global_eid, &resp, buffer);
+    // print_info("enclave return\n");
     char ch[1000];
     sprintf(ch, "enclave process should not return %d", resp);
     print_info(ch);
