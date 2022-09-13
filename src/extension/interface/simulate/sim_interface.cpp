@@ -18,9 +18,9 @@ void forkOpsProcess(){
         char keyid_str[64];
         sprintf(keyid_str, "%d", keyid);
         
-        char ch[100];
-        sprintf(ch, "keyid_str: %s", keyid_str);
-        print_info(ch);
+        // char ch[100];
+        // sprintf(ch, "keyid_str: %s", keyid_str);
+        // print_info(ch);
      
         char *argv[ ]={"sim_ops", keyid_str, NULL};   
         char *envp[ ]={"", NULL};
@@ -33,9 +33,9 @@ void *getSharedBuffer(size_t size)
     void *shm_buffer = NULL;
     int shmid;
     key_t key = (key_t) getpid();
-    char ch[100];
-    sprintf(ch, "shm keyid is server pid %d", key);
-    print_info(ch);
+    // char ch[100];
+    // sprintf(ch, "shm keyid is server pid %d", key);
+    // print_info(ch);
     forkOpsProcess();
     // 1. create shared memory
     shmid = shmget(key, size, 0644 | IPC_CREAT);

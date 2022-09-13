@@ -100,6 +100,7 @@ elseif ( ${TEE_TYPE} STREQUAL "TZ" )
 elseif ( ${TEE_TYPE} STREQUAL "SIM" )
     file(GLOB SRCS 
         enclave/*.c  
+        enclave/kv/*.cpp 
         enclave/simulate/sim.cpp 
         enclave/simulate/crypto.c 
     )

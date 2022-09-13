@@ -1,6 +1,12 @@
 #pragma once 
 #include <enc_types.h>
+// #include <sgx/enclave.hpp>
+#if defined(TEE_SGX)
 #include <sgx/enclave.hpp>
+#elif defined(TEE_TZ) 
+#include <trustzone/ops_ta.h>
+#endif
+#include <request_types.h>
 
 #define CACHE_SIZE 11
 
@@ -30,7 +36,7 @@ struct enc_hash {
     for (size_t i = 0; i < 4; ++i) {
       hash = hash * 31 + data_first;
     }
-    return abs(hash % CACHE_SIZE);
+    return abs(static_cast<int>(hash % CACHE_SIZE));
   }
 };
 
