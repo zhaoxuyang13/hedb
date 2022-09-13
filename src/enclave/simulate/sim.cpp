@@ -155,9 +155,9 @@ int main(int argc,char *argv[]){
 		{
 			LOAD_BARRIER;
 
-			counter ++;
-			if (counter % 100000 == 0)
-				printf("counter %d\n", counter++);
+			// counter ++;
+			// if (counter % 100000 == 0)
+			// 	printf("counter %d\n", counter++);
 
 			handle_ops(req);
 
