@@ -7,3 +7,4 @@ cmake-build-debug/
 *.d
 benchmark
 */ramdisk
+*.out

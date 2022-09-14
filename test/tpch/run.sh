@@ -16,8 +16,8 @@ do
     number=`echo $sql | awk -F "." '{print $1}' | awk -F "/" '{print $2}'`
     output_file=$run_tag/$number.out
     echo "$sql > $output_file"
-    ls ../../test.binlog -lh > $output_file
+    # ls ../../test.binlog -lh > $output_file
     # psql -U postgres -h $pg_ip -p $pg_ports -d test -f $sql > $output_file
-    psql -U postgres -d test -f $sql >> $output_file
+    psql -U postgres -d test -f $sql > $output_file
     sleep 3s
 done
