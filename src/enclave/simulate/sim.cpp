@@ -184,9 +184,9 @@ int main(int argc,char *argv[]){
 	}
 
     int data_size = sizeof(EncIntBulkRequestData);
-	char filename[64];
-	sprintf(filename, "pid-%d.log", key);
-	write_ptr = fopen(filename, "w+"); 
+	// char filename[64];
+	// sprintf(filename, "pid-%d.log", key);
+	// write_ptr = fopen(filename, "w+"); 
 	
 	atexit(exit_handler);
 
