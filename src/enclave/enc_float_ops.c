@@ -29,7 +29,7 @@ int enc_float32_cmp(EncFloatCmpRequestData *req)
         return resp;
     // decrypt_wait((uint8_t*) &left, sizeof(left));
 
-    LOAD_BARRIER;    
+    // LOAD_BARRIER;    
 
     req->cmp = (left == right) ? 0 : (left < right) ? -1 : 1;
     // printf("%d, %f, %f, %d\n",req->common.reqType, left,right,req->cmp);
