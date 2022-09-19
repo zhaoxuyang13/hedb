@@ -152,7 +152,7 @@ int encrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 }
 
 FILE *write_ptr = 0;
-// #define printf(...) fprintf(write_ptr, __VA_ARGS__ )
+#define printf(...) fprintf(write_ptr, __VA_ARGS__ )
 
 int shmid;
 void *shmaddr = NULL;
@@ -184,9 +184,9 @@ int main(int argc,char *argv[]){
 	}
 
     int data_size = sizeof(EncIntBulkRequestData);
-	// char filename[64];
-	// sprintf(filename, "pid-%d.log", key);
-	// write_ptr = fopen(filename, "w+"); 
+	char filename[64];
+	sprintf(filename, "/home/gz/logs/pid-%d.log", key);
+	write_ptr = fopen(filename, "w+"); 
 	
 	atexit(exit_handler);
 

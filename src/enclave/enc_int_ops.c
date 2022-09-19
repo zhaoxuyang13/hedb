@@ -33,7 +33,7 @@ int enc_int32_calc(EncIntCalcRequestData *req){
     int left,right,res;
     int resp = 0;
     // printf("call add\n");
-    resp = decrypt_bytes_para((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
+    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
 
     if (resp != 0)
         return resp;
@@ -43,7 +43,7 @@ int enc_int32_calc(EncIntCalcRequestData *req){
     if (resp != 0)
         return resp;
     
-    decrypt_wait((uint8_t*) &left, sizeof(left));
+    // decrypt_wait((uint8_t*) &left, sizeof(left));
 
     // printf("clac type %d, %f, %f, ", req->common.reqType, left, right);
     switch (req->common.reqType) /* req->common.op */
@@ -77,14 +77,14 @@ int enc_int32_calc(EncIntCalcRequestData *req){
 int enc_int32_cmp(EncIntCmpRequestData *req){
     int left,right ;
     int resp = 0;
-    resp = decrypt_bytes_para((uint8_t *) &req->left, sizeof(req->left),(uint8_t*) &left, sizeof(left));
+    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left),(uint8_t*) &left, sizeof(left));
     if (resp != 0)
         return resp;
 
     resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(right));
     if (resp != 0)
         return resp;
-    decrypt_wait((uint8_t*) &left, sizeof(left));
+    // decrypt_wait((uint8_t*) &left, sizeof(left));
 
     req->cmp = (left == right) ? 0 : (left < right) ? -1 : 1;
     // printf("%d, %d, %d, %d\n",req->common.reqType, left, right, req->cmp);
