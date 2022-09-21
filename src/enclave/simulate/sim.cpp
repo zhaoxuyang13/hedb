@@ -10,7 +10,8 @@
 #include "sim.hpp"
 #include "request_types.h"
 #include <pthread.h>
-
+#include "ops_server.h"
+#include <sys/wait.h>
 /* this load barrier is only for arm */
 #ifdef __aarch64__
 	#define LOAD_BARRIER asm volatile("dsb ld" ::: "memory")
@@ -154,17 +155,13 @@ int encrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 FILE *write_ptr = 0;
 // #define printf(...) fprintf(write_ptr, __VA_ARGS__ )
 
+
 int shmid;
-void *shmaddr = NULL;
-void exit_handler(){
+void *posix_shm_addr = NULL;
+void posix_shm_exit_handler(){
     // 4. detach shared memory
-    if (shmaddr != 0 && shmdt(shmaddr) == -1) {
+    if (posix_shm_addr != 0 && shmdt(posix_shm_addr) == -1) {
         perror("shmdt failed\n");
-    }
- 
-    // 5. delete shared memory
-    if (shmaddr != 0 && shmid != 0 && shmctl(shmid, IPC_RMID, 0) == -1) {
-        perror("shmctl delete shared memory failed\n");
     }
 	
 	if(write_ptr != 0){
@@ -172,55 +169,49 @@ void exit_handler(){
 	}
 }
 
-
-int main(int argc,char *argv[]){
-    
-	key_t key = (key_t) 2333;
-	if(argc == 2)
-		key = (key_t) atoi(argv[1]);
-	else if(argc > 2) {
-		printf("error argc\n");
-		exit(-1);
-	}
-
-    int data_size = sizeof(EncIntBulkRequestData);
-	char filename[64];
-	sprintf(filename, "pid-%d.log", key);
-	write_ptr = fopen(filename, "w+"); 
-	
-	atexit(exit_handler);
-
-    // 1. create shared memory
-    shmid = shmget(key, data_size, 0666 | IPC_CREAT);
+void *get_shmem_posix(size_t size){
+	// 1. create shared memory
+	int key = 666;
+	printf("shm size is %lx\n", size);
+    shmid = shmget(key, size, 0666 | IPC_CREAT);
     if (shmid == -1) {
         perror("shmget failed\n");
         exit(EXIT_FAILURE);
     }
- 
     // 2. attach shared memory
-    shmaddr = shmat(shmid, NULL, 0);
-    if (shmaddr == (void *)-1) {
+    posix_shm_addr = shmat(shmid, NULL, 0);
+    if (posix_shm_addr == (void *)-1) {
         perror("shmat failed\n");
         exit(EXIT_FAILURE);
     }
- 
-    // 3. read data to shared memory
+	atexit(posix_shm_exit_handler);
+	return posix_shm_addr;
+}
+
+pid_t fork_ops_process(void *shm_addr){
+    pid_t pid = fork();
+	if(pid != 0){ // father
+		return pid;
+	}
+	// child
+	// after fork, child inherit all attached shared memory (man shmat)
+	printf("waiting on shm_addr %p\n", shm_addr);
 	int counter = 0;
-	BaseRequest *req = (BaseRequest *)shmaddr;
+	BaseRequest *req = (BaseRequest *)shm_addr;
 	while(1){
 		if (req->status == EXIT)
 		{
 			decrypt_status = EXIT;
 			printf("SIM-TA Exit %d\n", counter);
-			break;
+			exit(0);
 		}
 		else if(req->status == SENT)
 		{
 			LOAD_BARRIER;
 
-			counter ++;
-			if (counter % 100000 == 0)
-				printf("counter %d\n", counter++);
+			// counter ++;
+			// if (counter % 100000 == 0)
+			// 	printf("counter %d\n", counter++);
 
 			handle_ops(req);
 
@@ -235,7 +226,63 @@ int main(int argc,char *argv[]){
 		else 
 			YIELD_PROCESSOR;
 	}
+	
 
- 
-    return 0;
+	// child should never return.
+	exit(0);
+}
+
+#define SHM_SIZE (16*1024*1024)
+#define META_REQ_SIZE 1024
+#define REQ_REGION_SIZE 1024*1024
+#define REGION_N_OFFSET(n) (META_REQ_SIZE + REQ_REGION_SIZE * n)
+#define MAX_REGION_NUM 16
+int main(int argc,char *argv[]){
+
+	int data_size = SHM_SIZE;
+	pid_t child_pids[20] = {};
+
+	OpsServer *req = (OpsServer *) get_shmem_posix(data_size);
+	memset(req, 0, sizeof(OpsServer));
+	while (1)
+	{
+		if(req->status == SHM_GET){
+			// allocate a empty region
+			printf("processing get\n");
+			for(int i = 0;i < MAX_REGION_NUM; i++){
+				if(GET(req->bitmap, i) == 0){
+					SET(req->bitmap, i);
+					req->ret_id = i;
+					void *addr = (void*)req  + REGION_N_OFFSET(i);
+					printf("allocate %d, base addr %p, alloc addr %p\n",i,req, addr);
+					pid_t child = fork_ops_process(addr);
+					printf("child pid %d\n",child);
+					child_pids[i] = child;
+					break;
+				}
+			}
+
+			STORE_BARRIER; // store everything before DONE.
+			req->status = SHM_DONE;
+			printf("get request done\n");
+		}else if(req->status == SHM_FREE){
+			// free a region
+			printf("processing free\n");
+			LOAD_BARRIER;
+			int id = req->free_id;
+			BaseRequest *base_req = (BaseRequest *)((void*)req  + REGION_N_OFFSET(id));
+			printf("free %d, %p\n", id, base_req);
+			base_req->status = EXIT;
+			assert(GET(req->bitmap, id) == 1);
+			CLEAR(req->bitmap, id);
+			waitpid(child_pids[id], nullptr, 0); // wait until child pid exit;
+			printf("waitpid pid %d\n", child_pids[id]);
+
+			STORE_BARRIER; // store everything before DONE.
+			req->status = SHM_DONE;
+			printf("free request done\n");
+		}else {
+			YIELD_PROCESSOR;
+		}
+	}
 }

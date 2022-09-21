@@ -121,8 +121,12 @@ elseif ( ${TEE_TYPE} STREQUAL "SIM" )
     install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/sim_ops DESTINATION ${INSTALL_DIR})
     install(CODE "execute_process(COMMAND chown postgres:postgres ${INSTALL_DIR}/sim_ops )")
 
-    set (USRC extension/interface/simulate/sim_interface.cpp)
-    add_library(SimInterface ${USRC}) 
+    file(GLOB USRCS
+        utils/sync.c
+        extension/interface/simulate/sim_interface.cpp
+        )
+    add_library(SimInterface ${USRCS}) 
+
     target_include_directories(SimInterface
         PRIVATE extension/include 
         PRIVATE extension/interface/simulate
