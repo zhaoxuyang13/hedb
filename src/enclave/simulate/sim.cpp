@@ -12,6 +12,8 @@
 #include <pthread.h>
 #include "ops_server.h"
 #include <sys/wait.h>
+#include <fcntl.h>
+#include <sys/mman.h>
 /* this load barrier is only for arm */
 #ifdef __aarch64__
 	#define LOAD_BARRIER asm volatile("dsb ld" ::: "memory")
@@ -188,6 +190,28 @@ void *get_shmem_posix(size_t size){
 	return posix_shm_addr;
 }
 
+#define SHM_SIZE (16*1024*1024)
+#define META_REQ_SIZE 1024
+#define REQ_REGION_SIZE 1024*1024
+#define REGION_N_OFFSET(n) (META_REQ_SIZE + REQ_REGION_SIZE * n)
+#define MAX_REGION_NUM 16
+
+int ivshm_fd;
+void ivshm_exit_handler(){
+    close(ivshm_fd);
+}
+void *get_shmem_ivshm(size_t size){
+	ivshm_fd = open("/dev/uio0", O_RDWR);
+    assert(ivshm_fd != -1);
+
+    void *ivshm_p = mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, ivshm_fd, 0);
+    assert(ivshm_p != NULL);
+
+	atexit(ivshm_exit_handler);
+	return ivshm_p;
+}
+
+
 pid_t fork_ops_process(void *shm_addr){
     pid_t pid = fork();
 	if(pid != 0){ // father
@@ -232,31 +256,27 @@ pid_t fork_ops_process(void *shm_addr){
 	exit(0);
 }
 
-#define SHM_SIZE (16*1024*1024)
-#define META_REQ_SIZE 1024
-#define REQ_REGION_SIZE 1024*1024
-#define REGION_N_OFFSET(n) (META_REQ_SIZE + REQ_REGION_SIZE * n)
-#define MAX_REGION_NUM 16
+
 int main(int argc,char *argv[]){
 
 	int data_size = SHM_SIZE;
 	pid_t child_pids[20] = {};
 
-	OpsServer *req = (OpsServer *) get_shmem_posix(data_size);
+	OpsServer *req = (OpsServer *) get_shmem_ivshm(data_size);
 	memset(req, 0, sizeof(OpsServer));
 	while (1)
 	{
 		if(req->status == SHM_GET){
 			// allocate a empty region
-			printf("processing get\n");
+			// printf("processing get\n");
 			for(int i = 0;i < MAX_REGION_NUM; i++){
 				if(GET(req->bitmap, i) == 0){
 					SET(req->bitmap, i);
 					req->ret_id = i;
 					void *addr = (void*)req  + REGION_N_OFFSET(i);
-					printf("allocate %d, base addr %p, alloc addr %p\n",i,req, addr);
+					// printf("allocate %d, base addr %p, alloc addr %p\n",i,req, addr);
 					pid_t child = fork_ops_process(addr);
-					printf("child pid %d\n",child);
+					// printf("child pid %d\n",child);
 					child_pids[i] = child;
 					break;
 				}
@@ -264,23 +284,24 @@ int main(int argc,char *argv[]){
 
 			STORE_BARRIER; // store everything before DONE.
 			req->status = SHM_DONE;
-			printf("get request done\n");
+			printf("allocate %d, base addr %p, alloc addr %p\n",i,req, addr);
+			// printf("get request done\n");
 		}else if(req->status == SHM_FREE){
 			// free a region
-			printf("processing free\n");
+			// printf("processing free\n");
 			LOAD_BARRIER;
 			int id = req->free_id;
 			BaseRequest *base_req = (BaseRequest *)((void*)req  + REGION_N_OFFSET(id));
-			printf("free %d, %p\n", id, base_req);
+
 			base_req->status = EXIT;
 			assert(GET(req->bitmap, id) == 1);
 			CLEAR(req->bitmap, id);
 			waitpid(child_pids[id], nullptr, 0); // wait until child pid exit;
-			printf("waitpid pid %d\n", child_pids[id]);
+			// printf("waitpid pid %d\n", child_pids[id]);
 
 			STORE_BARRIER; // store everything before DONE.
 			req->status = SHM_DONE;
-			printf("free request done\n");
+			printf("free %d, %p\n", id, base_req);
 		}else {
 			YIELD_PROCESSOR;
 		}

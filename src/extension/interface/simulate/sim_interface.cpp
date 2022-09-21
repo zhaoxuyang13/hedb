@@ -11,6 +11,8 @@
 #include "request_types.h"
 #include "ops_server.h"
 #include <cassert>
+#include <fcntl.h>
+#include <sys/mman.h>
 #include <errno.h>
 /* --------------------------------------------- */
 /* this load barrier is only for arm */
@@ -67,6 +69,14 @@ static void *get_shmem_posix(size_t size){
 	return posix_shm_addr;
 }
 
+static void *get_shmem_ivshm(size_t size){
+    int fd = open("/dev/uio0", O_RDWR);
+    assert(fd != -1);
+
+    void *p = mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    assert(p != NULL);
+	return p;
+}
 #define SHM_SIZE (16*1024*1024)
 #define META_REQ_SIZE 1024
 #define REQ_REGION_SIZE 1024*1024
@@ -77,7 +87,7 @@ static int shm_id;
 void *getSharedBuffer(size_t size)
 {
 
-    shm_addr = get_shmem_posix(SHM_SIZE);
+    shm_addr = get_shmem_ivshm(SHM_SIZE);
     OpsServer *ops_server = (OpsServer *)shm_addr;
     print_info("get shmem\n");
 
