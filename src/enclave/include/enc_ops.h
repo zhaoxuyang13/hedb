@@ -16,3 +16,10 @@ int handle_ops(BaseRequest *req);
 #ifdef __cplusplus 
 }
 #endif 
+
+#ifndef ENABLE_KV
+#define float_map_find(a, b, c) (*c = false)
+#define text_map_find(a, b, c) (*c = false)
+#define float_map_insert(...) ;
+#define text_map_insert(...) ;
+#endif 

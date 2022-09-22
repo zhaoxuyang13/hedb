@@ -24,7 +24,7 @@
 #endif
 
 
-uint8_t *decrypt_dst;
+uint8_t *decrypt_dst, *decrypt_src;
 size_t decrypt_src_len, decrypt_dst_len;
 volatile int decrypt_status = DONE;
 
@@ -35,7 +35,7 @@ void *decrypt_thread(void * arg){
 	{
 		if(decrypt_status == SENT){
 			LOAD_BARRIER;
-			int resp = decrypt_bytes(decrypt_buffer, decrypt_src_len, plain_buffer, decrypt_dst_len);
+			int resp = decrypt_bytes(decrypt_src, decrypt_src_len, decrypt_dst, decrypt_dst_len);
 			STORE_BARRIER;
 			decrypt_status = DONE;
 		}else if(decrypt_status == EXIT){
@@ -58,10 +58,10 @@ int decrypt_bytes_para(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_
 		pthread_create(&thread, nullptr, decrypt_thread, nullptr);
 		inited = true;
 	}
-	memcpy(decrypt_buffer, pSrc, src_len);
-	// decrypt_src = pSrc;
+	// memcpy(decrypt_buffer, pSrc, src_len);
+	decrypt_src = pSrc;
 	decrypt_src_len = src_len;
-	// decrypt_dst = pDst;
+	decrypt_dst = pDst;
 	decrypt_dst_len = exp_dst_len;
 	STORE_BARRIER;
 	decrypt_status = SENT;
@@ -74,7 +74,7 @@ void decrypt_wait(uint8_t *pDst, size_t exp_dst_len){
 		YIELD_PROCESSOR;
 	}
 	LOAD_BARRIER;
-	memcpy(pDst, plain_buffer, exp_dst_len);
+	// memcpy(pDst, plain_buffer, exp_dst_len);
 }
 
 
@@ -278,13 +278,13 @@ int main(int argc,char *argv[]){
 					pid_t child = fork_ops_process(addr);
 					// printf("child pid %d\n",child);
 					child_pids[i] = child;
+					printf("allocate %d, base addr %p, alloc addr %p\n",i,req, addr);
 					break;
 				}
 			}
 
 			STORE_BARRIER; // store everything before DONE.
 			req->status = SHM_DONE;
-			printf("allocate %d, base addr %p, alloc addr %p\n",i,req, addr);
 			// printf("get request done\n");
 		}else if(req->status == SHM_FREE){
 			// free a region

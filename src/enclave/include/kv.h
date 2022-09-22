@@ -77,6 +77,7 @@ Str text_map_find(buffer_map *m, const EncStr *enc_val, bool *found);
 extern buffer_map *f_map_p;
 extern buffer_map *t_map_p;
 
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
