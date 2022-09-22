@@ -43,6 +43,7 @@ int enc_text_cmp(EncStrCmpRequestData *req){
     int resp = 0 ;
     bool found;
     //  decrypt left
+#ifdef ENABLE_KV
     left = text_map_find(t_map_p, &req->left, &found);
     if (found) {
         left.data[left.len] = '\0';
@@ -55,7 +56,15 @@ int enc_text_cmp(EncStrCmpRequestData *req){
         left.data[left.len] = '\0';
         text_map_insert(t_map_p, &req->left, &left);
     }
+#else
+    left.len = req->left.len - IV_SIZE - TAG_SIZE;
+    resp = decrypt_bytes((uint8_t *)&req->left.enc_cstr, req->left.len, (uint8_t *)&left.data, left.len);
+    if (resp != 0)
+        return resp;
+    left.data[left.len] = '\0';
+#endif
 
+#ifdef ENABLE_KV
     // decrypt right
     right = text_map_find(t_map_p, &req->right, &found);
     if (found) {
@@ -69,6 +78,13 @@ int enc_text_cmp(EncStrCmpRequestData *req){
         right.data[right.len] = '\0';
         text_map_insert(t_map_p, &req->right, &right);
     }
+#else
+    right.len = req->right.len - IV_SIZE - TAG_SIZE;
+    resp = decrypt_bytes((uint8_t *)&req->right.enc_cstr, req->right.len, (uint8_t *)&right.data, right.len);
+    if (resp != 0)
+        return resp;
+    right.data[right.len] = '\0';
+#endif
 
     req->cmp = strcmp((const char*)left.data, (const char*)right.data);
     // printf("%d, %s, %s, %d\n",req->common.reqType, left.data, right.data, req->cmp);

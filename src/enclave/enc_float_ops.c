@@ -55,24 +55,33 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
 {
     float left,right,res;
     int resp = 0;
-    bool found1 = false;
-    left = float_map_find(f_map_p, &req->left, &found1);
-    if (!found1) {
-        resp = decrypt_bytes_para((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
+    bool found = false;
+#ifdef ENABLE_KV
+    left = float_map_find(f_map_p, &req->left, &found);
+    if (!found) {
+        resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
         if (resp != 0)
             return resp;
     }
+#else
+    resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
+    if (resp != 0)
+        return resp;
+#endif
 
-    bool found2 = false;
-    right = float_map_find(f_map_p, &req->right, &found2);
-    if (!found2) {
+#ifdef ENABLE_KV
+    found = false;
+    right = float_map_find(f_map_p, &req->right, &found);
+    if (!found) {
         resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(right));
         if (resp != 0)
             return resp;
     }
-    if (!found1) { 
-        decrypt_wait((uint8_t*) &left, sizeof(left));
-    }
+#else
+    resp = decrypt_bytes((uint8_t *) &req->right, sizeof(req->right),(uint8_t*) &right, sizeof(right));
+    if (resp != 0)
+        return resp;   
+#endif
 
     // printf("clac type %d, %f, %f, ", req->common.reqType, left, right);
     switch (req->common.reqType) /* req->common.op */
@@ -102,7 +111,9 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
 
     resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
 
+#ifdef ENABLE_KV
     float_map_insert(f_map_p, (EncFloat *) &req->res, &res);
+#endif
 
     return resp;
 }
@@ -120,12 +131,18 @@ int enc_float32_bulk(EncFloatBulkRequestData *req)
     bool found = false;
     while (count < bulk_size)
     {
+    #ifdef ENABLE_KV
         tmp = float_map_find(f_map_p, &array[count], &found);
         if (!found) {
             resp = decrypt_bytes((uint8_t *) &array[count], sizeof(EncFloat), (uint8_t*) &tmp, sizeof(float));    
             if (resp != 0)
                 return resp;
         }
+    #else
+        resp = decrypt_bytes((uint8_t *) &array[count], sizeof(EncFloat), (uint8_t*) &tmp, sizeof(float));    
+        if (resp != 0)
+            return resp;
+    #endif
 
         switch (req->common.reqType)
         {
@@ -217,6 +234,7 @@ int enc_float32_eval_expr(EncFloatEvalExprRequestData *req)
     bool found = false;
     // printf("Received expr: %s", expr.data);
     for (i = 0; i < arg_cnt; ++i) {
+    #ifdef ENABLE_KV
         arr[i] = float_map_find(f_map_p, &enc_arr[i], &found);
         if (!found) {
             resp = decrypt_bytes((uint8_t *) &enc_arr[i], sizeof(EncFloat), (uint8_t*) &arr[i], sizeof(float));    
@@ -224,6 +242,13 @@ int enc_float32_eval_expr(EncFloatEvalExprRequestData *req)
                 return resp;
             }
         }
+    #else
+        resp = decrypt_bytes((uint8_t *) &enc_arr[i], sizeof(EncFloat), (uint8_t*) &arr[i], sizeof(float));    
+        if (resp != 0) {
+            return resp;
+        }
+    #endif
+
         // printf("Received arg: %f", arr[i]);
     }
     res = eval_expr(expr.data, arr);

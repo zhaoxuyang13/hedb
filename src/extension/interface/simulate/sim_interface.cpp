@@ -86,8 +86,11 @@ static void *shm_addr;
 static int shm_id;
 void *getSharedBuffer(size_t size)
 {
-
+#ifdef ENABLE_LOCAL_SIM
+    shm_addr = get_shmem_posix(SHM_SIZE); 
+#else
     shm_addr = get_shmem_ivshm(SHM_SIZE);
+#endif
     OpsServer *ops_server = (OpsServer *)shm_addr;
     print_info("get shmem\n");
 

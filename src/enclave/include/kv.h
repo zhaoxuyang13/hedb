@@ -9,6 +9,7 @@
 #include <simulate/sim.hpp>
 #endif
 
+#include <request_types.h>
 #define CACHE_SIZE 11
 
 #ifdef __cplusplus
