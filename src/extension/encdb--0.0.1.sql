@@ -22,6 +22,16 @@ RETURNS int
 AS 'MODULE_PATHNAME'
 LANGUAGE C IMMUTABLE STRICT;
 
+CREATE OR REPLACE FUNCTION enable_record_mode(cstring)
+RETURNS int
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OR REPLACE FUNCTION enable_replay_mode(cstring)
+RETURNS int
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT;
+
 -------------------------------------------------------------------------------
 --ENCRYPTED INTEGER TYPE (randomized)
 -------------------------------------------------------------------------------

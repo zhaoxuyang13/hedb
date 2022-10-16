@@ -92,12 +92,12 @@ void *getSharedBuffer(size_t size)
     shm_addr = get_shmem_ivshm(SHM_SIZE);
 #endif
     OpsServer *ops_server = (OpsServer *)shm_addr;
-    print_info("get shmem\n");
+    // print_info("get shmem\n");
 
     spin_lock(&ops_server->lock);
     assert(ops_server->status == SHM_NONE); 
 
-    print_info("lock got\n");
+    // print_info("lock got\n");
     ops_server->status = SHM_GET;
     while(ops_server->status != SHM_DONE){
         YIELD_PROCESSOR;
@@ -106,9 +106,9 @@ void *getSharedBuffer(size_t size)
     shm_id = ops_server->ret_id;
     void *buffer = shm_addr + REGION_N_OFFSET(shm_id);
 
-    char ch[100];
-    sprintf(ch, "server done %d. shm_addr %p, buffer %p\n", ops_server->ret_id, shm_addr, buffer);
-    print_info(ch);
+    // char ch[100];
+    // sprintf(ch, "server done %d. shm_addr %p, buffer %p\n", ops_server->ret_id, shm_addr, buffer);
+    // print_info(ch);
 
     STORE_BARRIER;
     ops_server->status = SHM_NONE;
