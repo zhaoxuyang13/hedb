@@ -22,6 +22,6 @@ void spin_unlock(int volatile* p)
 
 
 void spin_wait(int volatile *p, int val){
-    while (*p != val)
-        __asm__ volatile("pause":::"memory");
+    // while (*p != val)
+    //     __asm__ volatile("pause":::"memory");
 }
