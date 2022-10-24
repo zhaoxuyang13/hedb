@@ -1,11 +1,11 @@
 #pragma once
+
 extern "C"
 {
 #include <defs.h>
 #include <enc_types.h>
 #include <request_types.h>
 }
-
 #include <extension_helper.hpp>
 
 

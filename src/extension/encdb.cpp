@@ -26,14 +26,17 @@ extern bool replayMode;
 extern char record_name_prefix[MAX_NAME_LENGTH];
 extern char record_names[MAX_RECORDS_NUM][MAX_NAME_LENGTH];
 extern int records_cnt;
-void print_info(const char *str,...)
-{
-    ereport(INFO, (errmsg(str)));
-}
-void print_error(const char *fmt,...)
-{
-    ereport(ERROR, (errmsg(fmt)));
-}
+void close_write_file_ptr();
+
+
+// void print_info(const char *str,...)
+// {
+//     ereport(INFO, (errmsg(str)));
+// }
+// void print_error(const char *fmt,...)
+// {
+//     ereport(ERROR, (errmsg(fmt)));
+// }
 Datum
     launch(PG_FUNCTION_ARGS)
 {
@@ -56,17 +59,21 @@ Datum
     recordMode = true;
     char* s = PG_GETARG_CSTRING(0);
     strncpy(record_name_prefix, s, strlen(s));
-    print_info(s);
+    print_info("%s\n", s);
     PG_RETURN_INT32(0);
 }
 Datum
     enable_replay_mode(PG_FUNCTION_ARGS)
 {
+    if(recordMode){
+        recordMode = false;
+        close_write_file_ptr();
+    }
     replayMode = true;
     char* s = PG_GETARG_CSTRING(0);
     strncpy(record_name_prefix, s, strlen(s));
     strcat(record_name_prefix, "-");
-    print_info(s);
+    print_info("%s\n", s);
 
     DIR *dir;
     struct dirent *ent;
@@ -83,9 +90,8 @@ Datum
         sprintf(tmp, "find %d log files\n", records_cnt);
         for(int i = 0; i < records_cnt; i ++){
             sprintf(tmp + strlen(tmp), "%d: %s\n", i, record_names[i]);
-            print_info(tmp + strlen(tmp));
         }
-        print_info(tmp);
+        print_info("%s\n",tmp);
         closedir (dir);
     } else {
         /* could not open directory */

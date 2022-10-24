@@ -127,7 +127,7 @@ Datum pg_enc_float4_in(PG_FUNCTION_ARGS)
     char *s = PG_GETARG_CSTRING(0);
     float val = pg_float4_in(s);
     EncFloat *f = (EncFloat *) palloc0(sizeof(EncFloat));
-    int resp = enc_float_encrypt(val, f);
+    enc_float_encrypt(val, f);
 
     PG_RETURN_POINTER(f);
 }
@@ -465,7 +465,6 @@ Datum pg_enc_float4_eval_expr(PG_FUNCTION_ARGS)
     int i;
     EncFloat *arr[EXPR_MAX_SIZE];
     EncFloat *res = (EncFloat *) palloc0(sizeof(EncFloat));
-    float tmp;
     char* s, s_postfix[EXPR_STACK_MAX_SIZE];
     Str *str = (Str *) palloc0(sizeof(Str));
     memset(s_postfix, 0, (size_t)EXPR_STACK_MAX_SIZE);

@@ -111,7 +111,7 @@ int enc_text_concatenate(EncStrCalcRequestData *req){
 
     memcpy(left.data + left.len, right.data, right.len);
     left.len += right.len;
-    left.data[left.len] = "\0";
+    left.data[left.len] = '\0';
 
     // printf("%s\n",req->common.reqType, left.data); 
 

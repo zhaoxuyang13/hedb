@@ -44,9 +44,9 @@ Timestamp pg_timestamp_in(char* str)
     int dtype;
     fsec_t fsec;
     struct pg_tm tt, *tm = &tt;
-    char buf[MAXDATELEN + 1];
-    char src_byte[TIMESTAMP_LENGTH];
-    int resp;
+    // char buf[MAXDATELEN + 1];
+    // char src_byte[TIMESTAMP_LENGTH];
+    // int resp;
 
     dterr = ParseDateTime(str, workbuf, sizeof(workbuf), field, ftype, MAXDATEFIELDS, &nf);
 
@@ -101,7 +101,7 @@ Datum
     // char ch[100];
     // sprintf(ch, "time is %lx", time);
     // print_info(ch);
-    int resp = enc_timestamp_encrypt(&time, t);
+    enc_timestamp_encrypt(&time, t);
     PG_RETURN_POINTER(t);
 }
 /*
@@ -146,13 +146,13 @@ Datum
 #ifdef NOT_USED
     Oid typelem = PG_GETARG_OID(1);
 #endif
-    int32 typmod = PG_GETARG_INT32(2);
+    // int32 typmod = PG_GETARG_INT32(2);
 
     Timestamp time;
     EncTimestamp* t = (EncTimestamp *)palloc0(ENC_TIMESTAMP_LENGTH);
 
     time = pg_timestamp_in(arg);
-    int resp = enc_timestamp_encrypt(&time, t);
+    enc_timestamp_encrypt(&time, t);
     PG_RETURN_POINTER(t);
 }
 
@@ -166,7 +166,7 @@ Datum
 {
     EncTimestamp *t = PG_GETARG_ENCTimestamp(0); 
     Timestamp timestamp;
-    int resp;
+    // int resp;
     char* result;
     struct pg_tm tt, *tm = &tt;
     fsec_t fsec;
@@ -198,8 +198,6 @@ Datum
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
     EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
-    TIMESTAMP time1;
-    TIMESTAMP time2;
 
     int ans = 0;
     enc_timestamp_cmp(t1,t2,&ans);
@@ -219,8 +217,6 @@ Datum
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
     EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
-    TIMESTAMP time1;
-    TIMESTAMP time2;
 
     int ans = 0;
     enc_timestamp_cmp(t1,t2,&ans);
@@ -240,8 +236,6 @@ Datum
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
     EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
-    TIMESTAMP time1;
-    TIMESTAMP time2;
 
     int ans = 0;
     enc_timestamp_cmp(t1,t2,&ans);
@@ -261,8 +255,6 @@ Datum
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
     EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
-    TIMESTAMP time1;
-    TIMESTAMP time2;
 
     int ans = 0;
     enc_timestamp_cmp(t1,t2,&ans);
@@ -282,8 +274,6 @@ Datum
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
     EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
-    TIMESTAMP time1;
-    TIMESTAMP time2;
 
     int ans = 0;
     enc_timestamp_cmp(t1,t2,&ans);
@@ -302,8 +292,6 @@ Datum
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
     EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
-    TIMESTAMP time1;
-    TIMESTAMP time2;
 
     int ans = 0;
     enc_timestamp_cmp(t1,t2,&ans);
@@ -321,8 +309,6 @@ Datum
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
     EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
-    TIMESTAMP time1;
-    TIMESTAMP time2;
 
     int ans = 0;
     enc_timestamp_cmp(t1,t2,&ans);

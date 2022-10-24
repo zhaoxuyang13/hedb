@@ -55,10 +55,10 @@ Datum
 {
     char* pIn = PG_GETARG_CSTRING(0);
     EncInt *result = (EncInt *) palloc0(sizeof(EncInt));
-    int status = 0;
+    // int status = 0;
 
     int in = pg_atoi(pIn, INT32_LENGTH, '\0');
-    status = enc_int_encrypt(in, result);
+    enc_int_encrypt(in, result);
     // ereport(INFO, (errmsg("encrypt return")));
 
     PG_RETURN_POINTER(result);
@@ -73,12 +73,12 @@ Datum
     pg_enc_int4_out(PG_FUNCTION_ARGS)
 {
     EncInt *in = PG_GETARG_ENCINT(0);
-    int out, resp;
+    int out;
     char *str = (char *) palloc0(sizeof(EncInt)); // this length is not really meaningful
     
     if (debugMode == true)
     {
-        resp = enc_int_decrypt(in, &out);
+        enc_int_decrypt(in, &out);
         sprintf(str, "%d", out);
         // ereport(INFO, (errmsg("auto decryption: DEC('%p') = %d", in, out)));
     }else {
@@ -98,12 +98,12 @@ Datum
 Datum
     pg_enc_int4_add(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     EncInt* result = (EncInt*)palloc0(sizeof(EncInt));
 
-    resp = enc_int_add(left, right, result);
+    enc_int_add(left, right, result);
 
     PG_RETURN_CSTRING(result);
 }
@@ -117,12 +117,12 @@ Datum
 Datum
     pg_enc_int4_sub(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     EncInt* result = (EncInt*)palloc0(sizeof(EncInt));
 
-    resp = enc_int_sub(left, right, result);
+    enc_int_sub(left, right, result);
 
     PG_RETURN_CSTRING(result);
 }
@@ -136,12 +136,12 @@ Datum
 Datum
     pg_enc_int4_mult(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     EncInt* result = (EncInt*)palloc0(sizeof(EncInt));
 
-    resp = enc_int_mult(left, right, result);
+    enc_int_mult(left, right, result);
 
     PG_RETURN_CSTRING(result);
 }
@@ -155,12 +155,12 @@ Datum
 Datum
     pg_enc_int4_div(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     EncInt* result = (EncInt*)palloc0(sizeof(EncInt));
 
-    resp = enc_int_div(left, right, result);
+    enc_int_div(left, right, result);
 
     PG_RETURN_CSTRING(result);
 }
@@ -175,12 +175,12 @@ Datum
 Datum
     pg_enc_int4_pow(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     EncInt* result = (EncInt*)palloc0(sizeof(EncInt));
 
-    resp = enc_int_pow(left, right, result);
+    enc_int_pow(left, right, result);
 
     PG_RETURN_CSTRING(result);
 }
@@ -195,12 +195,12 @@ Datum
 Datum
     pg_enc_int4_mod(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     EncInt* result = (EncInt*)palloc0(sizeof(EncInt));
 
-    resp = enc_int_mod(left, right, result);
+    enc_int_mod(left, right, result);
 
     PG_RETURN_CSTRING(result);
 }
@@ -214,12 +214,12 @@ Datum
 Datum
     pg_enc_int4_cmp(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     int res;
 
-    resp = enc_int_cmp(left, right, &res);
+    enc_int_cmp(left, right, &res);
 
     PG_RETURN_INT32(res);
 }
@@ -235,13 +235,13 @@ Datum
 Datum
     pg_enc_int4_eq(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     int res;
     bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    enc_int_cmp(left, right, &res);
 
     if (res == 0)
         cmp = true;
@@ -262,13 +262,13 @@ Datum
 Datum
     pg_enc_int4_ne(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     int res;
     bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    enc_int_cmp(left, right, &res);
 
     if (res == 0)
         cmp = false;
@@ -289,13 +289,13 @@ Datum
 Datum
     pg_enc_int4_lt(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     int res;
     bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    enc_int_cmp(left, right, &res);
 
     if (res == -1)
         cmp = true;
@@ -316,13 +316,13 @@ Datum
 Datum
     pg_enc_int4_le(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     int res;
     bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    enc_int_cmp(left, right, &res);
 
     if ((res == -1) || (res == 0))
         cmp = true;
@@ -343,13 +343,13 @@ Datum
 Datum
     pg_enc_int4_gt(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     int res;
     bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    enc_int_cmp(left, right, &res);
 
     if (res == 1)
         cmp = true;
@@ -370,13 +370,13 @@ Datum
 Datum
     pg_enc_int4_ge(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     int res;
     bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    enc_int_cmp(left, right, &res);
 
     if (res == 0 || res == 1)
         cmp = true;
@@ -390,8 +390,8 @@ Datum
     pg_enc_int4_encrypt(PG_FUNCTION_ARGS)
 {
     EncInt* out = (EncInt *) palloc0(sizeof(EncInt));
-    int in = PG_GETARG_INT32(0), resp = 0;
-    resp = enc_int_encrypt(in, out);
+    int in = PG_GETARG_INT32(0);
+    enc_int_encrypt(in, out);
     //ereport(LOG, (errmsg("function encrypt, output: %s", ans)));
     PG_RETURN_CSTRING(out);
 }
@@ -400,9 +400,9 @@ Datum
 Datum
     pg_enc_int4_decrypt(PG_FUNCTION_ARGS)
 {
-    int resp, ans = 0;
+    int ans = 0;
     EncInt *in = PG_GETARG_ENCINT(0);
-    resp = enc_int_decrypt(in, &ans);
+    enc_int_decrypt(in, &ans);
     //ereport(LOG, (errmsg("function decrypt, output: %d", ans)));
     PG_RETURN_INT32(ans);
 }
@@ -416,13 +416,13 @@ Datum
 Datum
     pg_enc_int4_max(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     int res;
-    bool cmp = false;
+    // bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    enc_int_cmp(left, right, &res);
 
     if (res == 1 ){
         PG_RETURN_POINTER(left);
@@ -442,13 +442,13 @@ Datum
 Datum
     pg_enc_int4_min(PG_FUNCTION_ARGS)
 {
-    int resp = 0;
+    // int resp = 0;
     EncInt* left = PG_GETARG_ENCINT(0);
     EncInt* right = PG_GETARG_ENCINT(1);
     int res;
-    bool cmp = false;
+    // bool cmp = false;
 
-    resp = enc_int_cmp(left, right, &res);
+    enc_int_cmp(left, right, &res);
 
     if (res == 1){
         PG_RETURN_POINTER(right);
@@ -464,7 +464,7 @@ Datum
     pg_enc_int4_sum_bulk(PG_FUNCTION_ARGS)
 {
     ArrayType* v = PG_GETARG_ARRAYTYPE_P(0);
-    int resp = 0;
+    // int resp = 0;
     ArrayIterator array_iterator;
     ArrayMetaState* my_extra = (ArrayMetaState*)fcinfo->flinfo->fn_extra;
     bool isnull;
@@ -483,7 +483,7 @@ Datum
 
         if (counter % (bulk_size) == 0)
         {
-            resp = enc_int_sum_bulk(bulk_size, bulkBuffer, sum);
+            enc_int_sum_bulk(bulk_size, bulkBuffer, sum);
 
             memcpy(bulkBuffer, sum, sizeof(EncInt));
             current_position = sizeof(EncInt);
@@ -491,7 +491,7 @@ Datum
         }
     }
 
-    resp = enc_int_sum_bulk(counter % bulk_size, bulkBuffer, sum);
+    enc_int_sum_bulk(counter % bulk_size, bulkBuffer, sum);
 
     pfree(bulkBuffer);
     PG_RETURN_CSTRING(sum);
@@ -502,7 +502,7 @@ Datum
     pg_enc_int4_avg_bulk(PG_FUNCTION_ARGS)
 {
     ArrayType* v = PG_GETARG_ARRAYTYPE_P(0);
-    int resp = 0;
+    // int resp = 0;
     ArrayIterator array_iterator;
     ArrayMetaState* my_extra = (ArrayMetaState*)fcinfo->flinfo->fn_extra;
     bool isnull;
@@ -534,12 +534,12 @@ Datum
     }
 
     //ereport(INFO, (errmsg("send rest %d: bulk %d,  %s", current_position, counter%bulk_size, pTemp)));
-    resp = enc_int_sum_bulk(counter % bulk_size, bulkBuffer, sum);
+    enc_int_sum_bulk(counter % bulk_size, bulkBuffer, sum);
     
 
-    resp = enc_int_encrypt(nitems, bulkBuffer);
+    enc_int_encrypt(nitems, bulkBuffer);
 
-    resp = enc_int_div(sum, bulkBuffer, result);
+    enc_int_div(sum, bulkBuffer, result);
 
     pfree(bulkBuffer);
     pfree(sum);
@@ -551,16 +551,16 @@ Datum
     pg_enc_int4_min_bulk(PG_FUNCTION_ARGS)
 {
     ArrayType* v = PG_GETARG_ARRAYTYPE_P(0);
-    int resp = 0;
+    // int resp = 0;
     int ans = 0;
     ArrayIterator array_iterator;
     ArrayMetaState* my_extra = (ArrayMetaState*)fcinfo->flinfo->fn_extra;
     bool isnull;
     Datum value;
 
-    int ndims1 = ARR_NDIM(v); //array dimension
-    int* dims1 = ARR_DIMS(v);
-    int nitems = ArrayGetNItems(ndims1, dims1); //number of items in array
+    // int ndims1 = ARR_NDIM(v); //array dimension
+    // int* dims1 = ARR_DIMS(v);
+    // int nitems = ArrayGetNItems(ndims1, dims1); //number of items in array
 
     EncInt* pMin = (EncInt*)palloc0(sizeof(EncInt));
     EncInt* pTemp = (EncInt*)palloc0(sizeof(EncInt));
@@ -573,7 +573,7 @@ Datum
     {
         memcpy(pTemp, DatumGetCString(value), sizeof(EncInt));
 
-        resp = enc_int_cmp(pMin, pTemp, &ans);
+        enc_int_cmp(pMin, pTemp, &ans);
 
         if (ans == 1)
             memcpy(pMin, pTemp, sizeof(EncInt));
@@ -589,16 +589,16 @@ Datum
     pg_enc_int4_max_bulk(PG_FUNCTION_ARGS)
 {
     ArrayType* v = PG_GETARG_ARRAYTYPE_P(0);
-    int resp = 0;
+    // int resp = 0;
     int ans = 0;
     ArrayIterator array_iterator;
     ArrayMetaState* my_extra = (ArrayMetaState*)fcinfo->flinfo->fn_extra;
     bool isnull;
     Datum value;
 
-    int ndims1 = ARR_NDIM(v); //array dimension
-    int* dims1 = ARR_DIMS(v);
-    int nitems = ArrayGetNItems(ndims1, dims1); //number of items in array
+    // int ndims1 = ARR_NDIM(v); //array dimension
+    // int* dims1 = ARR_DIMS(v);
+    // int nitems = ArrayGetNItems(ndims1, dims1); //number of items in array
 
     EncInt* pMax = (EncInt*)palloc0(sizeof(EncInt));
     EncInt* pTemp = (EncInt*)palloc0(sizeof(EncInt));
@@ -612,7 +612,7 @@ Datum
     {
         memcpy(pTemp, DatumGetCString(value), sizeof(EncInt));
 
-        resp = enc_int_cmp(pMax, pTemp, &ans);
+        enc_int_cmp(pMax, pTemp, &ans);
         if (ans == -1)
             memcpy(pMax, pTemp, sizeof(EncInt));
     }
@@ -631,9 +631,9 @@ Datum
 Datum
     pg_int4_to_enc_int4(PG_FUNCTION_ARGS)
 {
-    int in = PG_GETARG_INT32(0), resp = 0;
+    int in = PG_GETARG_INT32(0);
     EncInt* out = (EncInt *) palloc0(sizeof(EncInt));
-    resp = enc_int_encrypt(in, out);
+    enc_int_encrypt(in, out);
     //ereport(LOG, (errmsg("function encrypt, output: %s", ans)));
     PG_RETURN_CSTRING(out);
 }
@@ -648,9 +648,9 @@ Datum
     pg_int8_to_enc_int4(PG_FUNCTION_ARGS)
 {
     
-    int in = PG_GETARG_INT64(0), resp = 0;
+    int in = PG_GETARG_INT64(0);
     EncInt* out = (EncInt *) palloc0(sizeof(EncInt));
-    resp = enc_int_encrypt(in, out);
+    enc_int_encrypt(in, out);
     //ereport(LOG, (errmsg("function encrypt, output: %s", ans)));
     PG_RETURN_CSTRING(out);
 }

@@ -35,9 +35,9 @@ void forkOpsProcess(){
         // char ch[100];
         // sprintf(ch, "keyid_str: %s", keyid_str);
         // print_info(ch);
-     
-        char *argv[ ]={"sim_ops", keyid_str, NULL};   
-        char *envp[ ]={"", NULL};
+        char arg0[] = "sim_ops", env0[]="";
+        char *argv[ ]={arg0, keyid_str, NULL};   
+        char *envp[ ]={env0, NULL};
         execve("/usr/local/lib/hedb/sim_ops",argv, envp);
     }
 }

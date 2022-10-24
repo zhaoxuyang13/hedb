@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.9)
 project(extension)
 
+# add_compile_definitions(ENABLE_TEST_OPS)
+
 set(TEE_TYPE "" CACHE STRING "Type of TEE (SGX, TZ, SIM, etc)")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wunused-variable -Wunused-but-set-variable")
@@ -8,6 +10,13 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wunused-variable -Wunused-bu
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunused-variable -Wunused-but-set-variable")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+find_package(PostgreSQL REQUIRED)
+
+set(_link_flags "${PostgreSQL_SHARED_LINK_OPTIONS}")
+foreach(_dir ${PostgreSQL_SERVER_LIBRARY_DIRS})
+    set(_link_flags "${_link_flags} -L${_dir}")
+endforeach()
 
 
 # find_program(CCACHE_FOUND ccache)
@@ -131,7 +140,10 @@ elseif ( ${TEE_TYPE} STREQUAL "SIM" )
         PRIVATE extension/include 
         PRIVATE extension/interface/simulate
         PRIVATE include
+        PRIVATE ${PostgreSQL_INCLUDE_DIRS}
+        PRIVATE ${PostgreSQL_SERVER_INCLUDE_DIRS}
         )
+
 
 else()
     message( FATAL_ERROR "TEE_TYPE ${TEE_TYPE} not specified (SGX/TZ). CMake wil exit.")
@@ -141,4 +153,7 @@ endif()
 add_subdirectory(extension)
 # ## for test
 # add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../test/ops-micro ${CMAKE_CURRENT_BINARY_DIR}/)
-add_compile_definitions(ENABLE_KV)
+# add_compile_definitions(ENABLE_KV)
+# add_compile_definitions(ENABLE_PARA)
+add_compile_definitions(ENABLE_LOCAL_SIM)
+

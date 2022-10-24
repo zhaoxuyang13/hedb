@@ -106,7 +106,7 @@ Datum
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
     int ans = 0;
-    int resp = 0;
+    // int resp = 0;
 
     if (str1->order != ORDER_NONE && str2->order != ORDER_NONE) {
         if (str1->order == str2->order) {
@@ -116,7 +116,7 @@ Datum
         }
     }
     
-    resp = enc_text_cmp(str1, str2, &ans);
+    enc_text_cmp(str1, str2, &ans);
 
     if (ans == 0)
         cmp = true;
@@ -136,7 +136,7 @@ Datum
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
     int ans = 0;
-    int resp = 0;
+    // int resp = 0;
 
     if (str1->order != ORDER_NONE && str2->order != ORDER_NONE) {
         if (str1->order != str2->order) {
@@ -146,7 +146,7 @@ Datum
         }
     }
     
-    resp = enc_text_cmp(str1, str2, &ans);
+    enc_text_cmp(str1, str2, &ans);
 
 
     if (ans != 0)
@@ -167,7 +167,7 @@ Datum
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
     int ans = 0;
-    int resp = 0;
+    // int resp = 0;
 
     if (str1->order != ORDER_NONE && str2->order != ORDER_NONE) {
         if (str1->order <= str2->order) {
@@ -177,7 +177,7 @@ Datum
         }
     }
     
-    resp = enc_text_cmp(str1, str2, &ans);
+    enc_text_cmp(str1, str2, &ans);
 
 
     if (ans <= 0)
@@ -198,7 +198,7 @@ Datum
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
     int ans = 0;
-    int resp = 0;
+    // int resp = 0;
 
     if (str1->order != ORDER_NONE && str2->order != ORDER_NONE) {
         if (str1->order < str2->order) {
@@ -208,7 +208,7 @@ Datum
         }
     }
     
-    resp = enc_text_cmp(str1, str2, &ans);
+    enc_text_cmp(str1, str2, &ans);
 
 
     if (ans < 0)
@@ -229,7 +229,7 @@ Datum
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
     int ans = 0;
-    int resp = 0;
+    // int resp = 0;
 
     if (str1->order != ORDER_NONE && str2->order != ORDER_NONE) {
         if (str1->order >= str2->order) {
@@ -239,7 +239,7 @@ Datum
         }
     }
     
-    resp = enc_text_cmp(str1, str2, &ans);
+    enc_text_cmp(str1, str2, &ans);
 
 
     if (ans >= 0)
@@ -260,7 +260,7 @@ Datum
     EncStr* str2 = (EncStr *) VARDATA(s2);
     bool cmp = false;
     int ans = 0;
-    int resp = 0;
+    // int resp = 0;
 
     if (str1->order != ORDER_NONE && str2->order != ORDER_NONE) {
         if (str1->order > str2->order) {
@@ -270,7 +270,7 @@ Datum
         }
     }
     
-    resp = enc_text_cmp(str1, str2, &ans);
+    enc_text_cmp(str1, str2, &ans);
 
     if (ans > 0)
         cmp = true;
@@ -290,7 +290,7 @@ Datum
     EncStr* str1 = (EncStr *) VARDATA(s1);
     EncStr* str2 = (EncStr *) VARDATA(s2);
     int ans = 0;
-    int resp = 0;
+    // int resp = 0;
 
     if (str1->order != ORDER_NONE && str2->order != ORDER_NONE) {
         if (str1->order < str2->order) {
@@ -305,7 +305,7 @@ Datum
         PG_RETURN_INT32(ans);
     }
     
-    resp = enc_text_cmp(str1, str2, &ans);
+    enc_text_cmp(str1, str2, &ans);
 
     PG_RETURN_INT32(ans);
 }
@@ -365,7 +365,7 @@ Datum
     EncStr *estr = (EncStr *) VARDATA(res);
 
     SET_VARSIZE(res, ENCSTRLEN(len) + VARHDRSZ);
-    int resp = enc_text_concatenate(str1,str2, estr);
+    enc_text_concatenate(str1,str2, estr);
     // sprintf(ch, "after: str1->len %d, str2->len %d, estr->len %d",str1->len, str2->len,estr->len);
     // print_info(ch);
 
@@ -381,7 +381,7 @@ Datum
     EncStr* str = (EncStr *) VARDATA(s1);
     EncStr* pattern = (EncStr *) VARDATA(s2);
     int result = 0 ;
-    int resp = enc_text_like(str,pattern, &result);
+    enc_text_like(str,pattern, &result);
 
     PG_RETURN_BOOL(result);
 }
@@ -394,7 +394,7 @@ Datum
     EncStr* str = (EncStr *) VARDATA(s1);
     EncStr* pattern = (EncStr *) VARDATA(s2);
     int result = 0 ;
-    int resp = enc_text_like(str,pattern, &result);
+    enc_text_like(str,pattern, &result);
 
     PG_RETURN_BOOL(1 ^ result);
 }
@@ -433,7 +433,7 @@ Datum
     EncText*res = (EncText *) palloc0(ENCSTRLEN(len) + VARHDRSZ);
     EncStr *estr = (EncStr *) VARDATA(res); 
     SET_VARSIZE(res, ENCSTRLEN(len) + VARHDRSZ);
-    int resp = enc_text_substring(str, from, to, estr); 
+    enc_text_substring(str, from, to, estr); 
 
     PG_RETURN_CSTRING(res);
 }

@@ -1,6 +1,5 @@
 #pragma once 
 
-
 #include <enc_types.h>
 
 int enc_int_add(EncInt *left, EncInt *right, EncInt *res);

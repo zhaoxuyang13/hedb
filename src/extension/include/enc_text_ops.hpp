@@ -1,6 +1,5 @@
 #pragma once 
 
-
 #include <enc_types.h>
 
 int enc_text_cmp(EncStr *left, EncStr *right, int *res);

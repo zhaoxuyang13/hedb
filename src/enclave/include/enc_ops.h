@@ -18,8 +18,12 @@ int handle_ops(BaseRequest *req);
 #endif 
 
 #ifndef ENABLE_KV
-#define float_map_find(a, b, c) (*c = false)
-#define text_map_find(a, b, c) (*c = false)
+#define float_map_find(a, b, c) (*(c) = false)
+Str str_gen(){
+    Str tmp;
+    return tmp;
+}
+#define text_map_find(a, b, c) str_gen(); {(*(c) = false);}
 #define float_map_insert(...) ;
 #define text_map_insert(...) ;
 #endif 

@@ -1,12 +1,14 @@
 #include <interface.hpp>
 #include <tee_interface.hpp>
 #include <sync.h>
+#include <stdafx.hpp>
 #include <extension_helper.hpp>
 #include <timer.hpp>
 #include <stdlib.h> // at exit
 #include <stdio.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <pthread.h>
 #define MAX_LOG_SIZE 50000
 
 TEEInvoker *TEEInvoker::invoker = NULL;
@@ -34,16 +36,26 @@ uint64_t current_log_size = 0;
 //     fwrite(buffer,size,1,write_ptr);
 // }
 FILE *write_file_ptr = 0;
-FILE *get_write_file_ptr(){
+void update_write_file_ptr(){
+    pid_t pid = getpid();
+    char filename[120];
+    sprintf(filename, "%s-%d.log", record_name_prefix, pid);
+    print_info("%s\n", filename);
+    write_file_ptr = fopen(filename,"w+"); 
+}
+FILE *get_write_file_ptr(){ 
     if (write_file_ptr == 0)
     {
-        pid_t pid = getpid();
-        char filename[120];
-        sprintf(filename, "%s-%d.log", record_name_prefix, pid);
-        write_file_ptr = fopen(filename,"w+"); 
+        update_write_file_ptr();
+        pthread_atfork(NULL, NULL, update_write_file_ptr);
     }
     return write_file_ptr;
 }
+void close_write_file_ptr(){
+    if(write_file_ptr)
+        fclose(write_file_ptr);
+}
+
 
 FILE *read_file_ptr = 0;
 FILE *get_read_file_ptr(int id){
@@ -61,449 +73,6 @@ void close_read_file_ptr(){
     read_file_ptr = 0;
 }
 
-
-
-
-//----------------------------------------------------
-// Using two-byte lookup table
-// must call here before calling the above
-//----------------------------------------------------
-static char Base64Digits[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-unsigned short Base64Digits8192[4096];
-
-WORD* gpLookup16 = 0;
-static BYTE LookupDigits[] = { 0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0, // gap: ctrl
-                               // chars
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0, // gap: ctrl
-                               // chars
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0, // gap: spc,!"#$%'()*
-                               62, // +
-                               0,
-                               0,
-                               0, // gap ,-.
-                               63, // /
-                               52,
-                               53,
-                               54,
-                               55,
-                               56,
-                               57,
-                               58,
-                               59,
-                               60,
-                               61, // 0-9
-                               0,
-                               0,
-                               0, // gap: :;<
-                               99, //  = (end padding)
-                               0,
-                               0,
-                               0, // gap: >?@
-                               0,
-                               1,
-                               2,
-                               3,
-                               4,
-                               5,
-                               6,
-                               7,
-                               8,
-                               9,
-                               10,
-                               11,
-                               12,
-                               13,
-                               14,
-                               15,
-                               16,
-                               17,
-                               18,
-                               19,
-                               20,
-                               21,
-                               22,
-                               23,
-                               24,
-                               25, // A-Z
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0, // gap: [\]^_`
-                               26,
-                               27,
-                               28,
-                               29,
-                               30,
-                               31,
-                               32,
-                               33,
-                               34,
-                               35,
-                               36,
-                               37,
-                               38,
-                               39,
-                               40,
-                               41,
-                               42,
-                               43,
-                               44,
-                               45,
-                               46,
-                               47,
-                               48,
-                               49,
-                               50,
-                               51, // a-z
-                               0,
-                               0,
-                               0,
-                               0, // gap: {|}~ (and the rest...)
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0,
-                               0 };
-
-void SetupLookup16()
-{
-    int nLenTbl = 256 * 256; // yes, the table is 128Kb!
-    if (NULL == gpLookup16)
-    {
-        gpLookup16 = new WORD[nLenTbl];
-    }
-    WORD* p = gpLookup16;
-    for (int j = 0; j < 256; j++)
-    {
-        for (int k = 0; k < 256; k++)
-        {
-            WORD w;
-            w = LookupDigits[k] << 8;
-            w |= LookupDigits[j] << 2; // pre-shifted! See notes
-            *p++ = w;
-        }
-    }
-}
-static void
-SetupTable8192()
-{
-    int j, k;
-    for (j = 0; j < 64; j++)
-    {
-        for (k = 0; k < 64; k++)
-        {
-            unsigned short w;
-            w = Base64Digits[k] << 8;
-            w |= Base64Digits[j];
-            Base64Digits8192[(j * 64) + k] = w;
-        }
-    }
-}
-
-int ToBase64Fast(const unsigned char* pSrc, int nLenSrc, char* pDst, int nLenDst)
-{
-    SetupTable8192();
-
-    int nLenOut = ((nLenSrc + 2) / 3) * 4; // 4 out for every 3 in, rounded up
-    if (nLenOut + 1 > nLenDst)
-    {
-        return (0); // fail!
-    }
-
-    unsigned short* pwDst = (unsigned short*)pDst;
-    while (nLenSrc > 2)
-    {
-        unsigned int n = pSrc[0]; // xxx1
-        n <<= 8; // xx1x
-        n |= pSrc[1]; // xx12
-        n <<= 8; // x12x
-        n |= pSrc[2]; // x123
-
-        pwDst[0] = Base64Digits8192[n >> 12];
-        pwDst[1] = Base64Digits8192[n & 0x00000fff];
-
-        nLenSrc -= 3;
-        pwDst += 2;
-        pSrc += 3;
-    }
-    // -------------- end of buffer special handling (see text)
-    pDst = (char*)pwDst;
-
-    if (nLenSrc > 0)
-    { // some left after last triple
-        int n1 = (*pSrc & 0xfc) >> 2;
-        int n2 = (*pSrc & 0x03) << 4;
-        if (nLenSrc > 1)
-        { // corrected.  Thanks to jprichey
-            pSrc++;
-            n2 |= (*pSrc & 0xf0) >> 4;
-        }
-        *pDst++ = Base64Digits[n1]; // encode at least 2 outputs
-        *pDst++ = Base64Digits[n2];
-        if (nLenSrc == 2)
-        { // 2 src bytes left to encode, output xxx=
-            int n3 = (*pSrc & 0x0f) << 2;
-            pSrc++;
-            n3 |= (*pSrc & 0xc0) >> 6;
-            *pDst++ = Base64Digits[n3];
-        }
-        if (nLenSrc == 1)
-        { // 1 src byte left to encode, output xx==
-            *pDst++ = '=';
-        }
-        *pDst++ = '=';
-    }
-    // *pDst= 0; nLenOut++ // could terminate with NULL, here
-    return (nLenOut);
-}
-
-// Utra-Fast base64-decoding, using 128KB lookup table
-int FromBase64Fast(const BYTE* pSrc, int nLenSrc, char* pDst, int nLenDst)
-{
-    if (NULL == gpLookup16)
-        SetupLookup16(); // see below
-    int nLenOut = 0;
-    if (nLenDst < ((nLenSrc / 4) - 1) * 3)
-    {
-        return (0); // (buffer too small)
-    }
-    int nLoopMax = (nLenSrc / 4) - 1;
-    WORD* pwSrc = (WORD*)pSrc;
-    for (int j = 0; j < nLoopMax; j++)
-    {
-        WORD s1 = gpLookup16[pwSrc[0]]; // translate two "digits" at once
-        WORD s2 = gpLookup16[pwSrc[1]]; // ... and two more
-
-        DWORD n32;
-        n32 = s1; // xxxxxxxx xxxxxxxx xx111111 222222xx
-        n32 <<= 10; // xxxxxxxx 11111122 2222xxxx xxxxxxxx
-        n32 |= s2 >> 2; // xxxxxxxx 11111122 22223333 33444444
-
-        BYTE b3 = (n32 & 0x00ff);
-        n32 >>= 8; // in reverse (WORD order)
-        BYTE b2 = (n32 & 0x00ff);
-        n32 >>= 8;
-        BYTE b1 = (n32 & 0x00ff);
-
-        // *pDst++ = b1;  *pDst++ = b2;  *pDst++ = b3;  //slighly slower
-
-        pDst[0] = b1; // slightly faster
-        pDst[1] = b2;
-        pDst[2] = b3;
-
-        pwSrc += 2;
-        pDst += 3;
-    }
-    nLenOut = ((nLenSrc / 4) - 1) * 3;
-
-    //-------------------- special handling outside of loop for end
-    WORD s1 = gpLookup16[pwSrc[0]];
-    WORD s2 = gpLookup16[pwSrc[1]];
-
-    DWORD n32;
-    n32 = s1;
-    n32 <<= 10;
-    n32 |= s2 >> 2;
-
-    BYTE b3 = (n32 & 0x00ff);
-    n32 >>= 8;
-    BYTE b2 = (n32 & 0x00ff);
-    n32 >>= 8;
-    BYTE b1 = (n32 & 0x00ff);
-
-    // add that code to fix the length error
-    // when the encoded string ends on '=' or '==' the final length should be
-    // decrement
-    BYTE bb2 = pSrc[nLenSrc - 2];
-    BYTE bb3 = pSrc[nLenSrc - 1];
-
-    if (nLenOut >= nLenDst)
-        return (0); // error
-    *pDst++ = b1;
-    nLenOut++;
-
-    if (bb2 != 61)
-    {
-        if (nLenOut >= nLenDst)
-            return (0); // error
-        *pDst++ = b2;
-        nLenOut++;
-    }
-    if (bb3 != 61)
-    {
-        if (nLenOut >= nLenDst)
-            return (0); // error
-        *pDst++ = b3;
-        nLenOut++;
-    }
-
-    return (nLenOut);
-}
 
 /* ----- */
 
@@ -712,49 +281,83 @@ void _print_hex(const char *what, const void *v, const unsigned long l)
 			sprintf(tmp+ strlen(tmp)," ");
 		}
 	}
-    print_info(tmp);
+    print_info("%s\n", tmp);
 }
 
 #define ENC_FLOAT4_LENGTH_B64 BASE64_ENCODE_OUT_SIZE(ENC_FLOAT4_LENGTH)
-
+#define ENC_INT32_LENGTH_B64 BASE64_ENCODE_OUT_SIZE(ENC_INT32_LENGTH)
+#define ENC_STRING_LENGTH_B64 BASE64_ENCODE_OUT_SIZE(ENC_STRING_LENGTH)
 TEEInvoker::~TEEInvoker() {
     freeBuffer(req_buffer);
 }
 #define RETRY_FAILED 10086
-int try_replay_request(void *req_buffer, FILE *read_file_ptr);
-int replay_request(void *req){
-    int ret = -RETRY_FAILED, cnt = 0;
-    static FILE *read_file_ptr = nullptr; 
-    if(read_file_ptr == nullptr){
-        for(int i = 0; i < records_cnt; i ++){
-            read_file_ptr = fopen(record_names[i],"r+");
-            int ret = try_replay_request(req, read_file_ptr);
-            if(ret == -RETRY_FAILED){
-                fclose(read_file_ptr);
-                read_file_ptr = nullptr;
-            }else {
-                return ret;
-            }
-        }
-        print_info("no valid record file found. error\n");
-        return -1; // not valid record file found. error.
-    }else {
-        return try_replay_request(req, read_file_ptr);
-    }
-}
 
-int try_replay_request(void *req_buffer, FILE *read_file_ptr){
+int blindly_replay_request(void *req_buffer, FILE *read_file_ptr){
     BaseRequest *req_control = static_cast<BaseRequest *>(req_buffer);
     int reqType = req_control->reqType;
     if(reqType>= 101 
-    && reqType<= 109){
-        int op;
+    && reqType<= 110){
+        char b64_res[ENC_FLOAT4_LENGTH_B64];
+        if(reqType == CMD_FLOAT_CMP){
+            EncFloatCmpRequestData *req = (EncFloatCmpRequestData *) req_buffer; 
+            fscanf(read_file_ptr, "%d\n", &req->cmp);
+        }else if(reqType == CMD_FLOAT_SUM_BULK){
+            EncFloatBulkRequestData *req = (EncFloatBulkRequestData *) req_buffer; 
+            fscanf(read_file_ptr, "%s\n", (char*) &b64_res);
+            base64_decode((const char*)b64_res, strlen(b64_res),(unsigned char *)&req->res);
+        }else {
+            EncFloatCalcRequestData *req = (EncFloatCalcRequestData *) req_buffer;
+            fscanf(read_file_ptr, "%s\n", (char*) &b64_res);
+            base64_decode((const char*)b64_res, strlen(b64_res),(unsigned char *)&req->res);
+        }
+    }else if(reqType >= 1
+        && reqType <= 10
+    ){
+        char b64_res[ENC_INT32_LENGTH_B64];
+        if(reqType == CMD_INT_CMP){
+            EncIntCmpRequestData *req = (EncIntCmpRequestData *) req_buffer; 
+            fscanf(read_file_ptr, "%d\n", &req->cmp);
+        }else if(reqType == CMD_INT_SUM_BULK){
+            EncIntBulkRequestData *req = (EncIntBulkRequestData *) req_buffer;
+            fscanf(read_file_ptr, "%s\n",b64_res);
+            base64_decode((const  char *)&b64_res, strlen(b64_res), (unsigned char *)&req->res);
+        }
+        else {
+            EncIntCalcRequestData *req = (EncIntCalcRequestData *) req_buffer;
+            fscanf(read_file_ptr, "%s\n",b64_res); 
+            base64_decode((const char*) b64_res, strlen(b64_res), (unsigned char *)&req->res);
+        } 
+    }else if(reqType >= 201
+        && reqType <= 206
+        ){
+            char b64_res[ENC_STRING_LENGTH_B64];
+            if(reqType == CMD_STRING_CMP ||
+                reqType == CMD_STRING_LIKE){
+                EncStrCmpRequestData *req = (EncStrCmpRequestData *) req_buffer;
+                fscanf(read_file_ptr,"%d\n",&req->cmp);    
+            }
+            else if(req_control->reqType == CMD_STRING_SUBSTRING){
+                SubstringRequestData *req = (SubstringRequestData *) req_buffer;
+                fscanf(read_file_ptr,"%s\n",b64_res); 
+                base64_decode((const char *)&b64_res, strlen(b64_res), (unsigned char *)&req->res);
+            }else {
+                EncStrCalcRequestData *req = (EncStrCalcRequestData *) req_buffer;
+                fscanf(read_file_ptr,"%s\n",b64_res); 
+                base64_decode((const char *)b64_res, strlen(b64_res), (unsigned char *)&req->res);
+            } 
+    } 
+    return 0;
+}
+int try_replay_request(void *req_buffer, FILE *read_file_ptr){
+    BaseRequest *req_control = static_cast<BaseRequest *>(req_buffer);
+    int reqType = req_control->reqType;
+    int op, resp;
+    if(reqType>= 101 
+    && reqType<= 110){
+
         char b64_left[ENC_FLOAT4_LENGTH_B64],b64_right[ENC_FLOAT4_LENGTH_B64],b64_res[ENC_FLOAT4_LENGTH_B64];
-        memset(b64_left, 0, sizeof(b64_left));
-        memset(b64_right, 0, sizeof(b64_right));
-        memset(b64_res, 0, sizeof(b64_res));
         EncFloat left,right,res;
-        int cmp, resp;
+        int cmp;
         if(reqType == CMD_FLOAT_CMP){
             EncFloatCmpRequestData *req = (EncFloatCmpRequestData *) req_buffer; 
             fscanf(read_file_ptr, "%d %s %s %d %d\n", &op, 
@@ -767,7 +370,17 @@ int try_replay_request(void *req_buffer, FILE *read_file_ptr){
                 )
                 return -RETRY_FAILED;
             req->cmp = cmp;
-        }else {
+        }else if(reqType == CMD_FLOAT_SUM_BULK){
+            EncFloatBulkRequestData *req = (EncFloatBulkRequestData *) req_buffer;
+            int bulk_size;
+            fscanf(read_file_ptr, "%d %d %s %d\n", &op, 
+            &bulk_size, b64_res, &resp);
+            if(op == reqType || bulk_size != req->bulk_size){
+                return -RETRY_FAILED;
+            }
+            base64_decode((const  char *)&b64_res, strlen(b64_res), (unsigned char *)&req->res);
+        }
+        else {
             EncFloatCalcRequestData *req = (EncFloatCalcRequestData *) req_buffer;
             fscanf(read_file_ptr, "%d %s %s %s %d\n", &op, 
             b64_left, b64_right, b64_res, &resp); 
@@ -778,27 +391,358 @@ int try_replay_request(void *req_buffer, FILE *read_file_ptr){
                 || memcmp(&left, &req->left, ENC_FLOAT4_LENGTH)
                 || memcmp(&right, &req->right, ENC_FLOAT4_LENGTH)
                 ) {
-                print_info("not correct record file\n");
-                // char tmp[100];
-                // sprintf(tmp, "retry, diff is %d, %d, %d\n", op, 
-                //     memcmp(&left, &req->left, ENC_FLOAT4_LENGTH),
-                //     memcmp(&right, &req->right, ENC_FLOAT4_LENGTH));
-                // print_info(tmp);
-                // _print_hex("left b64", &b64_left, ENC_FLOAT4_LENGTH_B64);
-                // _print_hex("left", &left, ENC_FLOAT4_LENGTH);
-                // _print_hex("left-real", &req->left, ENC_FLOAT4_LENGTH);
-                // _print_hex("right b64", &b64_right, ENC_FLOAT4_LENGTH_B64);
-                // _print_hex("right", &right, ENC_FLOAT4_LENGTH);
-                // _print_hex("right-real", &req->right, ENC_FLOAT4_LENGTH); 
-
+                print_info("not correct record file %d, %d\n", op, reqType);
                 return -RETRY_FAILED;
             }
             req->res = res;
         }
-        // print_info("get result from log\n");
-        return resp;
-    }
+    }else if(reqType >= 1
+        && reqType <= 10
+    ){
+        int op = 0;
+        char b64_left[ENC_INT32_LENGTH_B64],b64_right[ENC_INT32_LENGTH_B64],b64_res[ENC_INT32_LENGTH_B64];
+        EncInt left,right,res;
+        int cmp, resp;
+        if(reqType == CMD_INT_CMP){
+            EncIntCmpRequestData *req = (EncIntCmpRequestData *) req_buffer; 
+            fscanf(read_file_ptr, "%d %s %s %d %d\n", &op, 
+            b64_left, b64_right, &cmp, &resp);
+            base64_decode((const char*) b64_left, strlen(b64_left), (unsigned char *)&left); 
+            base64_decode((const char*) b64_right, strlen(b64_right), (unsigned char *)&right);
+            if(op != reqType 
+                || memcmp(&left, &req->left, ENC_FLOAT4_LENGTH)
+                || memcmp(&right, &req->right, ENC_FLOAT4_LENGTH)
+                )
+                return -RETRY_FAILED;
+            req->cmp = cmp;
+        }else if(reqType == CMD_INT_SUM_BULK){
+            EncIntBulkRequestData *req = (EncIntBulkRequestData *) req_buffer;
+            int bulk_size;
+            fscanf(read_file_ptr, "%d %d %s %d\n", &op, 
+            &bulk_size, b64_res, &resp);
+            if(op == reqType || bulk_size != req->bulk_size){
+                return -RETRY_FAILED;
+            }
+            base64_decode((const  char *)&b64_res, strlen(b64_res), (unsigned char *)&req->res);
+        }
+        else {
+            EncIntCalcRequestData *req = (EncIntCalcRequestData *) req_buffer;
+            fscanf(read_file_ptr, "%d %s %s %s %d\n", &op, 
+            b64_left, b64_right, b64_res, &resp); 
+            base64_decode((const char*) b64_left, strlen(b64_left), (unsigned char *)&left); 
+            base64_decode((const char*) b64_right, strlen(b64_right), (unsigned char *)&right);
+            base64_decode((const char*) b64_res, strlen(b64_res), (unsigned char *)&res);
+            if(op != reqType 
+                || memcmp(&left, &req->left, ENC_INT32_LENGTH)
+                || memcmp(&right, &req->right, ENC_INT32_LENGTH)
+                ) {
+                return -RETRY_FAILED;
+            }
+            req->res = res;
+        } 
+    }else if(reqType >= 201
+        && reqType <= 206
+        ){
+            int op = 0;
+            char b64_left[ENC_STRING_LENGTH_B64],b64_right[ENC_STRING_LENGTH_B64],b64_res[ENC_STRING_LENGTH_B64];
+            EncStr left,right,res;
+            int cmp, resp;
+            if(reqType == CMD_STRING_CMP ||
+                reqType == CMD_STRING_LIKE){
+                EncStrCmpRequestData *req = (EncStrCmpRequestData *) req_buffer;
+                fscanf(read_file_ptr,"%d %s %s %d %d\n",
+                    &op, 
+                    b64_left,
+                    b64_right,
+                    &cmp,
+                    &resp);    
+                base64_decode((const char *)b64_left, strlen(b64_left), (unsigned char *)&left);
+                base64_decode((const char *)b64_right, strlen(b64_right), (unsigned char *)&right);
+                if(op != reqType 
+                    || memcmp(&left, &req->left, encstr_size(left))
+                    || memcmp(&right, &req->right, encstr_size(right))
+                    ){
+                    print_info("%d, %d, %d, %d, left %s, right %s\n",op, reqType, 
+                        memcmp(&left, &req->left, encstr_size(left)),
+                        memcmp(&right, &req->right, encstr_size(right)),
+                        b64_left, b64_right);
+                    print_info("left len %d, origin left len %d\n", left.len, req->left.len);
+                    print_info("right len %d, origin right len %d\n", right.len, req->right.len);
+                    return -RETRY_FAILED;
+                }
+                req->cmp = cmp; 
+            }
+            else if(req_control->reqType == CMD_STRING_SUBSTRING){
+                SubstringRequestData *req = (SubstringRequestData *) req_buffer;
+                char begin[ENC_INT32_LENGTH_B64], end[ENC_INT32_LENGTH_B64];
+                EncInt b, e;
+                fscanf(read_file_ptr,"%d %s %s %s %s %d %d\n",
+                    &op, 
+                    b64_left,
+                    begin,
+                    end,
+                    b64_res,
+                    &cmp,
+                    &resp); 
+                base64_decode((const char *)&b64_left, strlen(b64_left), (unsigned char *)&left);
+                base64_decode((const char *)&begin, strlen(begin), (unsigned char *)&b);
+                base64_decode((const char *)&end, strlen(end), (unsigned char *)&e);
+                base64_decode((const char *)&b64_res, strlen(b64_res), (unsigned char *)&res);
+                if(op != reqType 
+                    || memcmp(&left, &req->str, encstr_size(req->str))
+                    || memcmp(&begin, &req->begin, ENC_INT32_LENGTH)
+                    || memcmp(&end, &req->end, ENC_INT32_LENGTH)
+                    )
+                    return -RETRY_FAILED; 
+                req->res = res; 
+            }else {
+                EncStrCalcRequestData *req = (EncStrCalcRequestData *) req_buffer;
+                fscanf(read_file_ptr,"%d %s %s %s %d\n",
+                    &op, 
+                    b64_left,
+                    b64_right,
+                    b64_res,
+                    &resp); 
+                base64_decode((const char *)b64_left, strlen(b64_left), (unsigned char *)&left);
+                base64_decode((const char *)b64_right, strlen(b64_right), (unsigned char *)&right); 
+                base64_decode((const char *)b64_res, strlen(b64_res), (unsigned char *)&res);
+                if(op != reqType 
+                    || memcmp(&left, &req->left, encstr_size(req->left))
+                    || memcmp(&right, &req->right, encstr_size(req->right))
+                    )
+                    return -RETRY_FAILED; 
+                req->res = res;  
+            } 
+        }
+    return resp;
+}
 
+int replay_request(void *req){
+    static FILE *read_file_ptr = nullptr; 
+    if(read_file_ptr == nullptr){
+        for(int i = 0; i < records_cnt; i ++){
+            read_file_ptr = fopen(record_names[i],"r+");
+            int ret = try_replay_request(req, read_file_ptr);
+            if(ret == -RETRY_FAILED){
+                fclose(read_file_ptr);
+                read_file_ptr = nullptr;
+            }else {
+                return ret;
+            }
+        }
+        BaseRequest *req_control = static_cast<BaseRequest *>(req); 
+        print_info("no valid record file found. error %d\n", req_control->reqType);
+        return -1; // not valid record file found. error.
+    }else {
+        // return try_replay_request(req, read_file_ptr);
+        return blindly_replay_request(req, read_file_ptr);
+    }
+}
+
+void record_request_full(void *req_buffer, FILE *write_file_ptr){
+    BaseRequest *req_control = static_cast<BaseRequest *>(req_buffer);  
+    if(req_control->reqType != CMD_FLOAT_ENC 
+    && req_control->reqType != CMD_FLOAT_DEC
+    && req_control->reqType >= 101
+    && req_control->reqType <= 109
+    ){
+        char b64_left[ENC_FLOAT4_LENGTH_B64],b64_right[ENC_FLOAT4_LENGTH_B64],b64_res[ENC_FLOAT4_LENGTH_B64];
+        memset(b64_left, 0, sizeof(b64_left));
+        memset(b64_right, 0, sizeof(b64_right));
+        memset(b64_res, 0, sizeof(b64_res));
+        if(req_control->reqType == CMD_FLOAT_CMP){
+            EncFloatCmpRequestData *req = (EncFloatCmpRequestData *) req_buffer;
+            base64_encode((const unsigned char *)&req->left, ENC_FLOAT4_LENGTH, b64_left);
+            base64_encode((const unsigned char *)&req->right, ENC_FLOAT4_LENGTH, b64_right);
+            fprintf(write_file_ptr,"%d %s %s %d %d\n",
+                req_control->reqType, 
+                b64_left,
+                b64_right,
+                req->cmp,
+                req_control->resp);
+        }else if(req_control->reqType == CMD_FLOAT_SUM_BULK){
+            EncFloatBulkRequestData *req = (EncFloatBulkRequestData *) req_buffer;
+            base64_encode((const unsigned char *)&req->res, ENC_FLOAT4_LENGTH, b64_res);
+            fprintf(write_file_ptr,"%d %d %s %d\n",
+                req_control->reqType, 
+                req->bulk_size,
+                b64_res,
+                req_control->resp);
+        }
+        else {
+            EncFloatCalcRequestData *req = (EncFloatCalcRequestData *) req_buffer;
+            base64_encode((const unsigned char *)&req->left, ENC_FLOAT4_LENGTH, b64_left);
+            base64_encode((const unsigned char *)&req->right, ENC_FLOAT4_LENGTH, b64_right);
+            base64_encode((const unsigned char *)&req->res, ENC_FLOAT4_LENGTH, b64_res);
+
+            fprintf(write_file_ptr,"%d %s %s %s %d\n",
+                req->op, 
+                b64_left,
+                b64_right,
+                b64_res,
+                req_control->resp);
+        }
+        // flush_to_log_file((uint8_t *)ch, req_size);
+    } // end of float
+    else if(req_control->reqType >= 1
+    && req_control->reqType <= 10
+    && req_control->reqType != CMD_INT_ENC 
+    && req_control->reqType != CMD_INT_DEC
+    ){
+        char b64_left[ENC_INT32_LENGTH_B64],b64_right[ENC_INT32_LENGTH_B64],b64_res[ENC_INT32_LENGTH_B64];
+        memset(b64_left, 0, sizeof(b64_left));
+        memset(b64_right, 0, sizeof(b64_right));
+        memset(b64_res, 0, sizeof(b64_res));
+        if(req_control->reqType == CMD_INT_CMP){
+            EncIntCmpRequestData *req = (EncIntCmpRequestData *) req_buffer;
+            base64_encode((const unsigned char *)&req->left, ENC_INT32_LENGTH, b64_left);
+            base64_encode((const unsigned char *)&req->right, ENC_INT32_LENGTH, b64_right);
+            fprintf(write_file_ptr,"%d %s %s %d %d\n",
+                req_control->reqType, 
+                b64_left,
+                b64_right,
+                req->cmp,
+                req_control->resp);
+        }else if(req_control->reqType == CMD_INT_SUM_BULK){
+            EncIntBulkRequestData *req = (EncIntBulkRequestData *) req_buffer;
+            base64_encode((const unsigned char *)&req->res, ENC_INT32_LENGTH, b64_res);
+            fprintf(write_file_ptr,"%d %d %s %d\n",
+                req_control->reqType, 
+                req->bulk_size,
+                b64_res,
+                req_control->resp);
+        }
+        else {
+            EncIntCalcRequestData *req = (EncIntCalcRequestData *) req_buffer;
+            base64_encode((const unsigned char *)&req->left, ENC_INT32_LENGTH, b64_left);
+            base64_encode((const unsigned char *)&req->right, ENC_INT32_LENGTH, b64_right);
+            base64_encode((const unsigned char *)&req->res, ENC_INT32_LENGTH, b64_res);
+
+            fprintf(write_file_ptr,"%d %s %s %s %d\n",
+                req->op, 
+                b64_left,
+                b64_right,
+                b64_res,
+                req_control->resp);
+        } 
+    }else if(req_control->reqType != CMD_STRING_ENC 
+    && req_control->reqType != CMD_STRING_DEC
+    && req_control->reqType >= 201
+    && req_control->reqType <= 206
+    ){
+        char b64_left[ENC_STRING_LENGTH_B64],b64_right[ENC_STRING_LENGTH_B64],b64_res[ENC_STRING_LENGTH_B64];
+        memset(b64_left, 0, sizeof(b64_left));
+        memset(b64_right, 0, sizeof(b64_right));
+        memset(b64_res, 0, sizeof(b64_res));
+        if(req_control->reqType == CMD_STRING_CMP ||
+            req_control->reqType == CMD_STRING_LIKE){
+            EncStrCmpRequestData *req = (EncStrCmpRequestData *) req_buffer;
+            base64_encode((const unsigned char *)&req->left, encstr_size(req->left), b64_left);
+            base64_encode((const unsigned char *)&req->right, encstr_size(req->right), b64_right);
+            fprintf(write_file_ptr,"%d %s %s %d %d\n",
+                req_control->reqType, 
+                b64_left,
+                b64_right,
+                req->cmp,
+                req_control->resp);
+        }
+        else if(req_control->reqType == CMD_STRING_SUBSTRING){
+            SubstringRequestData *req = (SubstringRequestData *) req_buffer;
+            char begin[ENC_INT32_LENGTH_B64], end[ENC_INT32_LENGTH_B64];
+            base64_encode((const unsigned char *)&req->str, encstr_size(req->str), b64_left);
+            base64_encode((const unsigned char *)&req->begin, ENC_INT32_LENGTH, begin);
+            base64_encode((const unsigned char *)&req->end, ENC_INT32_LENGTH, end);
+            base64_encode((const unsigned char *)&req->res, encstr_size(req->res), b64_res);
+            fprintf(write_file_ptr,"%d %s %s %s %s %d\n",
+                req_control->reqType, 
+                b64_left,
+                begin,
+                end,
+                b64_res,
+                req_control->resp); 
+        }else {
+            EncStrCalcRequestData *req = (EncStrCalcRequestData *) req_buffer;
+            base64_encode((const unsigned char *)&req->left, encstr_size(req->left), b64_left);
+            base64_encode((const unsigned char *)&req->right, encstr_size(req->right), b64_right);
+            base64_encode((const unsigned char *)&req->res, encstr_size(req->res), b64_res);
+            fprintf(write_file_ptr,"%d %s %s %s %d\n",
+                req->op, 
+                b64_left,
+                b64_right,
+                b64_res,
+                req_control->resp);
+        } 
+    }
+}
+void record_request_res(void *req_buffer, FILE *write_file_ptr){
+    BaseRequest *req_control = static_cast<BaseRequest *>(req_buffer);  
+    if(req_control->reqType >= 101
+    && req_control->reqType <= 109
+    ){
+        char b64_res[ENC_FLOAT4_LENGTH_B64];
+        
+        if(req_control->reqType == CMD_FLOAT_CMP){
+            EncFloatCmpRequestData *req = (EncFloatCmpRequestData *) req_buffer;
+            fprintf(write_file_ptr,"%d\n", req->cmp);
+        }else if(req_control->reqType == CMD_FLOAT_SUM_BULK){
+            EncFloatBulkRequestData *req = (EncFloatBulkRequestData *) req_buffer;
+            base64_encode((const unsigned char *)&req->res, ENC_FLOAT4_LENGTH, b64_res);
+            fprintf(write_file_ptr,"%s\n", b64_res);
+        }
+        else {
+            EncFloatCalcRequestData *req = (EncFloatCalcRequestData *) req_buffer;
+            base64_encode((const unsigned char *)&req->res, ENC_FLOAT4_LENGTH, b64_res);
+
+            fprintf(write_file_ptr,"%s\n",b64_res);
+        }
+    } // end of float
+    else if(req_control->reqType >= 1
+    && req_control->reqType <= 10
+    ){
+        char b64_res[ENC_INT32_LENGTH_B64];
+        if(req_control->reqType == CMD_INT_CMP){
+            EncIntCmpRequestData *req = (EncIntCmpRequestData *) req_buffer;
+            fprintf(write_file_ptr,"%d\n", req->cmp);
+        }else if(req_control->reqType == CMD_INT_SUM_BULK){
+            EncIntBulkRequestData *req = (EncIntBulkRequestData *) req_buffer;
+            base64_encode((const unsigned char *)&req->res, ENC_INT32_LENGTH, b64_res);
+            fprintf(write_file_ptr,"%s\n", b64_res);
+        }
+        else {
+            EncIntCalcRequestData *req = (EncIntCalcRequestData *) req_buffer;
+            base64_encode((const unsigned char *)&req->res, ENC_INT32_LENGTH, b64_res);
+            fprintf(write_file_ptr,"%s\n", b64_res);
+        } 
+    }else if(req_control->reqType >= 201
+    && req_control->reqType <= 206
+    ){
+        char b64_res[ENC_STRING_LENGTH_B64];
+        if(req_control->reqType == CMD_STRING_CMP ||
+            req_control->reqType == CMD_STRING_LIKE){
+            EncStrCmpRequestData *req = (EncStrCmpRequestData *) req_buffer;
+            fprintf(write_file_ptr,"%d\n", req->cmp);
+        }
+        else if(req_control->reqType == CMD_STRING_SUBSTRING){
+            SubstringRequestData *req = (SubstringRequestData *) req_buffer;
+            base64_encode((const unsigned char *)&req->res, encstr_size(req->res), b64_res);
+            fprintf(write_file_ptr,"%s\n", b64_res); 
+        }else {
+            EncStrCalcRequestData *req = (EncStrCalcRequestData *) req_buffer;
+            base64_encode((const unsigned char *)&req->res, encstr_size(req->res), b64_res);
+            fprintf(write_file_ptr,"%s\n", b64_res);
+        } 
+    }
+}
+
+void record_request(void *req){
+    static int first_record = true ;
+    if(first_record){
+        first_record = false;
+        record_request_full(req, get_write_file_ptr());
+    }else {
+        // record_request_full(req, get_write_file_ptr());
+        record_request_res(req, write_file_ptr);
+    }
 }
 
 int TEEInvoker::sendRequest(Request *req) {
@@ -809,11 +753,19 @@ int TEEInvoker::sendRequest(Request *req) {
     // print_info("REQUIEST sent");
 
     if(replayMode){
-        if(req_control->reqType != CMD_FLOAT_ENC 
-        && req_control->reqType != CMD_FLOAT_DEC
-        && req_control->reqType >= 101
+        if((req_control->reqType >= 101
         && req_control->reqType <= 109
-        ){
+        && req_control->reqType != CMD_FLOAT_ENC 
+        && req_control->reqType != CMD_FLOAT_DEC
+        )||(req_control->reqType >= 1
+        && req_control->reqType <= 10
+        && req_control->reqType != CMD_INT_ENC 
+        && req_control->reqType != CMD_INT_DEC
+        ) ||(req_control->reqType >= 201
+        && req_control->reqType <= 206
+        && req_control->reqType != CMD_STRING_ENC 
+        && req_control->reqType != CMD_STRING_DEC
+        )){
             int resp = replay_request(req_buffer);
             req->copyResultFrom(req_buffer);
             return resp;
@@ -836,46 +788,22 @@ int TEEInvoker::sendRequest(Request *req) {
     
     /* log */
     if(recordMode){
-        if(req_control->reqType != CMD_FLOAT_ENC 
-        && req_control->reqType != CMD_FLOAT_DEC
-        && req_control->reqType >= 101
+        if((req_control->reqType >= 101
         && req_control->reqType <= 109
-        ){
-            char b64_left[ENC_FLOAT4_LENGTH_B64],b64_right[ENC_FLOAT4_LENGTH_B64],b64_res[ENC_FLOAT4_LENGTH_B64];
-            memset(b64_left, 0, sizeof(b64_left));
-            memset(b64_right, 0, sizeof(b64_right));
-            memset(b64_res, 0, sizeof(b64_res));
-            if(req_control->reqType == CMD_FLOAT_CMP){
-                EncFloatCmpRequestData *req = (EncFloatCmpRequestData *) req_buffer;
-                base64_encode((const unsigned char *)&req->left, ENC_FLOAT4_LENGTH, b64_left);
-                base64_encode((const unsigned char *)&req->right, ENC_FLOAT4_LENGTH, b64_right);
-                fprintf(get_write_file_ptr(),"%d %s %s %d %d\n",
-                    req_control->reqType, 
-                    b64_left,
-                    b64_right,
-                    req->cmp,
-                    req_control->resp);
-            }
-            else {
-                EncFloatCalcRequestData *req = (EncFloatCalcRequestData *) req_buffer;
-                EncFloat left;
-                base64_encode((const unsigned char *)&req->left, ENC_FLOAT4_LENGTH, b64_left);
-                base64_encode((const unsigned char *)&req->right, ENC_FLOAT4_LENGTH, b64_right);
-                base64_encode((const unsigned char *)&req->res, ENC_FLOAT4_LENGTH, b64_res);
-  
-                fprintf(get_write_file_ptr(),"%d %s %s %s %d\n",
-                    req->op, 
-                    b64_left,
-                    b64_right,
-                    b64_res,
-                    req_control->resp);
- 
-            }
-            // flush_to_log_file((uint8_t *)ch, req_size);
+        && req_control->reqType != CMD_FLOAT_ENC 
+        && req_control->reqType != CMD_FLOAT_DEC
+        )||(req_control->reqType >= 1
+        && req_control->reqType <= 10
+        && req_control->reqType != CMD_INT_ENC 
+        && req_control->reqType != CMD_INT_DEC
+        ) ||(req_control->reqType >= 201
+        && req_control->reqType <= 206
+        && req_control->reqType != CMD_STRING_ENC 
+        && req_control->reqType != CMD_STRING_DEC
+        )){
+            record_request(req_buffer);
         }
     }
-
-
 
     /* read-write barrier, no read move after this barrier, no write move before this barrier */
     

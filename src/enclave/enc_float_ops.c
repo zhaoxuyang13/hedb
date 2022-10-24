@@ -19,7 +19,6 @@ int enc_float32_cmp(EncFloatCmpRequestData *req)
 {
     float left,right ;
     int resp = 0;
-    bool found1 = false;
 
     resp = decrypt_bytes_para((uint8_t *) &req->left, sizeof(req->left),(uint8_t*) &left, sizeof(float));
 
@@ -59,12 +58,8 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
 
     left = float_map_find(f_map_p, &req->left, &found);
     if (!found) {
-        #ifdef ENABLE_PARA
             resp = decrypt_bytes_para((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
             para_issued = true;
-        #else
-            resp = decrypt_bytes((uint8_t *) &req->left, sizeof(req->left), (uint8_t*) &left, sizeof(left));
-         #endif
     }  
     if (resp != 0)
         return resp;
@@ -121,30 +116,49 @@ int enc_float32_bulk(EncFloatBulkRequestData *req)
 {
     int bulk_size = req->bulk_size;
     EncFloat *array = req->items;
-    float res = 0,tmp = 0;
+    double res = 0;
+    // float tmp = 0;
+    float values[bulk_size];
     int count = 0, resp = 0;
-    bool found = false;
+    bool found = false, parallel_issued = false;
     while (count < bulk_size)
     {
-        tmp = float_map_find(f_map_p, &array[count], &found);
+        values[count] = float_map_find(f_map_p, &array[count], &found);
         if (!found) {
-            resp = decrypt_bytes((uint8_t *) &array[count], sizeof(EncFloat), (uint8_t*) &tmp, sizeof(float));    
+            resp = decrypt_bytes_para((uint8_t *) &array[count], sizeof(EncFloat), (uint8_t*) &values[count], sizeof(float)); 
+            parallel_issued = true;   
             if (resp != 0)
                 return resp;
         }
 
-        switch (req->common.reqType)
-        {
-        case CMD_FLOAT_SUM_BULK:
-            res += tmp; 
-            break;
-        default:
-            break;
-        }
+        // switch (req->common.reqType)
+        // {
+        // case CMD_FLOAT_SUM_BULK:
+        //     res += tmp; 
+        //     break;
+        // default:
+        //     break;
+        // }
         count ++;
     }
 
-    resp = encrypt_bytes((uint8_t*) &res, sizeof(float),(uint8_t*) &req->res, sizeof(req->res));
+    if (parallel_issued) {
+        decrypt_wait(NULL, 0);
+    }
+
+    switch (req->common.reqType)
+    {
+    case CMD_FLOAT_SUM_BULK:
+        for (int i = 0; i < bulk_size; i++) {
+            res += values[i];
+        }
+        break;
+    default:
+        break;
+    }
+
+    float res1 = res;
+    resp = encrypt_bytes((uint8_t*) &res1, sizeof(float),(uint8_t*) &req->res, sizeof(req->res));
     return resp;
 }
 
@@ -220,12 +234,13 @@ int enc_float32_eval_expr(EncFloatEvalExprRequestData *req)
     EncFloat *enc_arr = req->items;
     float res = 0;
     float arr[EXPR_MAX_SIZE];
-    bool found = false;
+    bool found = false, parallel_issued = false;
     // printf("Received expr: %s", expr.data);
-    for (i = 0; i < arg_cnt; ++i) {
+    for (i = 0; i < arg_cnt - 1; ++i) {
         arr[i] = float_map_find(f_map_p, &enc_arr[i], &found);
         if (!found) {
-            resp = decrypt_bytes((uint8_t *) &enc_arr[i], sizeof(EncFloat), (uint8_t*) &arr[i], sizeof(float));    
+            resp = decrypt_bytes_para((uint8_t *) &enc_arr[i], sizeof(EncFloat), (uint8_t*) &arr[i], sizeof(float)); 
+            parallel_issued = true;  
             if (resp != 0) {
                 return resp;
             }
@@ -233,6 +248,19 @@ int enc_float32_eval_expr(EncFloatEvalExprRequestData *req)
 
         // printf("Received arg: %f", arr[i]);
     }
+
+    arr[i] = float_map_find(f_map_p, &enc_arr[i], &found);
+    if (!found) {
+        resp = decrypt_bytes((uint8_t *) &enc_arr[i], sizeof(EncFloat), (uint8_t*) &arr[i], sizeof(float));    
+        if (resp != 0) {
+            return resp;
+        }
+    }
+
+    if (parallel_issued) {
+        decrypt_wait(NULL, 0);
+    }
+
     res = eval_expr(expr.data, arr);
     resp = encrypt_bytes((uint8_t*) &res, sizeof(float), (uint8_t*) &req->res, sizeof(req->res));
     return resp;
