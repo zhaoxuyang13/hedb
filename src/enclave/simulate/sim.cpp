@@ -24,21 +24,38 @@
 #endif
 
 
-uint8_t *decrypt_dst, *decrypt_src;
-size_t decrypt_src_len, decrypt_dst_len;
-volatile int decrypt_status = DONE;
+// uint8_t *decrypt_dst, *decrypt_src;
+// size_t decrypt_src_len, decrypt_dst_len;
+// volatile int decrypt_status = DONE;
+
+struct Decrypt_args {
+	bool inited;
+	int index;
+	volatile int decrypt_status;
+	uint8_t *decrypt_dst;
+	uint8_t *decrypt_src;
+	size_t decrypt_src_len;
+	size_t decrypt_dst_len;
+};
+
+#define MAX_DECRYPT_THREAD 16
+static struct Decrypt_args args_array[MAX_DECRYPT_THREAD];
 
 uint8_t decrypt_buffer[sizeof(EncCStr) * 2];
 uint8_t plain_buffer[2048];
 void *decrypt_thread(void * arg){
+	int index = *(int *)arg;
+	printf("decrypt_thread: %d\n", index);
+
 	while (1)
 	{
-		if(decrypt_status == SENT){
+		if(args_array[index].decrypt_status == SENT){
 			LOAD_BARRIER;
-			int resp = decrypt_bytes(decrypt_src, decrypt_src_len, decrypt_dst, decrypt_dst_len);
+			decrypt_bytes(args_array[index].decrypt_src, args_array[index].decrypt_src_len,
+									 args_array[index].decrypt_dst, args_array[index].decrypt_dst_len);
 			STORE_BARRIER;
-			decrypt_status = DONE;
-		}else if(decrypt_status == EXIT){
+			args_array[index].decrypt_status = DONE;
+		}else if(args_array[index].decrypt_status == EXIT){
 			break;
 		}else {
 			;
@@ -47,40 +64,87 @@ void *decrypt_thread(void * arg){
 	return 0;
 }
 
+static unsigned long decrypt_para_counter = 0;
 int decrypt_bytes_para(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_len)
-{	
-	assert(decrypt_status == DONE);
+{
+#ifdef ENABLE_PARA
+	decrypt_para_counter++;
 
-	static int inited = false;
-	if(!inited){
-		pid_t pid;
-		pthread_t thread;
-		pthread_create(&thread, nullptr, decrypt_thread, nullptr);
-		inited = true;
+	int i;
+find_thread:
+	for (i = 0; i < MAX_DECRYPT_THREAD; i++) {
+		if (args_array[i].inited && args_array[i].decrypt_status == DONE) {
+			LOAD_BARRIER;
+			break;
+		} else if (!args_array[i].inited) {
+			pthread_t thread;
+			pthread_create(&thread, nullptr, decrypt_thread, &(args_array[i].index));
+			args_array[i].inited = true;
+			break;
+		} else {
+			;
+		}
 	}
-	// memcpy(decrypt_buffer, pSrc, src_len);
-	decrypt_src = pSrc;
-	decrypt_src_len = src_len;
-	decrypt_dst = pDst;
-	decrypt_dst_len = exp_dst_len;
+
+	if (i == MAX_DECRYPT_THREAD) {
+		printf("try another round\n");
+		goto find_thread;
+	}
+
+	args_array[i].decrypt_src = pSrc;
+	args_array[i].decrypt_src_len = src_len;
+	args_array[i].decrypt_dst = pDst;
+	args_array[i].decrypt_dst_len = exp_dst_len;
 	STORE_BARRIER;
-	decrypt_status = SENT;
+	args_array[i].decrypt_status = SENT;
+
+	// static int inited = false;
+	// if(!inited){
+	// 	pid_t pid;
+	// 	pthread_t thread;
+	// 	pthread_create(&thread, nullptr, decrypt_thread, nullptr);
+	// 	inited = true;
+	// }
+	// decrypt_src = pSrc;
+	// decrypt_src_len = src_len;
+	// decrypt_dst = pDst;
+	// decrypt_dst_len = exp_dst_len;
+	// STORE_BARRIER;
+	// decrypt_status = SENT;
+#else
+	decrypt_bytes(pSrc, src_len, pDst, exp_dst_len);
+#endif
 	return 0;
 }
 
 void decrypt_wait(uint8_t *pDst, size_t exp_dst_len){
-	while (decrypt_status != DONE)
-	{
+#ifdef ENABLE_PARA
+	// while (decrypt_status != DONE)
+	// {
+	// 	YIELD_PROCESSOR;
+	// }
+	bool done = false;
+	while (!done) {
+		done = true;
+		for (int i = 0; i < MAX_DECRYPT_THREAD; i++) {
+			if (args_array[i].inited && args_array[i].decrypt_status != DONE) {
+				done = false;
+				break;
+			}
+		}
 		YIELD_PROCESSOR;
 	}
 	LOAD_BARRIER;
+#endif
 	// memcpy(pDst, plain_buffer, exp_dst_len);
 }
 
 
+static unsigned long decrypt_counter = 0;
 int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_len)
 {	
 	// _print_hex("dec ", pSrc, src_len);
+	decrypt_counter++;
 
 	size_t dst_len = 0;
 	int resp = 0;
@@ -137,9 +201,10 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
     * SGX_error, if there was an error during encryption/decryption
     0, otherwise
 */
+static unsigned long encrypt_counter = 0;
 int encrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_len)
 {
-
+	encrypt_counter++;
 	size_t dst_len = exp_dst_len;
 	int resp = 0;
 
@@ -220,13 +285,26 @@ pid_t fork_ops_process(void *shm_addr){
 	// child
 	// after fork, child inherit all attached shared memory (man shmat)
 	printf("waiting on shm_addr %p\n", shm_addr);
+	
+	for (int i = 0; i < MAX_DECRYPT_THREAD; i++) {
+		args_array[i].index = i;
+		args_array[i].inited = false;
+		args_array[i].decrypt_status = NONE;
+	}
+
 	int counter = 0;
 	BaseRequest *req = (BaseRequest *)shm_addr;
 	while(1){
 		if (req->status == EXIT)
 		{
-			decrypt_status = EXIT;
-			printf("SIM-TA Exit %d\n", counter);
+			// decrypt_status = EXIT;
+			for (int i = 0; i < MAX_DECRYPT_THREAD; i++) {
+				if (args_array[i].inited) {
+					args_array[i].decrypt_status = EXIT;
+				}
+			}
+
+			printf("SIM-TA Exit %d, decrypt counter: %lu, dec parallel counter: %lu encrypt counter: %lu\n", counter, decrypt_counter, decrypt_para_counter, encrypt_counter);
 			exit(0);
 		}
 		else if(req->status == SENT)
@@ -261,8 +339,11 @@ int main(int argc,char *argv[]){
 
 	int data_size = SHM_SIZE;
 	pid_t child_pids[20] = {};
-
+#ifdef ENABLE_LOCAL_SIM
+	OpsServer *req = (OpsServer *) get_shmem_posix(data_size);
+#else 
 	OpsServer *req = (OpsServer *) get_shmem_ivshm(data_size);
+#endif
 	memset(req, 0, sizeof(OpsServer));
 	while (1)
 	{

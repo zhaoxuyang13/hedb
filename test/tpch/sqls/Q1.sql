@@ -1,4 +1,5 @@
 select enable_debug_mode(1);
+set max_parallel_workers=1;
 \timing
 select
     l_returnflag,
