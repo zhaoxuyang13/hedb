@@ -1,8 +1,13 @@
 #pragma once
 
-#include <cstdio>
-
-
-// void print_info(const char *fmt,... );
-
-
+#ifdef ENABLE_TEST_OPS
+#define print_info(...) \
+            printf(__VA_ARGS__)
+#define print_error(...) \
+            printf(__VA_ARGS__)
+#else
+#define print_info(...) \
+            ereport(INFO, (errmsg(__VA_ARGS__)))
+#define print_error(...) \
+            ereport(ERROR, (errmsg(__VA_ARGS__)))
+#endif

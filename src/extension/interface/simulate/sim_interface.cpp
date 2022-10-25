@@ -1,19 +1,19 @@
 // #include <thread>
-#include <extension_helper.hpp>
 #include <unistd.h>
 #include <defs.h>
 #include <sys/shm.h>
 #include <cstring>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sim_interface.hpp>
-#include <sys/types.h>
-#include "request_types.h"
-#include "ops_server.h"
 #include <cassert>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <errno.h>
+#include <sim_interface.hpp>
+#include <extension_helper.hpp>
+#include <sys/types.h>
+#include "request_types.h"
+#include "ops_server.h"
 /* --------------------------------------------- */
 /* this load barrier is only for arm */
 #ifdef __aarch64__
@@ -23,6 +23,9 @@
 	#define LOAD_BARRIER ;
 	#define STORE_BARRIER ;
 #endif
+
+
+
 
 
 void forkOpsProcess(){
@@ -54,9 +57,7 @@ static void *get_shmem_posix(size_t size){
 	int key = 666;
     posix_shmid = shmget(key, size, 0666 | IPC_CREAT);
     if (posix_shmid == -1){
-        char ch[100];
-        sprintf(ch, "shmget failed %d errno\n", errno);
-        print_info(ch);
+        print_info("shmget failed %d errno\n", errno);
         exit(EXIT_FAILURE);
     }
     // 2. attach shared memory

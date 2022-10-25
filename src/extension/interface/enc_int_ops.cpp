@@ -5,17 +5,17 @@
 
 int enc_int_sum_bulk(size_t bulk_size, EncInt* arg1, EncInt* res)
 {
-    auto *req = new BulkRequest<EncInt>(CMD_INT_SUM_BULK, bulk_size, arg1, res);
+    auto req = BulkRequest<EncInt>(CMD_INT_SUM_BULK, bulk_size, arg1, res);
     TEEInvoker *invoker = TEEInvoker::getInstance();
-    int resp = invoker->sendRequest(req);
+    int resp = invoker->sendRequest(&req);
     return resp;
 }
 
 int enc_int_ops(int cmd, EncInt* left, EncInt* right, EncInt* res)
 {
-    auto *req = new CalcRequest<EncInt>(cmd, left, right, res);
+    auto req = CalcRequest<EncInt>(cmd, left, right, res);
     TEEInvoker *invoker = TEEInvoker::getInstance();
-    int resp = invoker->sendRequest(req);
+    int resp = invoker->sendRequest(&req);
     return resp;
 }
 
@@ -56,24 +56,24 @@ int enc_int_mod(EncInt* left, EncInt* right, EncInt* res)
 
 int enc_int_cmp(EncInt* left, EncInt* right, int* res)
 {
-    auto *req = new CmpRequest<EncInt, CMD_INT_CMP>(left, right, res);
+    auto req = CmpRequest<EncInt, CMD_INT_CMP>(left, right, res);
     TEEInvoker *invoker = TEEInvoker::getInstance();
-    int resp = invoker->sendRequest(req);
+    int resp = invoker->sendRequest(&req);
     return resp;
 }
 
 int enc_int_encrypt(int pSrc, EncInt* pDst)
 {   
-    auto *req = new EncRequest<int, EncInt, CMD_INT_ENC>(&pSrc, pDst);
+    auto req = EncRequest<int, EncInt, CMD_INT_ENC>(&pSrc, pDst);
     TEEInvoker *invoker = TEEInvoker::getInstance();
-    int resp = invoker->sendRequest(req);
+    int resp = invoker->sendRequest(&req);
     return resp;
 }
 
 int enc_int_decrypt(EncInt* pSrc, int* pDst)
 {
-    auto *req = new DecRequest<EncInt,int, CMD_INT_DEC>(pSrc, pDst);
+    auto req = DecRequest<EncInt,int, CMD_INT_DEC>(pSrc, pDst);
     TEEInvoker *invoker = TEEInvoker::getInstance();
-    int resp = invoker->sendRequest(req);
+    int resp = invoker->sendRequest(&req);
     return resp;
 }

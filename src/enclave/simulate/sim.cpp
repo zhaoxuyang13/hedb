@@ -14,6 +14,8 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <sched.h>
+
 /* this load barrier is only for arm */
 #ifdef __aarch64__
 	#define LOAD_BARRIER asm volatile("dsb ld" ::: "memory")
@@ -38,7 +40,7 @@ struct Decrypt_args {
 	size_t decrypt_dst_len;
 };
 
-#define MAX_DECRYPT_THREAD 16
+#define MAX_DECRYPT_THREAD 1
 static struct Decrypt_args args_array[MAX_DECRYPT_THREAD];
 
 uint8_t decrypt_buffer[sizeof(EncCStr) * 2];
@@ -166,9 +168,10 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 		printf("error src len");
 		return -1;
 	}
-	resp = gcm_decrypt(pSrc, src_len, pDst, &dst_len);
+	// resp = gcm_decrypt(pSrc, src_len, pDst, &dst_len);
+	memcpy(pDst, pSrc, exp_dst_len);
 	// printf("after dec");
-	assert(dst_len == exp_dst_len);
+	// assert(dst_len == exp_dst_len);
 
 	// }
 
@@ -177,9 +180,8 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 	// timer += duration;
 	// printf("1000 dec duration in us %d",duration);
 
+	
 
-	// memset(pDst, 0, dst_len);
-	// memcpy(pDst, pSrc, dst_len);
 	if (resp !=0)
 	{
 		static __thread pid_t tid = gettid();
@@ -208,14 +210,16 @@ int encrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 	size_t dst_len = exp_dst_len;
 	int resp = 0;
 
-	resp = gcm_encrypt(pSrc, src_len, pDst, &dst_len);
+	// resp = gcm_encrypt(pSrc, src_len, pDst, &dst_len);
 	// printf("after enc");
-	assert(dst_len == exp_dst_len);
+	// assert(dst_len == exp_dst_len);
 	// {
 	// 	_print_hex("enc from ", pSrc, src_len);
 	// 	_print_hex("enc to ", pDst, dst_len);
 	// }
-	
+	memset(pDst, 0, dst_len);
+	memcpy(pDst, pSrc, dst_len);
+
 	return resp;
 }
 
@@ -303,14 +307,14 @@ pid_t fork_ops_process(void *shm_addr){
 					args_array[i].decrypt_status = EXIT;
 				}
 			}
-
 			printf("SIM-TA Exit %d, decrypt counter: %lu, dec parallel counter: %lu encrypt counter: %lu\n", counter, decrypt_counter, decrypt_para_counter, encrypt_counter);
+			req->status = NONE;
 			exit(0);
 		}
 		else if(req->status == SENT)
 		{
 			LOAD_BARRIER;
-
+			// printf("request received %d\n", req->reqType);
 			// counter ++;
 			// if (counter % 100000 == 0)
 			// 	printf("counter %d\n", counter++);
@@ -336,6 +340,11 @@ pid_t fork_ops_process(void *shm_addr){
 
 
 int main(int argc,char *argv[]){
+	cpu_set_t mask;
+	CPU_ZERO(&mask);
+	for(int i = 0; i < 4;i ++)
+		CPU_SET(i, &mask);
+	int result = sched_setaffinity(0, sizeof(mask), &mask);
 
 	int data_size = SHM_SIZE;
 	pid_t child_pids[20] = {};

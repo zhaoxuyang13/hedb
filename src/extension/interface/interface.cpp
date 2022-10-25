@@ -1,7 +1,6 @@
 #include <interface.hpp>
 #include <tee_interface.hpp>
 #include <sync.h>
-#include <stdafx.hpp>
 #include <extension_helper.hpp>
 #include <timer.hpp>
 #include <stdlib.h> // at exit
@@ -10,6 +9,16 @@
 #include <unistd.h>
 #include <pthread.h>
 #define MAX_LOG_SIZE 50000
+
+
+/* this load barrier is only for arm */
+#ifdef __aarch64__
+	#define LOAD_BARRIER asm volatile("dsb ld" ::: "memory")
+	#define STORE_BARRIER asm volatile("dsb st" ::: "memory")
+#elif __x86_64
+	#define LOAD_BARRIER ;
+	#define STORE_BARRIER ;
+#endif
 
 TEEInvoker *TEEInvoker::invoker = NULL;
 
@@ -38,9 +47,11 @@ uint64_t current_log_size = 0;
 FILE *write_file_ptr = 0;
 void update_write_file_ptr(){
     pid_t pid = getpid();
+
     char filename[120];
     sprintf(filename, "%s-%d.log", record_name_prefix, pid);
     print_info("%s\n", filename);
+
     write_file_ptr = fopen(filename,"w+"); 
 }
 FILE *get_write_file_ptr(){ 
@@ -745,9 +756,12 @@ void record_request(void *req){
     }
 }
 
+char null_buffer[1024*1024];
 int TEEInvoker::sendRequest(Request *req) {
     int resp;
     req->serializeTo(req_buffer);
+
+    // print_info("done seriale\n");
     BaseRequest *req_control = static_cast<BaseRequest *>(req_buffer);
     /* TODO write barrier */
     // print_info("REQUIEST sent");
@@ -774,17 +788,26 @@ int TEEInvoker::sendRequest(Request *req) {
     // static myTime time;
 	// static double timer = 0,duration = 0;
 	// time.tic();
-
+    STORE_BARRIER;
     req_control->status = SENT;
-
+    // print_info("done sent\n");
     /* wait for status */
     while (req_control->status != DONE)
         YIELD_PROCESSOR;
     /* TODO read barrier */
+    LOAD_BARRIER;
     req->copyResultFrom(req_buffer);
     resp = req_control->resp;
+
+    // if(req_control->reqType == CMD_INT_CMP){
+    //     // print_info("TEST LATENCY\n");
+    //     for(int i = 1000000; i >= 0; i --){
+    //         req->copyResultFrom(req_buffer);
+    //     }
+    // }
+
     // char ch[1000];
-    
+    // print_info("done copy\n");
     
     /* log */
     if(recordMode){
@@ -808,15 +831,12 @@ int TEEInvoker::sendRequest(Request *req) {
     /* read-write barrier, no read move after this barrier, no write move before this barrier */
     
     req_control->status = NONE;
-    free(req); /* free req to avoid mem leak */ 
+
     // time.toc();
     // duration = time.getDuration() / 1000000;
     // timer += duration;
     // if(req_control->reqType == CMD_FLOAT_DEC || req_control->reqType == CMD_INT_DEC){
-    //     print_info("shit");
-    //     char ch[1000];	
-    //     sprintf(ch, "total duration in ms: sum %f ", timer );
-    //     print_info(ch);
+    //     print_info("total duration in ms: sum %f ", timer );
     // }
 
     return resp;
@@ -824,7 +844,7 @@ int TEEInvoker::sendRequest(Request *req) {
 
 extern FILE *plain_file;
 void exit_handler(){
-    // print_info("EXIT handler called\n");
+    print_info("EXIT handler called\n");
     TEEInvoker *invoker = TEEInvoker::getInstance();
     delete invoker;
     // if(write_ptr != 0)
@@ -838,6 +858,8 @@ void exit_handler(){
 TEEInvoker::TEEInvoker() {
     // print_info("get shared buffer");
     req_buffer = getSharedBuffer(sizeof (EncIntBulkRequestData));
+    BaseRequest *req_control = static_cast<BaseRequest *>(req_buffer);
+    req_control->status = NONE;
     // print_info("buffer got");
     atexit(exit_handler);
-}
+} //

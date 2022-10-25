@@ -36,9 +36,9 @@ extern "C"
 
 class Request {
 public:
-    virtual void serializeTo(void *buffer) const = 0;
+    virtual inline void serializeTo(void *buffer) const = 0;
 
-    virtual void copyResultFrom(void *buffer) const = 0;
+    virtual inline void copyResultFrom(void *buffer) const = 0;
 
     // virtual void genLog(void *buffer) const = 0;
     virtual inline int size()  const { return 0; };
@@ -58,7 +58,7 @@ public:
     EncType *right;
     int *cmp;
 
-    void serializeTo(void *buffer) const override  {
+    inline void serializeTo(void *buffer) const override  {
         auto *req = (EncTypeCmpRequestData *) buffer;
         req->common.reqType = reqType;
         COPY(&req->left, left);
@@ -67,7 +67,7 @@ public:
         // req->right = *right;
     }
     
-    void copyResultFrom(void *buffer)const override  {
+    inline void copyResultFrom(void *buffer)const override  {
         auto *req = (EncTypeCmpRequestData *) buffer;
         *cmp = req->cmp;
     }
@@ -94,7 +94,7 @@ public:
 
     CalcRequest(int op, EncType *left, EncType *right, EncType *res) : op(op), left(left), right(right), res(res) {}
 
-    void serializeTo(void *buffer) const override {
+    inline void serializeTo(void *buffer) const override {
         auto *req = (EncTypeCalcRequestData *) buffer;
         req->common.reqType = op;
         req->op = op;
@@ -102,7 +102,7 @@ public:
         COPY(&req->right, right);
     }
 
-    void copyResultFrom(void *buffer)const override  {
+    inline void copyResultFrom(void *buffer)const override  {
         auto *req = (EncTypeCalcRequestData *) buffer;
         COPY(res, &req->res);
         // *res = req->res;
@@ -136,14 +136,14 @@ public:
                                                                                 bulk_size(bulkSize), items(items),
                                                                                 res(res) {}
 
-    void serializeTo(void *buffer) const override {
+    inline void serializeTo(void *buffer) const override {
         auto *req = (EncTypeBulkRequestData *)buffer;
         req->common.reqType = bulk_type;
         req->bulk_size = bulk_size;
         memcpy(req->items, items, sizeof(EncType) * bulk_size);
     }
 
-    void copyResultFrom(void *buffer)const override  {
+    inline void copyResultFrom(void *buffer)const override  {
         auto *req = (EncTypeBulkRequestData *)buffer;
         *res = req->res;
     }
@@ -166,17 +166,18 @@ public:
                                                                             expr(expr), items(items),
                                                                             res(res) {}
 
-    void serializeTo(void *buffer) const override {
+    inline void serializeTo(void *buffer) const override {
         auto *req = (EncTypeEvalExprRequestData *)buffer;
         req->common.reqType = eval_type;
         req->arg_cnt = arg_cnt;
-        for (int i = 0; i < arg_cnt; ++i) {
-            memcpy(&(req->items[i]), items[i], sizeof(EncType));
-        }
+        memcpy(req->items, items, sizeof(EncType) * arg_cnt);
+        // for (int i = 0; i < arg_cnt; ++i) {
+        //     memcpy(&(req->items[i]), items[i], sizeof(EncType));
+        // }
         memcpy(&(req->expr), &expr, sizeof(expr));
     }
 
-    void copyResultFrom(void *buffer)const override  {
+    inline void copyResultFrom(void *buffer)const override  {
         auto *req = (EncTypeEvalExprRequestData *)buffer;
         *res = req->res;
     }
@@ -195,7 +196,7 @@ public:
 
     EncRequest(PlainType *plaintext, EncType *res) : plaintext(plaintext), res(res) {}
 
-    void serializeTo(void *buffer) const override {
+    inline void serializeTo(void *buffer) const override {
         auto *req = (EncTypeEncRequestData *) buffer;
         req->common.reqType = reqType;
         // req->plaintext = *plaintext;
@@ -208,7 +209,7 @@ public:
         // }
     }
 
-    void copyResultFrom(void *buffer)const override {
+    inline void copyResultFrom(void *buffer)const override {
         auto *req = (EncTypeEncRequestData *) buffer;
         COPY(res, &req->ciphertext);
 
@@ -230,7 +231,7 @@ public:
     
     DecRequest(EncType *ciphertext, PlainType *res) : ciphertext(ciphertext), res(res) {}
 
-    void serializeTo(void *buffer) const override{
+    inline void serializeTo(void *buffer) const override{
         auto *req = (EncTypeDecRequestData *) buffer;
         req->common.reqType = reqType;
 
@@ -238,7 +239,7 @@ public:
         // req->ciphertext = *ciphertext;
     }
 
-    void copyResultFrom(void *buffer)const override {
+    inline void copyResultFrom(void *buffer)const override {
         auto *req = (EncTypeDecRequestData *) buffer;
 
         COPY(res, &req->plaintext);
@@ -261,13 +262,13 @@ public:
     
     OneArgRequest(Type1 *in, Type2 *res) : in(in), res(res) {}
 
-    void serializeTo(void *buffer) const override{
+    inline void serializeTo(void *buffer) const override{
         auto *req = (OneArgRequestData *) buffer;
         req->common.reqType = reqType;
         req->in = *in;
     }
 
-    void copyResultFrom(void *buffer)const override {
+    inline void copyResultFrom(void *buffer)const override {
         auto *req = (OneArgRequestData *) buffer;
         *res = req->res;
     }
@@ -292,7 +293,7 @@ public:
     
     ThreeArgRequest(Type1 *arg1, Type2 *arg2,Type3 *arg3, resType *res) : arg1(arg1),arg2(arg2),arg3(arg3), res(res) {}
 
-    void serializeTo(void *buffer) const override{
+    inline void serializeTo(void *buffer) const override{
         auto *req = (ThreeArgRequestData *) buffer;
         req->common.reqType = reqType;
         COPY(&req->arg1, arg1);
@@ -301,7 +302,7 @@ public:
         req->arg3 = *arg3;
     }
 
-    void copyResultFrom(void *buffer)const override {
+    inline void copyResultFrom(void *buffer)const override {
         auto *req = (ThreeArgRequestData *) buffer;
 
         COPY(res, &req->res);

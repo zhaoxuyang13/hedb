@@ -10,7 +10,7 @@ private:
     void *req_buffer;
 public: 
     ~TEEInvoker();
-    static TEEInvoker *getInstance(){
+    static inline TEEInvoker *getInstance(){
         if (invoker == nullptr){
             invoker = new TEEInvoker;
         }

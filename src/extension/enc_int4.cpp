@@ -219,7 +219,13 @@ Datum
     EncInt* right = PG_GETARG_ENCINT(1);
     int res;
 
+    // int l = 1, r= 2;
+    // bool cmp;
+    // for(int i = 0; i <= 1000000; i ++){
     enc_int_cmp(left, right, &res);
+        // cmp = l > r ? 1 :
+                // l < r ? -1: 0;
+    // }
 
     PG_RETURN_INT32(res);
 }

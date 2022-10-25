@@ -1,3 +1,5 @@
+message(STATUS "processing Tests...")
+
 
 file(GLOB TEST_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} 
     "*.cpp"
