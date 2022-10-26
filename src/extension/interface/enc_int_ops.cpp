@@ -1,7 +1,6 @@
 #include <enc_int_ops.hpp>
 #include <interface.hpp>
 #include <request.hpp>
-#include <extension_helper.hpp>
 
 int enc_int_sum_bulk(size_t bulk_size, EncInt* arg1, EncInt* res)
 {

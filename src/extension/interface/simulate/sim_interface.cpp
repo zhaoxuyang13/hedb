@@ -10,10 +10,11 @@
 #include <sys/mman.h>
 #include <errno.h>
 #include <sim_interface.hpp>
-#include <extension_helper.hpp>
 #include <sys/types.h>
 #include "request_types.h"
 #include "ops_server.h"
+#include "extension.hpp"
+
 /* --------------------------------------------- */
 /* this load barrier is only for arm */
 #ifdef __aarch64__
@@ -57,7 +58,7 @@ static void *get_shmem_posix(size_t size){
 	int key = 666;
     posix_shmid = shmget(key, size, 0666 | IPC_CREAT);
     if (posix_shmid == -1){
-        print_info("shmget failed %d errno\n", errno);
+        perror("shmget failed %d errno\n");
         exit(EXIT_FAILURE);
     }
     // 2. attach shared memory

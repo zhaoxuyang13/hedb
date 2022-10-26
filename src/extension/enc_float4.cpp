@@ -4,7 +4,6 @@
 #include <extension.hpp>
 #include <string.h>
 #include <enc_float_ops.hpp>
-#include <extension_helper.hpp>
 #ifdef __cplusplus
 extern "C" {
 #endif

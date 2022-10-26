@@ -2,7 +2,6 @@
  * a simple UDF for timestamp
  */
 #include "extension.hpp"
-#include "extension_helper.hpp"
 #include <enc_timestamp_ops.hpp>
 #ifdef __cplusplus
 extern "C" {

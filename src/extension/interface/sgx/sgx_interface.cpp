@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <fstream>
 #include <thread>
-#include <extension_helper.hpp>
 #include <unistd.h>
 #include <iostream>
 /* Global EID shared by multiple threads */

@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.9)
 project(extension)
 
-set(ENABLE_TEST_OPS true)
-add_compile_definitions(ENABLE_TEST_OPS)
+# set(ENABLE_TEST_OPS true)
+
+if(ENABLE_TEST_OPS)
+    add_compile_definitions(ENABLE_TEST_OPS)
+endif()
 
 set(TEE_TYPE "" CACHE STRING "Type of TEE (SGX, TZ, SIM, etc)")
 
@@ -142,12 +145,10 @@ elseif ( ${TEE_TYPE} STREQUAL "SIM" )
         PRIVATE extension/interface/simulate
         PRIVATE include
         )
-    if(NOT DEFINED ENABLE_TEST_OPS)
-        target_include_directories(SimInterface 
-            PRIVATE ${PostgreSQL_INCLUDE_DIRS}
-            PRIVATE ${PostgreSQL_SERVER_INCLUDE_DIRS}
-        )
-    endif()
+    target_include_directories(SimInterface 
+        PRIVATE ${PostgreSQL_INCLUDE_DIRS}
+        PRIVATE ${PostgreSQL_SERVER_INCLUDE_DIRS}
+    )
 
 else()
     message( FATAL_ERROR "TEE_TYPE ${TEE_TYPE} not specified (SGX/TZ). CMake wil exit.")

@@ -1,6 +1,5 @@
 #include <stdafx.hpp>
 #include <extension.hpp>
-#include <extension_helper.hpp>
 #include <stdarg.h>
 #include <dirent.h>
 #include <sys/types.h>

@@ -10,6 +10,8 @@
 #include <float.h>
 #include <limits.h>
 
+
+#ifndef ENABLE_TEST_OPS
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -26,6 +28,7 @@ extern "C" {
 #include <c.h>
 #ifdef __cplusplus
 }
+#endif
 #endif
 #include "defs.h"
 

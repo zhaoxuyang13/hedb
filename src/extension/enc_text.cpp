@@ -2,7 +2,6 @@
  * a simple UDF for text
  */
 #include <extension.hpp>
-#include <extension_helper.hpp>
 #include <enc_text_ops.hpp>
 #include <enc_int_ops.hpp>
 #ifdef __cplusplus

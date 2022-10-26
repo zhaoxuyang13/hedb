@@ -1,13 +1,14 @@
 #include <interface.hpp>
 #include <tee_interface.hpp>
 #include <sync.h>
-#include <extension_helper.hpp>
 #include <timer.hpp>
 #include <stdlib.h> // at exit
 #include <stdio.h>
 #include <ctype.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <extension.hpp>
+
 #define MAX_LOG_SIZE 50000
 
 
@@ -22,9 +23,12 @@
 
 TEEInvoker *TEEInvoker::invoker = NULL;
 
+#define RR_MINIMUM false
+
+
 
 #define MAX_NAME_LENGTH 100
-#define MAX_PARALLEL_WORKER_SIZE 16
+#define MAX_PARALLEL_WORKER_SIZE 16    //TODO: the database can only see one buffer allocated to it.
 #define MAX_RECORDS_NUM (MAX_PARALLEL_WORKER_SIZE + 1)
 
 bool recordMode = false;
@@ -545,8 +549,11 @@ int replay_request(void *req){
         print_info("no valid record file found. error %d\n", req_control->reqType);
         return -1; // not valid record file found. error.
     }else {
-        // return try_replay_request(req, read_file_ptr);
-        return blindly_replay_request(req, read_file_ptr);
+        #if RR_MINIMUM
+            return blindly_replay_request(req, read_file_ptr);
+        #else 
+            return try_replay_request(req, read_file_ptr);
+        #endif
     }
 }
 
@@ -751,8 +758,13 @@ void record_request(void *req){
         first_record = false;
         record_request_full(req, get_write_file_ptr());
     }else {
-        // record_request_full(req, get_write_file_ptr());
-        record_request_res(req, write_file_ptr);
+        #if RR_MINIMUM
+            record_request_res(req, write_file_ptr);
+        #else 
+            record_request_full(req, get_write_file_ptr());
+        #endif
+        
+        
     }
 }
 
