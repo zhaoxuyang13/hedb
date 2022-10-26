@@ -168,8 +168,8 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 		printf("error src len");
 		return -1;
 	}
-	// resp = gcm_decrypt(pSrc, src_len, pDst, &dst_len);
-	memcpy(pDst, pSrc, exp_dst_len);
+	resp = gcm_decrypt(pSrc, src_len, pDst, &dst_len);
+	// memcpy(pDst, pSrc, exp_dst_len);
 	// printf("after dec");
 	// assert(dst_len == exp_dst_len);
 
@@ -210,15 +210,15 @@ int encrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 	size_t dst_len = exp_dst_len;
 	int resp = 0;
 
-	// resp = gcm_encrypt(pSrc, src_len, pDst, &dst_len);
+	resp = gcm_encrypt(pSrc, src_len, pDst, &dst_len);
 	// printf("after enc");
 	// assert(dst_len == exp_dst_len);
 	// {
 	// 	_print_hex("enc from ", pSrc, src_len);
 	// 	_print_hex("enc to ", pDst, dst_len);
 	// }
-	memset(pDst, 0, dst_len);
-	memcpy(pDst, pSrc, dst_len);
+	// memset(pDst, 0, dst_len);
+	// memcpy(pDst, pSrc, dst_len);
 
 	return resp;
 }
