@@ -33,17 +33,32 @@ PlainType BufferMap<PlainType, EncType>::find(const EncType *enc_val, bool *foun
 }
 
 void float_map_insert(buffer_map *m, const EncFloat *enc_val, const float *plain_val) {
+#ifdef ENABLE_KV
   ((BufferMap<float, EncFloat> *)m)->insert(enc_val, plain_val);
+#endif
 }
 
 float float_map_find(buffer_map *m, const EncFloat *enc_val, bool *found) {
+#ifdef ENABLE_KV
   return ((BufferMap<float, EncFloat> *)m)->find(enc_val, found);
+#else
+  *found = false;
+  return 0;
+#endif
 }
 
 void text_map_insert(buffer_map *m, const EncStr *enc_val, const Str *plain_val) {
+#ifdef ENABLE_KV
   ((BufferMap<Str, EncStr> *)m)->insert(enc_val, plain_val);
+#endif
 }
 
 Str text_map_find(buffer_map *m, const EncStr *enc_val, bool *found) {
+#ifdef ENABLE_KV
   return ((BufferMap<Str, EncStr> *)m)->find(enc_val, found);
+#else
+  Str tmp;
+  *found = false;
+  return tmp;
+#endif
 }

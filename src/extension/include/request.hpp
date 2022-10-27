@@ -169,10 +169,10 @@ public:
         auto *req = (EncTypeEvalExprRequestData *)buffer;
         req->common.reqType = eval_type;
         req->arg_cnt = arg_cnt;
-        memcpy(req->items, items, sizeof(EncType) * arg_cnt);
-        // for (int i = 0; i < arg_cnt; ++i) {
-        //     memcpy(&(req->items[i]), items[i], sizeof(EncType));
-        // }
+        // memcpy(req->items, items, sizeof(EncType) * arg_cnt);
+        for (int i = 0; i < arg_cnt; ++i) {
+            memcpy(&(req->items[i]), items[i], sizeof(EncType));
+        }
         memcpy(&(req->expr), &expr, sizeof(expr));
     }
 

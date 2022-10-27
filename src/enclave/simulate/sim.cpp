@@ -15,6 +15,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sched.h>
+#include <mutex>
 
 /* this load barrier is only for arm */
 #ifdef __aarch64__
@@ -25,12 +26,7 @@
 	#define STORE_BARRIER ;
 #endif
 
-
-// uint8_t *decrypt_dst, *decrypt_src;
-// size_t decrypt_src_len, decrypt_dst_len;
-// volatile int decrypt_status = DONE;
-
-struct Decrypt_args {
+struct alignas(128) Decrypt_args {
 	bool inited;
 	int index;
 	volatile int decrypt_status;
@@ -40,7 +36,7 @@ struct Decrypt_args {
 	size_t decrypt_dst_len;
 };
 
-#define MAX_DECRYPT_THREAD 1
+
 static struct Decrypt_args args_array[MAX_DECRYPT_THREAD];
 
 uint8_t decrypt_buffer[sizeof(EncCStr) * 2];
@@ -51,7 +47,7 @@ void *decrypt_thread(void * arg){
 
 	while (1)
 	{
-		if(args_array[index].decrypt_status == SENT){
+		if(args_array[index].decrypt_status == SENT) {
 			LOAD_BARRIER;
 			decrypt_bytes(args_array[index].decrypt_src, args_array[index].decrypt_src_len,
 									 args_array[index].decrypt_dst, args_array[index].decrypt_dst_len);
@@ -100,19 +96,6 @@ find_thread:
 	STORE_BARRIER;
 	args_array[i].decrypt_status = SENT;
 
-	// static int inited = false;
-	// if(!inited){
-	// 	pid_t pid;
-	// 	pthread_t thread;
-	// 	pthread_create(&thread, nullptr, decrypt_thread, nullptr);
-	// 	inited = true;
-	// }
-	// decrypt_src = pSrc;
-	// decrypt_src_len = src_len;
-	// decrypt_dst = pDst;
-	// decrypt_dst_len = exp_dst_len;
-	// STORE_BARRIER;
-	// decrypt_status = SENT;
 #else
 	decrypt_bytes(pSrc, src_len, pDst, exp_dst_len);
 #endif
@@ -121,10 +104,6 @@ find_thread:
 
 void decrypt_wait(uint8_t *pDst, size_t exp_dst_len){
 #ifdef ENABLE_PARA
-	// while (decrypt_status != DONE)
-	// {
-	// 	YIELD_PROCESSOR;
-	// }
 	bool done = false;
 	while (!done) {
 		done = true;
@@ -171,7 +150,7 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 	resp = gcm_decrypt(pSrc, src_len, pDst, &dst_len);
 	// memcpy(pDst, pSrc, exp_dst_len);
 	// printf("after dec");
-	// assert(dst_len == exp_dst_len);
+	assert(dst_len == exp_dst_len);
 
 	// }
 
@@ -212,7 +191,7 @@ int encrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 
 	resp = gcm_encrypt(pSrc, src_len, pDst, &dst_len);
 	// printf("after enc");
-	// assert(dst_len == exp_dst_len);
+	assert(dst_len == exp_dst_len);
 	// {
 	// 	_print_hex("enc from ", pSrc, src_len);
 	// 	_print_hex("enc to ", pDst, dst_len);
@@ -340,11 +319,11 @@ pid_t fork_ops_process(void *shm_addr){
 
 
 int main(int argc,char *argv[]){
-	cpu_set_t mask;
-	CPU_ZERO(&mask);
-	for(int i = 0; i < 4;i ++)
-		CPU_SET(i, &mask);
-	int result = sched_setaffinity(0, sizeof(mask), &mask);
+	// cpu_set_t mask;
+	// CPU_ZERO(&mask);
+	// for(int i = 0; i < 4;i ++)
+	// 	CPU_SET(i, &mask);
+	// int result = sched_setaffinity(0, sizeof(mask), &mask);
 
 	int data_size = SHM_SIZE;
 	pid_t child_pids[20] = {};
