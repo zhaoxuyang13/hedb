@@ -1,33 +1,34 @@
 
 #include <enc_text_ops.h>
+#include <like_match.h>
 // #include <string.h>
 
-static int MatchText(char *t, int tlen, char *p, int plen)
-{
+// static int MatchText(char *t, int tlen, char *p, int plen)
+// {
 
-	char* subt = t;
-	char* subp = p;
-	int i = 0;
-	int j = 0;
-	while (i <= tlen - 1 && j <= plen - 1)
-	{
-		if (subt[i] == subp[j])
-		{
-			i++;
-			j++;
-		}
-		else
-		{
-			i = i - j + 1;
-			j = 0;
-		}
-	}
-	if (j == strlen(subp))
-	{
-		return 1;
-	}
-	return 0;
-}
+// 	char* subt = t;
+// 	char* subp = p;
+// 	int i = 0;
+// 	int j = 0;
+// 	while (i <= tlen - 1 && j <= plen - 1)
+// 	{
+// 		if (subt[i] == subp[j])
+// 		{
+// 			i++;
+// 			j++;
+// 		}
+// 		else
+// 		{
+// 			i = i - j + 1;
+// 			j = 0;
+// 		}
+// 	}
+// 	if (j == strlen(subp))
+// 	{
+// 		return 1;
+// 	}
+// 	return 0;
+// }
 
 void SubText(char *dst, char *str, int from, int to)
 {
