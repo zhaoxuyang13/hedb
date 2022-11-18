@@ -1,43 +1,7 @@
 
 #include <enc_text_ops.h>
 #include <like_match.h>
-// #include <string.h>
-
-// static int MatchText(char *t, int tlen, char *p, int plen)
-// {
-
-// 	char* subt = t;
-// 	char* subp = p;
-// 	int i = 0;
-// 	int j = 0;
-// 	while (i <= tlen - 1 && j <= plen - 1)
-// 	{
-// 		if (subt[i] == subp[j])
-// 		{
-// 			i++;
-// 			j++;
-// 		}
-// 		else
-// 		{
-// 			i = i - j + 1;
-// 			j = 0;
-// 		}
-// 	}
-// 	if (j == strlen(subp))
-// 	{
-// 		return 1;
-// 	}
-// 	return 0;
-// }
-
-void SubText(char *dst, char *str, int from, int to)
-{
-    // char* result = (char *)palloc((to-from+1)*sizeof(char));
-    for (int i = 0; i < to-from+1; i++)
-    {
-        dst[i] = str[from + i - 1];
-    }
-}
+#include <plain_text_ops.h>
 
 int enc_text_cmp(EncStrCmpRequestData *req){
     Str left,right;
@@ -66,7 +30,7 @@ int enc_text_cmp(EncStrCmpRequestData *req){
     }
     right.data[right.len] = '\0';
 
-    req->cmp = strcmp((const char*)left.data, (const char*)right.data);
+    req->cmp = plain_text_cmp(left.data, left.len, right.data, right.len);
     // printf("%d, %s, %s, %d\n",req->common.reqType, left.data, right.data, req->cmp);
     
     return resp;
@@ -110,9 +74,7 @@ int enc_text_concatenate(EncStrCalcRequestData *req){
     right.data[right.len] = '\0';
     // printf("%d, %s, %s, ",req->common.reqType, left.data,right.data);
 
-    memcpy(left.data + left.len, right.data, right.len);
-    left.len += right.len;
-    left.data[left.len] = '\0';
+    plain_text_concat(left.data, &left.len, right.data, right.len);
 
     // printf("%s\n",req->common.reqType, left.data); 
 

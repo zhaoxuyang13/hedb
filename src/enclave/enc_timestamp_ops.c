@@ -1,5 +1,5 @@
 #include "enc_timestamp_ops.h"
-
+#include "plain_timestamp_ops.h"
 int enc_timestamp_cmp(EncTimestampCmpRequestData *req)
 {
     int resp = 0;
@@ -14,7 +14,7 @@ int enc_timestamp_cmp(EncTimestampCmpRequestData *req)
     if (resp != 0)
         return resp;
 
-    req->cmp = (left == right) ? 0 : (left < right) ? -1 : 1;
+    req->cmp = plain_timestamp_cmp(left, right);
 
     // printf("%d, %d, %d, %d\n",req->common.reqType, left,right,req->cmp);
     return resp;

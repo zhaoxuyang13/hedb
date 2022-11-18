@@ -1,9 +1,6 @@
 #include "enc_float_ops.h"
-
+#include "plain_float_ops.h"
 // extern int decrypt_status;
-#if defined(TEE_TZ)
-extern double pow(double x, int y);
-#endif
 
 
 /* this load barrier is only for arm */
@@ -31,7 +28,7 @@ int enc_float32_cmp(EncFloatCmpRequestData *req)
 
     decrypt_wait((uint8_t*) &left, sizeof(left));  
 
-    req->cmp = (left == right) ? 0 : (left < right) ? -1 : 1;
+    req->cmp = plain_float_cmp(left, right);
     // printf("%d, %f, %f, %d\n",req->common.reqType, left,right,req->cmp);
 
     return resp;
@@ -76,29 +73,7 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
         decrypt_wait((uint8_t*) &left, sizeof(left));  
 
     // printf("calc type %d, %f, %f, ", req->common.reqType, left, right);
-    switch (req->common.reqType) /* req->common.op */
-    {
-    case CMD_FLOAT_PLUS:
-        res = left + right;
-        break;
-    case CMD_FLOAT_MINUS:
-        res = left - right;
-        break;
-    case CMD_FLOAT_MULT: 
-        res = left * right;
-        break;
-    case CMD_FLOAT_DIV:
-        res = left / right;
-        break;
-    case CMD_FLOAT_EXP: 
-        res =  pow(left,right);
-        break;
-    case CMD_FLOAT_MOD:
-        res = (int)left % (int)right;
-        break;
-    default:
-        break;
-    }
+    res = plain_float_calc(req->common.reqType, left, right);
     // printf("%d, %f, %f, %f\n",req->common.reqType, left,right, res);
 
     resp = encrypt_bytes((uint8_t*) &res, sizeof(res),(uint8_t*) &req->res, sizeof(req->res));
@@ -108,16 +83,10 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
     return resp;
 }
 
-
-
-
-
 int enc_float32_bulk(EncFloatBulkRequestData *req)
 {
     int bulk_size = req->bulk_size;
     EncFloat *array = req->items;
-    double res = 0;
-    // float tmp = 0;
     float values[bulk_size];
     int count = 0, resp = 0;
     bool found = false, parallel_issued = false;
@@ -141,86 +110,14 @@ int enc_float32_bulk(EncFloatBulkRequestData *req)
         decrypt_wait(NULL, 0);
     }
 
-    switch (req->common.reqType)
-    {
-    case CMD_FLOAT_SUM_BULK:
-        for (int i = 0; i < bulk_size; i++) {
-            res += values[i];
-        }
-        break;
-    default:
-        break;
-    }
+    float res = (float) plain_float_bulk(req->common.reqType, 
+        bulk_size, values);
 
-    float res1 = res;
-    resp = encrypt_bytes((uint8_t*) &res1, sizeof(float),(uint8_t*) &req->res, sizeof(req->res));
+    resp = encrypt_bytes((uint8_t*) &res, sizeof(float),(uint8_t*) &req->res, sizeof(req->res));
     return resp;
 }
 
-/**
- * @brief evaluates and calculates prefix notation expression
- * 
- * @param expr 
- * @return float 
- */
-float eval_expr(char *expr, float *arr) {
-    float stack[EXPR_STACK_MAX_SIZE];
-    size_t i;
-    int stack_top_pos = -1;
-    float op1, op2;
-    char c;
-    memset(stack, 0, (size_t)EXPR_STACK_MAX_SIZE * sizeof(float));
-    for (i = 0; i < strlen(expr); ++i) {
-        c = expr[i];
-        if ((int8_t)c > 0) {
-            stack_top_pos++;
-            stack[stack_top_pos] = arr[c - 1];
-        } else {
-            c = (char)-c;
-            if (c == '#') {
-                if (stack_top_pos < 0) {
-                    printf("Missing operand!\n");
-                    // exit(0);
-                }
-                stack[stack_top_pos] = -stack[stack_top_pos];
-            } else {
-                if (stack_top_pos < 1) {
-                    printf("Missing operand!\n");
-                    // exit(0);
-                }
-                op1 = (float)stack[stack_top_pos--];
-                op2 = (float)stack[stack_top_pos];
-                switch(c) {
-                    case '+':
-                        stack[stack_top_pos] = op2 + op1;
-                        break;
-                    case '-':
-                        stack[stack_top_pos] = op2 - op1;
-                        break;
-                    case '*':
-                        stack[stack_top_pos] = op2 * op1;
-                        break;
-                    case '/':
-                        stack[stack_top_pos] = op2 / op1;
-                        break;
-                    case '%':
-                        stack[stack_top_pos] = (float)((int)op2 % (int)op1);
-                        break;
-                    case '^':
-                        stack[stack_top_pos] = (float)pow((double)op2, (double)op1);
-                        break;
-                    default:
-                        printf("No matching operand!\n");
-                        // exit(0);
-                }
-                if (c == '+') {
-                    stack[stack_top_pos] = op1 + op2;
-                }
-            }
-        }
-    }
-    return stack[stack_top_pos];
-}
+
 
 int enc_float32_eval_expr(EncFloatEvalExprRequestData *req)
 {
@@ -255,7 +152,7 @@ int enc_float32_eval_expr(EncFloatEvalExprRequestData *req)
         decrypt_wait(NULL, 0);
     }
 
-    res = eval_expr(expr.data, arr);
+    res = plain_float_eval_expr(expr.data, arr);
     resp = encrypt_bytes((uint8_t*) &res, sizeof(float), (uint8_t*) &req->res, sizeof(req->res));
     return resp;
 

@@ -115,6 +115,7 @@ elseif ( ${TEE_TYPE} STREQUAL "SIM" )
     add_compile_definitions(TEE_SIM) 
     file(GLOB SRCS 
         enclave/*.c  
+        enclave/plain_ops/*.c
         enclave/kv/*.cpp 
         enclave/simulate/sim.cpp 
         enclave/simulate/crypto.c 
