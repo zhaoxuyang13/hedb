@@ -1,6 +1,5 @@
 
 #include <enc_text_ops.h>
-#include <like_match.h>
 #include <plain_text_ops.h>
 
 int enc_text_cmp(EncStrCmpRequestData *req){
@@ -30,7 +29,7 @@ int enc_text_cmp(EncStrCmpRequestData *req){
     }
     right.data[right.len] = '\0';
 
-    req->cmp = plain_text_cmp(left.data, left.len, right.data, right.len);
+    req->cmp = plain_text_cmp((char *) left.data, left.len, (char *) right.data, right.len);
     // printf("%d, %s, %s, %d\n",req->common.reqType, left.data, right.data, req->cmp);
     
     return resp;
@@ -52,7 +51,7 @@ int enc_text_like(EncStrLikeRequestData *req){
         return resp;
     right.data[right.len] = '\0';
 
-    req->cmp = MatchText((char *) left.data, left.len,(char *) right.data, right.len);
+    req->cmp = plain_text_like((char *) left.data, left.len, (char *) right.data, right.len);
     // printf("%d, %s, %s, %d\n",req->common.reqType, left.data, right.data,req->cmp);
     
     return resp;
@@ -74,7 +73,7 @@ int enc_text_concatenate(EncStrCalcRequestData *req){
     right.data[right.len] = '\0';
     // printf("%d, %s, %s, ",req->common.reqType, left.data,right.data);
 
-    plain_text_concat(left.data, &left.len, right.data, right.len);
+    plain_text_concat((char *) left.data, &left.len,(char *)  right.data, right.len);
 
     // printf("%s\n",req->common.reqType, left.data); 
 

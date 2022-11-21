@@ -1,4 +1,5 @@
 #include <plain_text_ops.h>
+#include <like_match.h>
 #include <defs.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -18,7 +19,7 @@ int plain_text_cmp(char *lhs, uint32_t l_size, char *rhs, uint32_t r_size)
 
 int plain_text_like(char *lhs, uint32_t l_size, char *rhs, uint32_t r_size)
 {
-
+    return MatchText(lhs, l_size, rhs, r_size);
 }
 
 void plain_text_concat(char *left, uint32_t *l_size, char *right, uint32_t r_size)

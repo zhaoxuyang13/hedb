@@ -17,6 +17,10 @@
 #include <sched.h>
 #include <mutex>
 
+
+
+#include <map> // for profile 
+
 /* this load barrier is only for arm */
 #ifdef __aarch64__
 	#define LOAD_BARRIER asm volatile("dsb ld" ::: "memory")
@@ -293,6 +297,7 @@ pid_t fork_ops_process(void *shm_addr){
 		else if(req->status == SENT)
 		{
 			LOAD_BARRIER;
+			
 			// printf("request received %d\n", req->reqType);
 			// counter ++;
 			// if (counter % 100000 == 0)
