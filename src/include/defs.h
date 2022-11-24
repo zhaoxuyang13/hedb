@@ -85,7 +85,8 @@ typedef unsigned long DWORD; //4bytes
 #define CMD_TIMESTAMP_DEC 152
 #define CMD_TIMESTAMP_EXTRACT_YEAR 153
 
-/* for TZ TA */
+/* for Trustzone TA */
+#ifdef TEE_TZ
 #define TA_OPS_UUID \
 	{ 0x64974d40, 0x92cd, 0x4714, \
 		{ 0x9e, 0x8f, 0x44, 0x2f, 0x3a, 0x4d, 0xb3, 0xaf} }
@@ -96,3 +97,4 @@ typedef unsigned long DWORD; //4bytes
 #define TA_OPS_CMD_OPS_PROCESS      2
 #define TA_OPS_CMD_AES_GCM 			3
 #define TA_OPS_CMD_LOAD_KEY			4
+#endif
