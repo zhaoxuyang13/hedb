@@ -54,9 +54,10 @@ int enc_text_like(EncStrLikeRequestData *req){
     if (resp != 0)
         return resp;
     right.data[right.len] = '\0';
-
-    req->cmp = plain_text_like((char *) left.data, left.len, (char *) right.data, right.len);
     decrypt_wait(NULL, 0);
+    
+    req->cmp = plain_text_like((char *) left.data, left.len, (char *) right.data, right.len);
+
     // printf("%d, %s, %s, %d\n",req->common.reqType, left.data, right.data,req->cmp);
     
     return resp;
