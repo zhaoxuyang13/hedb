@@ -7,6 +7,11 @@ all: build
 build: 
 	cmake --build build 
 
+klee_wrapper:
+	clang -I src/include -I src/enclave/include -emit-llvm -c -g src/enclave/klee_wrapper/wrapper.c
+	clang -I src/enclave/klee_wrapper -emit-llvm -c -g src/enclave/klee_wrapper/prefix_udf.c
+	llvm-link wrapper.bc prefix_udf.bc -o whole.bc
+
 configure_sgx:
 	cmake -B build -S ./src -DTEE_TYPE=SGX
 

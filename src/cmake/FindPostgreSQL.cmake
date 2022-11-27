@@ -45,7 +45,8 @@ find_program(
   PATH_SUFFIXES bin)
 
 if(NOT PG_CONFIG)
-  message(FATAL_ERROR "Could not find pg_config")
+  message(INFO "Could not find pg_config")
+  return()
 endif()
 
 message(STATUS "Found pg_config as ${PG_CONFIG}")
