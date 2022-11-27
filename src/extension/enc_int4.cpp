@@ -470,36 +470,35 @@ Datum
     pg_enc_int4_sum_bulk(PG_FUNCTION_ARGS)
 {
     ArrayType* v = PG_GETARG_ARRAYTYPE_P(0);
-    // int resp = 0;
-    ArrayIterator array_iterator;
-    ArrayMetaState* my_extra = (ArrayMetaState*)fcinfo->flinfo->fn_extra;
     bool isnull;
     Datum value;
-    size_t bulk_size = BULK_SIZE;
-    unsigned long current_position = 0, counter = 0;
+
     EncInt* sum = (EncInt*)palloc0(sizeof(EncInt));
-    EncInt* bulkBuffer = (EncInt*)palloc0(sizeof(EncInt) * bulk_size);
+    EncInt array[BULK_SIZE];
+    int counter = 1;
+
     // TODO: two copies happens here, for array of encint.
-    array_iterator = array_create_iterator(v, 0, my_extra);
+    ArrayMetaState *my_extra = (ArrayMetaState *)fcinfo->flinfo->fn_extra;
+    ArrayIterator array_iterator = array_create_iterator(v, 0, my_extra);
+
+    array_iterate(array_iterator, &value, &isnull);
+    *sum = *DatumGetEncInt(value);
+    array[0] = *sum;
     while (array_iterate(array_iterator, &value, &isnull))
     {
-        memcpy(bulkBuffer + current_position, DatumGetCString(value), sizeof(EncInt));
-        current_position += sizeof(EncInt);
+        array[counter] = *DatumGetEncInt(value);
         counter++;
-
-        if (counter % (bulk_size) == 0)
+        if (counter == BULK_SIZE)
         {
-            enc_int_sum_bulk(bulk_size, bulkBuffer, sum);
-
-            memcpy(bulkBuffer, sum, sizeof(EncInt));
-            current_position = sizeof(EncInt);
-            counter++;
+            enc_int_sum_bulk(BULK_SIZE, array, sum);
+            array[0] = *sum;
+            counter = 1;
         }
     }
+    if(counter > 1){
+        enc_int_sum_bulk(counter, array, sum);
+    }
 
-    enc_int_sum_bulk(counter % bulk_size, bulkBuffer, sum);
-
-    pfree(bulkBuffer);
     PG_RETURN_CSTRING(sum);
 }
 
@@ -508,49 +507,43 @@ Datum
     pg_enc_int4_avg_bulk(PG_FUNCTION_ARGS)
 {
     ArrayType* v = PG_GETARG_ARRAYTYPE_P(0);
-    // int resp = 0;
-    ArrayIterator array_iterator;
-    ArrayMetaState* my_extra = (ArrayMetaState*)fcinfo->flinfo->fn_extra;
     bool isnull;
-    size_t bulk_size = BULK_SIZE;
     Datum value;
     int ndims1 = ARR_NDIM(v); //array dimension
     int* dims1 = ARR_DIMS(v);
     int nitems = ArrayGetNItems(ndims1, dims1); //number of items in array
-    unsigned long current_position = 0, counter = 0;
-    EncInt* sum = (EncInt*)palloc0(sizeof(EncInt));
-    EncInt* bulkBuffer = (EncInt*)palloc0(sizeof(EncInt) * bulk_size);
-    EncInt* result =(EncInt*)palloc0(sizeof(EncInt)); 
-    array_iterator = array_create_iterator(v, 0, my_extra);
 
+    EncInt sum;
+    EncInt* res = (EncInt*)palloc0(sizeof(EncInt)); 
+    EncInt array[BULK_SIZE];
+    EncInt num;
+    int counter; // sum will be at array[0]
+
+    ArrayMetaState *my_extra = (ArrayMetaState *)fcinfo->flinfo->fn_extra;
+    ArrayIterator array_iterator = array_create_iterator(v, 0, my_extra);
+
+    array_iterate(array_iterator, &value, &isnull);
+    sum = *DatumGetEncInt(value);
+    array[0] = sum;
+    counter = 1;
     while (array_iterate(array_iterator, &value, &isnull))
     {
-        memcpy(bulkBuffer + current_position, DatumGetCString(value), sizeof(EncInt));
-        current_position += sizeof(EncInt);
-        counter++;
-
-        if (counter % (bulk_size) == 0)
-        {
-            enc_int_sum_bulk(bulk_size, bulkBuffer, sum);
-
-            memcpy(bulkBuffer, sum, sizeof(EncInt));
-            current_position = sizeof(EncInt);
-            counter++;
+        array[counter] = *DatumGetEncInt(value);
+        counter ++; 
+        if(counter == BULK_SIZE){
+            enc_int_sum_bulk(BULK_SIZE,array, &sum);
+            array[0] = sum;
+            counter = 1;
         }
     }
 
-    //ereport(INFO, (errmsg("send rest %d: bulk %d,  %s", current_position, counter%bulk_size, pTemp)));
-    enc_int_sum_bulk(counter % bulk_size, bulkBuffer, sum);
-    
+    if(counter > 1){
+        enc_int_sum_bulk(counter,array, &sum);
+    }
+    enc_int_encrypt(nitems, &num);
+    enc_int_div(&sum, &num, res);
 
-    enc_int_encrypt(nitems, bulkBuffer);
-
-    enc_int_div(sum, bulkBuffer, result);
-
-    pfree(bulkBuffer);
-    pfree(sum);
-
-    PG_RETURN_CSTRING(result);
+    PG_RETURN_CSTRING(res);
 }
 
 Datum
@@ -569,7 +562,7 @@ Datum
     // int nitems = ArrayGetNItems(ndims1, dims1); //number of items in array
 
     EncInt* pMin = (EncInt*)palloc0(sizeof(EncInt));
-    EncInt* pTemp = (EncInt*)palloc0(sizeof(EncInt));
+    EncInt pTemp;
     array_iterator = array_create_iterator(v, 0, my_extra);
     array_iterate(array_iterator, &value, &isnull);
 
@@ -577,15 +570,15 @@ Datum
 
     while (array_iterate(array_iterator, &value, &isnull))
     {
-        memcpy(pTemp, DatumGetCString(value), sizeof(EncInt));
+        memcpy(&pTemp, DatumGetCString(value), sizeof(EncInt));
 
-        enc_int_cmp(pMin, pTemp, &ans);
+        enc_int_cmp(pMin, &pTemp, &ans);
 
         if (ans == 1)
-            memcpy(pMin, pTemp, sizeof(EncInt));
+            memcpy(pMin, &pTemp, sizeof(EncInt));
     }
 
-    pfree(pTemp);
+    // pfree(pTemp);
 
     PG_RETURN_CSTRING(pMin);
 }
@@ -607,7 +600,7 @@ Datum
     // int nitems = ArrayGetNItems(ndims1, dims1); //number of items in array
 
     EncInt* pMax = (EncInt*)palloc0(sizeof(EncInt));
-    EncInt* pTemp = (EncInt*)palloc0(sizeof(EncInt));
+    EncInt pTemp;
 
     array_iterator = array_create_iterator(v, 0, my_extra);
     array_iterate(array_iterator, &value, &isnull);
@@ -616,14 +609,14 @@ Datum
 
     while (array_iterate(array_iterator, &value, &isnull))
     {
-        memcpy(pTemp, DatumGetCString(value), sizeof(EncInt));
+        memcpy(&pTemp, DatumGetCString(value), sizeof(EncInt));
 
-        enc_int_cmp(pMax, pTemp, &ans);
+        enc_int_cmp(pMax, &pTemp, &ans);
         if (ans == -1)
-            memcpy(pMax, pTemp, sizeof(EncInt));
+            memcpy(pMax, &pTemp, sizeof(EncInt));
     }
 
-    pfree(pTemp);
+    // pfree(pTemp);
 
     PG_RETURN_CSTRING(pMax);
 }

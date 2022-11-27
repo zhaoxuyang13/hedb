@@ -3,6 +3,7 @@
 #include <defs.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 void SubText(char *dst, char *str, int from, int to)
 {

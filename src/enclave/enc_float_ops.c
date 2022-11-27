@@ -1,5 +1,7 @@
 #include "enc_float_ops.h"
 #include "plain_float_ops.h"
+#include<time.h>
+
 // extern int decrypt_status;
 
 
@@ -83,13 +85,20 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
     return resp;
 }
 
+
+
+static int bulk_count = 0;
 int enc_float32_bulk(EncFloatBulkRequestData *req)
 {
+    clock_t start, end;
+    bulk_count++;
+
     int bulk_size = req->bulk_size;
     EncFloat *array = req->items;
     float values[bulk_size];
     int count = 0, resp = 0;
     bool found = false, parallel_issued = false;
+    // start = clock();
     while (count < bulk_size)
     {
         values[count] = float_map_find(f_map_p, &array[count], &found);

@@ -1,5 +1,6 @@
 #include "enc_timestamp_ops.h"
 #include "plain_timestamp_ops.h"
+
 int enc_timestamp_cmp(EncTimestampCmpRequestData *req)
 {
     int resp = 0;
@@ -20,7 +21,19 @@ int enc_timestamp_cmp(EncTimestampCmpRequestData *req)
     return resp;
 }
 
-// int enc_timestamp_extract_year(EncTimestamp *in, EncInt *out)
-// {
 
-// }
+
+
+int enc_timestamp_extract_year(EncTimestampExtractYearRequestData *req)
+{
+    int resp = 0;
+    TIMESTAMP t;
+    int year;
+    resp = decrypt_bytes((uint8_t *) &req->in, sizeof(req->in),(uint8_t*) &t, sizeof(t));
+    if (resp != 0)
+        return resp;
+    year = plain_timestamp_extract_year(t);
+    
+    resp = encrypt_bytes((uint8_t *) &year, sizeof(year), (uint8_t *) &req->res, sizeof(req->res));
+    return resp;
+}

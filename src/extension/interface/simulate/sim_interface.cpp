@@ -15,6 +15,10 @@
 #include "ops_server.h"
 #include "extension.hpp"
 
+
+#include <chrono>
+using namespace std::chrono;
+
 /* --------------------------------------------- */
 /* this load barrier is only for arm */
 #ifdef __aarch64__
@@ -53,10 +57,11 @@ static void *posix_shm_addr = NULL;
 
 // }
 
+static int shm_key = 666; /* shmkey 666 is for real udf, shmkey 233 is for mock */
 static void *get_shmem_posix(size_t size){
 	// 1. create shared memory
-	int key = 666;
-    posix_shmid = shmget(key, size, 0666 | IPC_CREAT);
+	// int key = 666;
+    posix_shmid = shmget(shm_key, size, 0666 | IPC_CREAT);
     if (posix_shmid == -1){
         perror("shmget failed %d errno\n");
         exit(EXIT_FAILURE);
@@ -84,6 +89,12 @@ static void *get_shmem_ivshm(size_t size){
 #define REQ_REGION_SIZE 1024*1024
 #define REGION_N_OFFSET(n) (META_REQ_SIZE + REQ_REGION_SIZE * n)
 
+
+void *getMockBuffer(size_t size){
+    shm_key = 233; // 233 is the mock key
+    return getSharedBuffer(size);
+}
+
 static void *shm_addr;
 static int shm_id;
 void *getSharedBuffer(size_t size)
@@ -100,9 +111,19 @@ void *getSharedBuffer(size_t size)
     assert(ops_server->status == SHM_NONE); 
 
     // print_info("lock got\n");
+    auto start = std::chrono::high_resolution_clock::now();
+
     ops_server->status = SHM_GET;
     while(ops_server->status != SHM_DONE){
         YIELD_PROCESSOR;
+        auto elapsed = std::chrono::high_resolution_clock::now() - start;
+        long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
+        elapsed).count();
+        if (microseconds > 5000)
+        {
+            /* unable to connect to udf */
+            return 0;
+        }
     }
     LOAD_BARRIER;
     shm_id = ops_server->ret_id;

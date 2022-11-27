@@ -314,34 +314,34 @@ Datum pg_enc_float4_avg_bulk(PG_FUNCTION_ARGS)
     int *dims1 = ARR_DIMS(v);
     int nitems = ArrayGetNItems(ndims1, dims1); // number of items in array
 
-    EncFloat *sum = (EncFloat *) palloc0(sizeof(EncFloat));
+    EncFloat sum;
     EncFloat *res = (EncFloat *) palloc0(sizeof(EncFloat));
     EncFloat num;
     EncFloat array[BULK_SIZE];
-    int counter = 1; // sum will be at array[0]
+    int counter; // sum will be at array[0]
 
     ArrayMetaState *my_extra = (ArrayMetaState *)fcinfo->flinfo->fn_extra;
     ArrayIterator array_iterator = array_create_iterator(v, 0, my_extra);
 
     array_iterate(array_iterator, &value, &isnull);
-    *sum = *DatumGetEncFloat(value);
-    array[0] = *sum;
+    sum = *DatumGetEncFloat(value);
+    array[0] = sum;
+    counter = 1;
     while (array_iterate(array_iterator, &value, &isnull))
     {
         array[counter] = *DatumGetEncFloat(value);
         counter ++; 
         if(counter == BULK_SIZE){
-            enc_float_sum_bulk(BULK_SIZE,array, sum);
-            array[0] = *sum;
+            enc_float_sum_bulk(BULK_SIZE,array, &sum);
+            array[0] = sum;
             counter = 1;
         }
     }
     if(counter > 1){
-        enc_float_sum_bulk(counter,array, sum);
+        enc_float_sum_bulk(counter,array, &sum);
     }
     enc_float_encrypt(nitems*1.0, &num);
-    enc_float_div(sum, &num,res);
-    pfree(sum);
+    enc_float_div(&sum, &num,res);
     PG_RETURN_POINTER(res);
 }
 

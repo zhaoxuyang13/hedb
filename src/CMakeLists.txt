@@ -159,6 +159,7 @@ endif()
 add_subdirectory(extension)
 # ## for test
 # add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../test/ops-micro ${CMAKE_CURRENT_BINARY_DIR}/)
+## KV and PARA is not compatible for now
 # add_compile_definitions(ENABLE_KV)
 # add_compile_definitions(ENABLE_PARA)
 add_compile_definitions(ENABLE_LOCAL_SIM)

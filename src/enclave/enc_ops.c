@@ -78,6 +78,9 @@ int handle_ops(BaseRequest *base_req)
     }
 
     /* timestamp*/
+    case CMD_TIMESTAMP_EXTRACT_YEAR: 
+        base_req->resp = enc_timestamp_extract_year((EncTimestampExtractYearRequestData *)base_req);
+        break;
     case CMD_TIMESTAMP_CMP: 
         base_req->resp = enc_timestamp_cmp((EncTimestampCmpRequestData *)base_req);
         break;

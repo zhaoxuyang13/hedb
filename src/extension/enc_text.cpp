@@ -48,15 +48,15 @@ cstring_to_text_with_len(const char *s, int len)
 EncText *cstring_to_enctext_with_len(const char *s, uint32_t len){
     
     EncText *result = (EncText *) palloc0(ENCSTRLEN(len) + VARHDRSZ);
-    Str *str = (Str *) palloc0(sizeof(Str)); 
+    Str str; 
     
-    str->len = len;
-    memcpy(str->data, s, len);
+    str.len = len;
+    memcpy(str.data, s, len);
     
     EncStr *estr = (EncStr *) VARDATA(result);
     estr->order = ORDER_NONE;
  
-    enc_text_encrypt(str,estr); 
+    enc_text_encrypt(&str,estr); 
 
     SET_VARSIZE(result, ENCSTRLEN(len) + VARHDRSZ);
 
@@ -83,14 +83,15 @@ Datum
 {
     EncText* s = PG_GETARG_ENCTEXT_P(0);
     EncStr  *estr = (EncStr *) VARDATA(s);
-    Str *str = (Str *) palloc0(sizeof(Str));
-    
+    Str str;
     // print_info("out before dec");
-    enc_text_decrypt(estr, str);
+    enc_text_decrypt(estr, &str);
     // print_info("out after dec");
-    str->data[str->len] = '\0';
+    char * res = (char *) palloc0(str.len + 1);
+    memcpy(res, str.data, str.len);
+    res[str.len] = '\0';
     // ereport(INFO, errmsg("out: order %d", estr->order));
-    PG_RETURN_CSTRING(str->data);
+    PG_RETURN_CSTRING(res);
 }
 
 // @input: two strings
@@ -115,7 +116,10 @@ Datum
         }
     }
     
-    enc_text_cmp(str1, str2, &ans);
+    if (enc_text_cmp(str1, str2, &ans) < 0) {
+        print_info("text eq");
+        exit(0);
+    }
 
     if (ans == 0)
         cmp = true;
@@ -145,7 +149,10 @@ Datum
         }
     }
     
-    enc_text_cmp(str1, str2, &ans);
+    if (enc_text_cmp(str1, str2, &ans) < 0) {
+        print_info("text ne");
+        exit(0);
+    }
 
 
     if (ans != 0)
@@ -176,7 +183,10 @@ Datum
         }
     }
     
-    enc_text_cmp(str1, str2, &ans);
+    if (enc_text_cmp(str1, str2, &ans) < 0) {
+        print_info("text le");
+        exit(0);
+    }
 
 
     if (ans <= 0)
@@ -206,9 +216,11 @@ Datum
             PG_RETURN_BOOL(false);
         }
     }
-    
-    enc_text_cmp(str1, str2, &ans);
 
+    if (enc_text_cmp(str1, str2, &ans) < 0) {
+        print_info("text lt");
+        exit(0);
+    }
 
     if (ans < 0)
         cmp = true;
@@ -238,8 +250,10 @@ Datum
         }
     }
     
-    enc_text_cmp(str1, str2, &ans);
-
+    if (enc_text_cmp(str1, str2, &ans) < 0) {
+        print_info("text ge");
+        exit(0);
+    }
 
     if (ans >= 0)
         cmp = true;
@@ -269,7 +283,9 @@ Datum
         }
     }
     
-    enc_text_cmp(str1, str2, &ans);
+    if (enc_text_cmp(str1, str2, &ans) < 0) {
+        exit(0);
+    }
 
     if (ans > 0)
         cmp = true;
@@ -304,7 +320,10 @@ Datum
         PG_RETURN_INT32(ans);
     }
     
-    enc_text_cmp(str1, str2, &ans);
+    if (enc_text_cmp(str1, str2, &ans) < 0) {
+        print_info("text cmp");
+        exit(0);
+    }
 
     PG_RETURN_INT32(ans);
 }
@@ -339,10 +358,13 @@ Datum
 
     EncText* s = PG_GETARG_ENCTEXT_P(0);
     EncStr  *estr = (EncStr *) VARDATA(s);
-    Str *str = (Str *) palloc0(sizeof(Str));
-    enc_text_decrypt(estr, str);
-    str->data[str->len] = '\0';
-    PG_RETURN_CSTRING(str->data);
+    Str str;
+    enc_text_decrypt(estr, &str);
+    
+    char * res = (char *)palloc0(str.len + 1);
+    memcpy(res, str.data, str.len);
+    res[str.len] = '\0';
+    PG_RETURN_CSTRING(res);
 }
 
 // @input: two strings
@@ -374,13 +396,15 @@ Datum
 Datum
     pg_enc_text_like(PG_FUNCTION_ARGS)
 {
-
     EncText* s1 = PG_GETARG_ENCTEXT_P(0);
     EncText* s2 = PG_GETARG_ENCTEXT_P(1);
     EncStr* str = (EncStr *) VARDATA(s1);
     EncStr* pattern = (EncStr *) VARDATA(s2);
     int result = 0 ;
-    enc_text_like(str,pattern, &result);
+    if (enc_text_like(str,pattern, &result) < 0) {
+        print_info("text like");
+        exit(0);
+    }
 
     PG_RETURN_BOOL(result);
 }
@@ -393,7 +417,9 @@ Datum
     EncStr* str = (EncStr *) VARDATA(s1);
     EncStr* pattern = (EncStr *) VARDATA(s2);
     int result = 0 ;
-    enc_text_like(str,pattern, &result);
+    if (enc_text_like(str,pattern, &result) < 0) {
+        exit(0);
+    } 
 
     PG_RETURN_BOOL(1 ^ result);
 }
@@ -414,7 +440,7 @@ Datum
 }
 
 // @input: string and two integers
-// @return: the substring specified by from and to.
+// @return: the Substring specified by from and to.
 Datum
     substring(PG_FUNCTION_ARGS)
 {

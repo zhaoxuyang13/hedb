@@ -27,7 +27,7 @@ RETURNS int
 AS 'MODULE_PATHNAME'
 LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
-CREATE OR REPLACE FUNCTION enable_replay_mode(cstring)
+CREATE OR REPLACE FUNCTION enable_replay_mode(cstring, cstring)
 RETURNS int
 AS 'MODULE_PATHNAME'
 LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
@@ -156,10 +156,10 @@ LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 -- AS 'MODULE_PATHNAME'
 -- LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
--- CREATE FUNCTION pg_enc_int4_avg_bulk(enc_int4[])
--- RETURNS enc_float4
--- AS 'MODULE_PATHNAME'
--- LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
+CREATE FUNCTION pg_enc_int4_avg_bulk(enc_int4[])
+RETURNS enc_float4
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_int4_min_bulk(enc_int4[])
 RETURNS enc_int4
@@ -259,13 +259,13 @@ CREATE AGGREGATE sum (enc_int4)
    finalfunc = pg_enc_int4_sum_bulk  
 );
 
--- CREATE AGGREGATE avg (enc_int4)
--- (
---    sfunc = array_append,
---    stype = enc_int4[],
---    finalfunc = pg_enc_int4_avg_bulk
+CREATE AGGREGATE avg (enc_int4)
+(
+   sfunc = array_append,
+   stype = enc_int4[],
+   finalfunc = pg_enc_int4_avg_bulk
 
--- );
+);
 
 -- CREATE AGGREGATE avg_simple (enc_int4)
 -- (
@@ -914,10 +914,10 @@ RETURNS boolean
 AS 'MODULE_PATHNAME'
 LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
--- CREATE OR REPLACE FUNCTION pg_catalog.date_part(text, enc_timestamp)
--- RETURNS enc_int4
--- AS 'MODULE_PATHNAME'
--- LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
+CREATE OR REPLACE FUNCTION pg_catalog.date_part(text, enc_timestamp)
+RETURNS enc_int4
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT PARALLEL SAFE;
 
 CREATE FUNCTION pg_enc_timestamp_gt(enc_timestamp, enc_timestamp)
 RETURNS boolean
@@ -1011,6 +1011,12 @@ CREATE OR REPLACE FUNCTION enc_timestamp(timestamp)
     LANGUAGE C STRICT IMMUTABLE ;
 
 CREATE CAST (timestamp AS enc_timestamp) WITH FUNCTION enc_timestamp(timestamp) AS ASSIGNMENT;
+
+-- CREATE CAST (varchar AS enc_timestamp) WITH FUNCTION enc_timestamp(varchar) AS ASSIGNMENT;
+-- CREATE OR REPLACE FUNCTION enc_text(varchar)
+--     RETURNS enc_text
+--     AS 'MODULE_PATHNAME', 'varchar_to_enc_timestamp'
+--     LANGUAGE C STRICT IMMUTABLE ;
 
 -- sets order info in EncStr.order field
 -- if order info not available, order is set to -1, and comparison goes to TEE
