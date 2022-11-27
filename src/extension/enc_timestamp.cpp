@@ -17,14 +17,10 @@ PG_FUNCTION_INFO_V1(pg_enc_timestamp_le);
 PG_FUNCTION_INFO_V1(pg_enc_timestamp_gt);
 PG_FUNCTION_INFO_V1(pg_enc_timestamp_ge);
 PG_FUNCTION_INFO_V1(pg_enc_timestamp_cmp);
+PG_FUNCTION_INFO_V1(date_part);
 #ifdef __cplusplus
 }
 #endif
-
-// static TimeOffset time2t(const int hour, const int min, const int sec, const fsec_t fsec)
-// {
-//     return (((hour * MINS_PER_HOUR) + min) * SECS_PER_MINUTE) + sec + fsec;
-// }
 
 /* Convert a string to internal timestamp type. This function based on native postgres function 'timestamp_in'
  * @input: string as a postgres argument
@@ -307,10 +303,27 @@ Datum
     pg_enc_timestamp_cmp(PG_FUNCTION_ARGS)
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
-    EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
+    EncTimestamp *t2 = PG_GETARG_ENCTimestamp(1);
 
     int ans = 0;
     enc_timestamp_cmp(t1,t2,&ans);
 
     PG_RETURN_INT32(ans);
+}
+
+
+
+Datum
+    date_part(PG_FUNCTION_ARGS)
+{
+    char* get = text_to_cstring(PG_GETARG_TEXT_P(0));
+    if (strcmp(get, "year") != 0)
+    {
+        ereport(ERROR, (errmsg("Only date_part('year', enc_timestamp) is currently implemented.")));
+    }
+    EncTimestamp* timestamp = PG_GETARG_ENCTimestamp(1);
+    EncInt* result = (EncInt *) palloc(sizeof(EncInt));
+
+    enc_timestamp_extract_year(timestamp, result);
+    PG_RETURN_POINTER(result);
 }

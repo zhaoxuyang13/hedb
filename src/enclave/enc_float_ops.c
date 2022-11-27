@@ -1,4 +1,5 @@
 #include "enc_float_ops.h"
+#include<time.h>
 
 // extern int decrypt_status;
 #if defined(TEE_TZ)
@@ -110,10 +111,12 @@ int enc_float32_calc(EncFloatCalcRequestData *req)
 
 
 
-
-
+static int bulk_count = 0;
 int enc_float32_bulk(EncFloatBulkRequestData *req)
 {
+    clock_t start, end;
+    bulk_count++;
+
     int bulk_size = req->bulk_size;
     EncFloat *array = req->items;
     double res = 0;
@@ -121,6 +124,7 @@ int enc_float32_bulk(EncFloatBulkRequestData *req)
     float values[bulk_size];
     int count = 0, resp = 0;
     bool found = false, parallel_issued = false;
+    // start = clock();
     while (count < bulk_size)
     {
         values[count] = float_map_find(f_map_p, &array[count], &found);
@@ -151,9 +155,12 @@ int enc_float32_bulk(EncFloatBulkRequestData *req)
     default:
         break;
     }
-
     float res1 = res;
     resp = encrypt_bytes((uint8_t*) &res1, sizeof(float),(uint8_t*) &req->res, sizeof(req->res));
+
+    // end = clock();
+    // printf("bulk function called %d times, bulk size: %d, time=%fms\n", bulk_count, bulk_size, (double)(end-start) * 1000/CLOCKS_PER_SEC);  
+
     return resp;
 }
 

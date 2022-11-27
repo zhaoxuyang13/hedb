@@ -11,4 +11,4 @@
 #include <request_types.h>
 
 int enc_timestamp_cmp(EncTimestampCmpRequestData *req);
-// int enc_timestamp_extract_year(EncTimestampExtractYearRequestData * req);
+int enc_timestamp_extract_year(EncTimestampExtractYearRequestData * req);

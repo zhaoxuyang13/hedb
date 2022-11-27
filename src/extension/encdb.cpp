@@ -22,10 +22,12 @@ PG_FUNCTION_INFO_V1(enable_replay_mode);
 bool debugMode = true;
 extern bool recordMode;
 extern bool replayMode;
+extern bool sequence_replay;
 extern char record_name_prefix[MAX_NAME_LENGTH];
 extern char record_names[MAX_RECORDS_NUM][MAX_NAME_LENGTH];
 extern int records_cnt;
 void close_write_file_ptr();
+void read_log();
 
 
 // void print_info(const char *str,...)
@@ -98,6 +100,13 @@ Datum
         return EXIT_FAILURE;
     }
 
+    char* mode = PG_GETARG_CSTRING(1);
+    if (strcmp(mode, "random") == 0) {
+        sequence_replay = false;
+        read_log();
+    }
+
+    print_info("mode: %s, seq: %d", mode, (int)sequence_replay);
 
     PG_RETURN_INT32(0);
 }

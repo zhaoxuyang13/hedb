@@ -569,7 +569,7 @@ Datum
     // int nitems = ArrayGetNItems(ndims1, dims1); //number of items in array
 
     EncInt* pMin = (EncInt*)palloc0(sizeof(EncInt));
-    EncInt* pTemp = (EncInt*)palloc0(sizeof(EncInt));
+    EncInt pTemp;
     array_iterator = array_create_iterator(v, 0, my_extra);
     array_iterate(array_iterator, &value, &isnull);
 
@@ -577,15 +577,15 @@ Datum
 
     while (array_iterate(array_iterator, &value, &isnull))
     {
-        memcpy(pTemp, DatumGetCString(value), sizeof(EncInt));
+        memcpy(&pTemp, DatumGetCString(value), sizeof(EncInt));
 
-        enc_int_cmp(pMin, pTemp, &ans);
+        enc_int_cmp(pMin, &pTemp, &ans);
 
         if (ans == 1)
-            memcpy(pMin, pTemp, sizeof(EncInt));
+            memcpy(pMin, &pTemp, sizeof(EncInt));
     }
 
-    pfree(pTemp);
+    // pfree(pTemp);
 
     PG_RETURN_CSTRING(pMin);
 }
@@ -607,7 +607,7 @@ Datum
     // int nitems = ArrayGetNItems(ndims1, dims1); //number of items in array
 
     EncInt* pMax = (EncInt*)palloc0(sizeof(EncInt));
-    EncInt* pTemp = (EncInt*)palloc0(sizeof(EncInt));
+    EncInt pTemp;
 
     array_iterator = array_create_iterator(v, 0, my_extra);
     array_iterate(array_iterator, &value, &isnull);
@@ -616,14 +616,14 @@ Datum
 
     while (array_iterate(array_iterator, &value, &isnull))
     {
-        memcpy(pTemp, DatumGetCString(value), sizeof(EncInt));
+        memcpy(&pTemp, DatumGetCString(value), sizeof(EncInt));
 
-        enc_int_cmp(pMax, pTemp, &ans);
+        enc_int_cmp(pMax, &pTemp, &ans);
         if (ans == -1)
-            memcpy(pMax, pTemp, sizeof(EncInt));
+            memcpy(pMax, &pTemp, sizeof(EncInt));
     }
 
-    pfree(pTemp);
+    // pfree(pTemp);
 
     PG_RETURN_CSTRING(pMax);
 }

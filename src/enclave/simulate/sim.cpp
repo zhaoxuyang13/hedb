@@ -43,7 +43,6 @@ uint8_t decrypt_buffer[sizeof(EncCStr) * 2];
 uint8_t plain_buffer[2048];
 void *decrypt_thread(void * arg){
 	int index = *(int *)arg;
-	printf("decrypt_thread: %d\n", index);
 
 	while (1)
 	{
@@ -62,11 +61,11 @@ void *decrypt_thread(void * arg){
 	return 0;
 }
 
-static unsigned long decrypt_para_counter = 0;
+// static unsigned long decrypt_para_counter = 0;
 int decrypt_bytes_para(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_len)
 {
 #ifdef ENABLE_PARA
-	decrypt_para_counter++;
+	// decrypt_para_counter++;
 
 	int i;
 find_thread:
@@ -121,11 +120,11 @@ void decrypt_wait(uint8_t *pDst, size_t exp_dst_len){
 }
 
 
-static unsigned long decrypt_counter = 0;
+// static unsigned long decrypt_counter = 0;
 int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_len)
 {	
 	// _print_hex("dec ", pSrc, src_len);
-	decrypt_counter++;
+	// decrypt_counter++;
 
 	size_t dst_len = 0;
 	int resp = 0;
@@ -150,7 +149,7 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 	resp = gcm_decrypt(pSrc, src_len, pDst, &dst_len);
 	// memcpy(pDst, pSrc, exp_dst_len);
 	// printf("after dec");
-	assert(dst_len == exp_dst_len);
+	// assert(dst_len == exp_dst_len);
 
 	// }
 
@@ -182,10 +181,10 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
     * SGX_error, if there was an error during encryption/decryption
     0, otherwise
 */
-static unsigned long encrypt_counter = 0;
+// static unsigned long encrypt_counter = 0;
 int encrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_len)
 {
-	encrypt_counter++;
+        // encrypt_counter++;
 	size_t dst_len = exp_dst_len;
 	int resp = 0;
 
@@ -219,9 +218,9 @@ void posix_shm_exit_handler(){
 	}
 }
 
-void *get_shmem_posix(size_t size){
+void *get_shmem_posix(int key, size_t size){
 	// 1. create shared memory
-	int key = 666;
+	// int key = 666;
 	printf("shm size is %lx\n", size);
     shmid = shmget(key, size, 0666 | IPC_CREAT);
     if (shmid == -1) {
@@ -275,7 +274,11 @@ pid_t fork_ops_process(void *shm_addr){
 		args_array[i].decrypt_status = NONE;
 	}
 
-	int counter = 0;
+	int counter = 0, non_enc_counter = 0;
+	int counters[300] = {};
+	// for(int i = 0 ;i < 300; i++){
+	// 	counters[i] = 0;
+	// }
 	BaseRequest *req = (BaseRequest *)shm_addr;
 	while(1){
 		if (req->status == EXIT)
@@ -286,7 +289,12 @@ pid_t fork_ops_process(void *shm_addr){
 					args_array[i].decrypt_status = EXIT;
 				}
 			}
-			printf("SIM-TA Exit %d, decrypt counter: %lu, dec parallel counter: %lu encrypt counter: %lu\n", counter, decrypt_counter, decrypt_para_counter, encrypt_counter);
+			printf("SIM-TA Exit, ops counter: %d, non-enc counter %d\n", counter, non_enc_counter);
+			for(int i = 0; i <= 299; i ++){
+				if(counters[i])
+					printf("%d: counter %d, ", i,  counters[i]);
+			}
+			printf("\n");
 			req->status = NONE;
 			exit(0);
 		}
@@ -294,7 +302,17 @@ pid_t fork_ops_process(void *shm_addr){
 		{
 			LOAD_BARRIER;
 			// printf("request received %d\n", req->reqType);
-			// counter ++;
+			counter ++;
+			if(req->reqType != CMD_INT_ENC
+			&& req->reqType != CMD_INT_DEC
+			&& req->reqType != CMD_FLOAT_ENC
+			&& req->reqType != CMD_FLOAT_DEC
+			&& req->reqType != CMD_STRING_ENC
+			&& req->reqType != CMD_STRING_DEC
+			&& req->reqType != CMD_TIMESTAMP_ENC
+			&& req->reqType != CMD_TIMESTAMP_DEC)
+				non_enc_counter ++;
+			counters[req->reqType] ++;
 			// if (counter % 100000 == 0)
 			// 	printf("counter %d\n", counter++);
 
@@ -304,7 +322,6 @@ pid_t fork_ops_process(void *shm_addr){
 			{
 				printf("TA error %d, %d\n",req->resp,counter);
 			}
-
 			STORE_BARRIER;
 			req->status = DONE;
 		}
@@ -324,11 +341,15 @@ int main(int argc,char *argv[]){
 	// for(int i = 0; i < 4;i ++)
 	// 	CPU_SET(i, &mask);
 	// int result = sched_setaffinity(0, sizeof(mask), &mask);
-
+	int key = 666;
+	if(argc == 2){
+		key = atoi(argv[1]);
+	}
+	printf("sim_server running on shared memory key %d\n", key);
 	int data_size = SHM_SIZE;
 	pid_t child_pids[20] = {};
 #ifdef ENABLE_LOCAL_SIM
-	OpsServer *req = (OpsServer *) get_shmem_posix(data_size);
+	OpsServer *req = (OpsServer *) get_shmem_posix(key, data_size);
 #else 
 	OpsServer *req = (OpsServer *) get_shmem_ivshm(data_size);
 #endif

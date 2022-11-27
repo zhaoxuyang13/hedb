@@ -10,6 +10,9 @@ void *getSharedBuffer(size_t size);
 /* free shared buffer. */
 void freeBuffer(void *buffer);
 
+void *getMockBuffer(size_t size);
+
+
 #ifdef __cplusplus
 }
 #endif
