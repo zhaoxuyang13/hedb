@@ -124,11 +124,11 @@ void decrypt_wait(uint8_t *pDst, size_t exp_dst_len){
 }
 
 
-// static unsigned long decrypt_counter = 0;
+static unsigned long decrypt_counter = 0;
 int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_len)
 {	
 	// _print_hex("dec ", pSrc, src_len);
-	// decrypt_counter++;
+	decrypt_counter++;
 
 	size_t dst_len = 0;
 	int resp = 0;
@@ -185,10 +185,10 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
     * SGX_error, if there was an error during encryption/decryption
     0, otherwise
 */
-// static unsigned long encrypt_counter = 0;
+static unsigned long encrypt_counter = 0;
 int encrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_len)
 {
-        // encrypt_counter++;
+    encrypt_counter++;
 	size_t dst_len = exp_dst_len;
 	int resp = 0;
 
@@ -293,7 +293,7 @@ pid_t fork_ops_process(void *shm_addr){
 					args_array[i].decrypt_status = EXIT;
 				}
 			}
-			printf("SIM-TA Exit, ops counter: %d, non-enc counter %d\n", counter, non_enc_counter);
+			printf("SIM-TA Exit, ops counter: %d, non-enc counter %d, dec counter: %ld, enc counter: %ld\n", counter, non_enc_counter, decrypt_counter, encrypt_counter);
 			for(int i = 0; i <= 299; i ++){
 				if(counters[i])
 					printf("%d: counter %d, ", i,  counters[i]);

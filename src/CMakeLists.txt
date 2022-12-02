@@ -9,7 +9,7 @@ endif()
 
 set(TEE_TYPE "" CACHE STRING "Type of TEE (SGX, TZ, SIM, etc)")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wunused-variable -Wunused-but-set-variable")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2 -Wunused-variable -Wunused-but-set-variable")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunused-variable -Wunused-but-set-variable")
 

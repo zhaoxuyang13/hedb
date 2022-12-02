@@ -42,7 +42,15 @@ char record_names[MAX_RECORDS_NUM][MAX_NAME_LENGTH];
 uint8_t log_buffer[MAX_LOG_SIZE] ;
 uint64_t current_log_size = 0;
 
-// FILE *write_ptr = 0;
+static inline uint64_t
+arm64_pmccntr(void)
+{
+//    uint64_t tsc;
+//    asm volatile("mrs %0, pmccntr_el0" : "=r"(tsc));
+//    return tsc;
+}
+
+// FILE *write_ptr = 0;m
 // void flush_to_log_file(uint8_t *buffer, uint64_t size){
 //     if (write_ptr == 0)
 //     {
@@ -57,7 +65,7 @@ void update_write_file_ptr(){
     sprintf(filename, "%s-%d.log", record_name_prefix, pid);
     print_info("%s\n", filename);
 
-    write_file_ptr = fopen(filename,"w+"); 
+    write_file_ptr = fopen(filename,"w+b"); 
 }
 
 void flush_write_file_ptr(){
@@ -84,7 +92,7 @@ FILE *get_read_file_ptr(int id){
     { 
         char filename[120];
         sprintf(filename, "%s-%d.log", record_name_prefix, id); 
-        read_file_ptr = fopen(filename,"r+"); 
+        read_file_ptr = fopen(filename,"r+b"); 
     }
     return read_file_ptr;
 }
@@ -94,11 +102,12 @@ void close_read_file_ptr(){
     read_file_ptr = 0;
 }
 
+// TODO: not implemented yet
 std::unordered_map<string, string> log_map;
 void read_log()
 {
     for(int i = 0; i < records_cnt; i ++){
-        read_file_ptr = fopen(record_names[i],"r+");
+        read_file_ptr = fopen(record_names[i],"r+b");
 
         fclose(read_file_ptr);
     }
@@ -315,6 +324,13 @@ void _print_hex(const char *what, const void *v, const unsigned long l)
     print_info("%s\n", tmp);
 }
 
+void print_base64(const void *cipher, int length, int base64_length, char* message) 
+{
+    char base64_str[base64_length];
+    base64_encode((const unsigned char *)cipher, length, base64_str);
+    print_info("%s length: %d, contents: %s", message, length, base64_str);
+}
+
 #define ENC_FLOAT4_LENGTH_B64 BASE64_ENCODE_OUT_SIZE(ENC_FLOAT4_LENGTH)
 #define ENC_INT32_LENGTH_B64 BASE64_ENCODE_OUT_SIZE(ENC_INT32_LENGTH)
 #define ENC_STRING_LENGTH_B64 BASE64_ENCODE_OUT_SIZE(ENC_STRING_LENGTH)
@@ -386,234 +402,330 @@ int random_replay(void *req_buffer)
 
 }
 
+static int previous_op = 0;
 int seq_replay(void *req_buffer, FILE *read_file_ptr)
 {
     BaseRequest *req_control = static_cast<BaseRequest *>(req_buffer);
     int reqType = req_control->reqType;
     int op, resp;
+    uint64_t timestamp;
+    fread(&op, sizeof(int), 1, read_file_ptr);
+    if (op != reqType) {
+        print_error("replay fail at %ld, op: %d, reqType: %d, previous_op: %d", ftell(read_file_ptr), op, reqType, previous_op);
+        return -RETRY_FAILED;
+    }
+
     if(reqType>= 101 
     && reqType<= 110){
-
-        char b64_left[ENC_FLOAT4_LENGTH_B64],b64_right[ENC_FLOAT4_LENGTH_B64],b64_res[ENC_FLOAT4_LENGTH_B64];
         EncFloat left,right,res;
         int cmp;
         if(reqType == CMD_FLOAT_CMP){
             EncFloatCmpRequestData *req = (EncFloatCmpRequestData *) req_buffer; 
-            fscanf(read_file_ptr, "%d %s %s %d %d\n", &op, 
-            b64_left, b64_right, &cmp, &resp);
-            base64_decode((const char*) b64_left, strlen(b64_left), (unsigned char *)&left); 
-            base64_decode((const char*) b64_right, strlen(b64_right), (unsigned char *)&right);
-
-            if(op != reqType
-            || memcmp(&left, &req->left, sizeof(left))
-            || memcmp(&right, &req->right, sizeof(right))
-            ) {
-                print_info("float cmp fail at %ld, op: %d, reqType: %d", ftell(read_file_ptr), op, reqType);
-                print_info("memcmp %d, %d \n", 
-                    memcmp(&left, &req->left, sizeof(left)), 
-                    memcmp(&right, &req->right, sizeof(right))
-                    );
+            char read_buffer[sizeof(int) * 2 + ENC_FLOAT4_LENGTH * 2 + sizeof(uint64_t)];
+            char *src = read_buffer;
+            fread(read_buffer, sizeof(char), sizeof(int) * 2 + ENC_FLOAT4_LENGTH * 2 + sizeof(uint64_t), read_file_ptr);
+            memcpy(&left, src, ENC_FLOAT4_LENGTH);
+            src += ENC_FLOAT4_LENGTH;
+            memcpy(&right, src, ENC_FLOAT4_LENGTH);
+            src += ENC_FLOAT4_LENGTH;
+            memcpy(&cmp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&resp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&timestamp, src, sizeof(uint64_t));
+            
+            if (memcmp(&req->left, &left, ENC_FLOAT4_LENGTH) || memcmp(&req->right, &right, ENC_FLOAT4_LENGTH)) {
+                print_error("float cmp fail at %ld", ftell(read_file_ptr));
                 return -RETRY_FAILED;
             }
             req->cmp = cmp;
         }else if(reqType == CMD_FLOAT_SUM_BULK){
             EncFloatBulkRequestData *req = (EncFloatBulkRequestData *) req_buffer;
             int bulk_size;
+            char read_buffer[sizeof(int) * 2 + ENC_FLOAT4_LENGTH + sizeof(uint64_t)];
+            char *src = read_buffer;
+            fread(read_buffer, sizeof(char), sizeof(int) * 2 + ENC_FLOAT4_LENGTH + sizeof(uint64_t), read_file_ptr);
+            memcpy(&bulk_size, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&res, src, ENC_FLOAT4_LENGTH);
+            src += ENC_FLOAT4_LENGTH;
+            memcpy(&resp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&timestamp, src, sizeof(uint64_t));
 
-            fscanf(read_file_ptr, "%d %d %s %d", &op, 
-            &bulk_size, b64_res, &resp);
-            if(op == reqType || bulk_size != req->bulk_size){
+            if (bulk_size != req->bulk_size) {
+                print_error("float sum fail at %ld, req->bulk_size: %d, bulk_size:%d", ftell(read_file_ptr), req->bulk_size, bulk_size);
                 return -RETRY_FAILED;
             }
-            base64_decode((const  char *)&b64_res, strlen(b64_res), (unsigned char *)&req->res);
-            for(int i = 0; i < bulk_size; i ++){
-                fscanf(read_file_ptr, "%s", b64_left);
-            }
-            fscanf(read_file_ptr, "\n");
 
-            if(op != reqType || bulk_size != req->bulk_size){
-                print_info("float bulk, replay fail at %ld", ftell(read_file_ptr));
-                return -RETRY_FAILED;
+            char read_buffer_operators[bulk_size * ENC_FLOAT4_LENGTH];
+            EncFloat operand;
+            src = read_buffer_operators;
+            fread(read_buffer_operators, sizeof(char), bulk_size * ENC_FLOAT4_LENGTH, read_file_ptr);
+            for (int i = 0; i < bulk_size; i++) {
+                memcpy(&operand, src, ENC_FLOAT4_LENGTH);
+                if (memcmp(&operand, &req->items[i], ENC_FLOAT4_LENGTH)) {
+                    print_error("float sum operands %d different", i);
+                    return -RETRY_FAILED;
+                }
+                src += ENC_FLOAT4_LENGTH;
             }
+
+            memcpy(&req->res, &res, ENC_FLOAT4_LENGTH);
         }
         else {
             EncFloatCalcRequestData *req = (EncFloatCalcRequestData *) req_buffer;
-            fscanf(read_file_ptr, "%d %s %s %s %d\n", &op, 
-            b64_left, b64_right, b64_res, &resp); 
-            base64_decode((const char*) b64_left, strlen(b64_left), (unsigned char *)&left); 
-            base64_decode((const char*) b64_right, strlen(b64_right), (unsigned char *)&right);
-            base64_decode((const char*) b64_res, strlen(b64_res), (unsigned char *)&res);
+            char read_buffer[sizeof(int) + ENC_FLOAT4_LENGTH * 3 + sizeof(uint64_t)];
+            char *src = read_buffer;
+            fread(read_buffer, sizeof(char), sizeof(int) + ENC_FLOAT4_LENGTH * 3 + sizeof(uint64_t), read_file_ptr);
+            memcpy(&left, src, ENC_FLOAT4_LENGTH);
+            src += ENC_FLOAT4_LENGTH;
+            memcpy(&right, src, ENC_FLOAT4_LENGTH);
+            src += ENC_FLOAT4_LENGTH;
+            memcpy(&res, src, ENC_FLOAT4_LENGTH);
+            src += ENC_FLOAT4_LENGTH;
+            memcpy(&resp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&timestamp, src, sizeof(uint64_t));
 
-            if(op != reqType) {
-                print_info("float ops failed at %ld, op: %d, reqType: %d", ftell(read_file_ptr), op, reqType);
+            if (memcmp(&left, &req->left, ENC_FLOAT4_LENGTH) || memcmp(&right, &req->right, ENC_FLOAT4_LENGTH)) {
+                print_error("float ops fail at %ld", ftell(read_file_ptr));
                 return -RETRY_FAILED;
             }
-            req->res = res;
+            
+            memcpy(&req->res, &res, ENC_FLOAT4_LENGTH);
         }
     }else if(reqType >= 1
         && reqType <= 10
     ){
-        char b64_left[ENC_INT32_LENGTH_B64],b64_right[ENC_INT32_LENGTH_B64],b64_res[ENC_INT32_LENGTH_B64];
         EncInt left,right,res;
         int cmp;
         if(reqType == CMD_INT_CMP){
             EncIntCmpRequestData *req = (EncIntCmpRequestData *) req_buffer; 
-            fscanf(read_file_ptr, "%d %s %s %d %d\n", &op, 
-            b64_left, b64_right, &cmp, &resp);
-            base64_decode((const char*) b64_left, strlen(b64_left), (unsigned char *)&left); 
-            base64_decode((const char*) b64_right, strlen(b64_right), (unsigned char *)&right);
-            if(op != reqType 
-                || memcmp(&left, &req->left, ENC_INT32_LENGTH)
-                || memcmp(&right, &req->right, ENC_INT32_LENGTH)
-                ) {
-                print_info("int cmp fail at %ld", ftell(read_file_ptr));
+            char read_buffer[sizeof(int) * 2 + ENC_INT32_LENGTH * 2 + sizeof(uint64_t)];
+            char *src = read_buffer;
+            fread(read_buffer, sizeof(char), sizeof(int) * 2 + ENC_INT32_LENGTH * 2 + sizeof(uint64_t), read_file_ptr);
+            memcpy(&left, src, ENC_INT32_LENGTH);
+            src += ENC_INT32_LENGTH;
+            memcpy(&right, src, ENC_INT32_LENGTH);
+            src += ENC_INT32_LENGTH;
+            memcpy(&cmp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&resp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&timestamp, src, sizeof(uint64_t));
+
+            if (memcmp(&left, &req->left, ENC_INT32_LENGTH) || memcmp(&right, &req->right, ENC_INT32_OPE_LENGTH)) {
+                print_error("int cmp fail at %ld", ftell(read_file_ptr));
                 return -RETRY_FAILED;
             }
+
             req->cmp = cmp;
         }else if(reqType == CMD_INT_SUM_BULK){
             EncIntBulkRequestData *req = (EncIntBulkRequestData *) req_buffer;
             int bulk_size;
-            fscanf(read_file_ptr, "%d %d %s %d", &op, 
-            &bulk_size, b64_res, &resp);
-            if(op == reqType || bulk_size != req->bulk_size){
-                print_info("int sum bulk fail at %ld", ftell(read_file_ptr));
+            char read_buffer[sizeof(int) * 2 + ENC_INT32_LENGTH + sizeof(uint64_t)];
+            char *src = read_buffer;
+            fread(read_buffer, sizeof(char), sizeof(int) * 2 + ENC_INT32_LENGTH + sizeof(uint64_t), read_file_ptr);
+            memcpy(&bulk_size, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&res, src, ENC_INT32_LENGTH);
+            src += ENC_INT32_LENGTH;
+            memcpy(&resp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&timestamp, src, sizeof(uint64_t));
+
+            if (bulk_size != req->bulk_size) {
+                print_error("int sum fail at %ld, req->bulk_size: %d, bulk_size:%d", ftell(read_file_ptr), req->bulk_size, bulk_size);
                 return -RETRY_FAILED;
             }
-            base64_decode((const  char *)&b64_res, strlen(b64_res), (unsigned char *)&req->res);
 
-            for(int i = 0; i < bulk_size; i ++){
-                fscanf(read_file_ptr, "%s", b64_left);
+            char read_buffer_operators[bulk_size * ENC_INT32_LENGTH];
+            EncFloat operand;
+            src = read_buffer_operators;
+            fread(read_buffer_operators, sizeof(char), bulk_size * ENC_INT32_LENGTH, read_file_ptr);
+            for (int i = 0; i < bulk_size; i++) {
+                memcpy(&operand, src, ENC_INT32_LENGTH);
+                if (memcmp(&operand, &req->items[i], ENC_INT32_LENGTH)) {
+                    print_error("int sum operands %d different", i);
+                    return -RETRY_FAILED;
+                }
+                src += ENC_INT32_LENGTH;
             }
-            fscanf(read_file_ptr, "\n");
+
+            memcpy(&req->res, &res, ENC_INT32_LENGTH);
         }
         else {
             EncIntCalcRequestData *req = (EncIntCalcRequestData *) req_buffer;
-            fscanf(read_file_ptr, "%d %s %s %s %d\n", &op, 
-            b64_left, b64_right, b64_res, &resp); 
-            base64_decode((const char*) b64_left, strlen(b64_left), (unsigned char *)&left); 
-            base64_decode((const char*) b64_right, strlen(b64_right), (unsigned char *)&right);
-            base64_decode((const char*) b64_res, strlen(b64_res), (unsigned char *)&res);
-            if(op != reqType 
-                || memcmp(&left, &req->left, ENC_INT32_LENGTH)
-                || memcmp(&right, &req->right, ENC_INT32_LENGTH)
-                ) {
-                print_info("int ops fail at %ld", ftell(read_file_ptr));
+            char read_buffer[sizeof(int) + ENC_INT32_LENGTH * 3 + sizeof(uint64_t)];
+            char *src = read_buffer;
+            fread(read_buffer, sizeof(char), sizeof(int) + ENC_INT32_LENGTH * 3 + sizeof(uint64_t), read_file_ptr);
+            memcpy(&left, src, ENC_INT32_LENGTH);
+            src += ENC_INT32_LENGTH;
+            memcpy(&right, src, ENC_INT32_LENGTH);
+            src += ENC_INT32_LENGTH;
+            memcpy(&res, src, ENC_INT32_LENGTH);
+            src += ENC_INT32_LENGTH;
+            memcpy(&resp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&timestamp, src, sizeof(uint64_t));
+
+            if (memcmp(&left, &req->left, ENC_INT32_LENGTH) || memcmp(&right, &req->right, ENC_INT32_LENGTH)) {
+                print_error("int ops fail at %ld", ftell(read_file_ptr));
                 return -RETRY_FAILED;
             }
-            req->res = res;
+            
+            memcpy(&req->res, &res, ENC_INT32_LENGTH);
         }
     } else if (reqType >= 201 && reqType <= 206)
     {
-        char b64_left[ENC_STRING_LENGTH_B64], b64_right[ENC_STRING_LENGTH_B64], b64_res[ENC_STRING_LENGTH_B64];
         EncStr left, right, res;
         int cmp;
         if (reqType == CMD_STRING_CMP ||
             reqType == CMD_STRING_LIKE) {
             EncStrCmpRequestData *req = (EncStrCmpRequestData *)req_buffer;
+            int left_length, right_length;
+            fread(&left_length, sizeof(int), 1, read_file_ptr);
+            fread(&right_length, sizeof(int), 1, read_file_ptr);
 
-            fscanf(read_file_ptr, "%d %s %s %d %d\n",
-                   &op,
-                   b64_left,
-                   b64_right,
-                   &cmp,
-                   &resp);
-            base64_decode((const char *)b64_left, strlen(b64_left), (unsigned char *)&left);
-            base64_decode((const char *)b64_right, strlen(b64_right), (unsigned char *)&right);
-
-            if (op != reqType || resp)
-            {
-                // print_info("%d, %d, %d, %d, left %s, right %s\n",op, reqType,
-                //     memcmp(&left, &req->left, encstr_size(left)),
-                //     memcmp(&right, &req->right, encstr_size(right)),
-                //     b64_left, b64_right);
-                print_info("string cmp failed at %ld, op: %d, reqType:%d, resp %d\n", ftell(read_file_ptr), op, reqType, resp);
+            if (left_length != encstr_size(req->left) || right_length != encstr_size(req->right)) {
+                print_error("string cmp fail at %ld, length not right", ftell(read_file_ptr));
                 return -RETRY_FAILED;
             }
+
+            char read_buffer[left_length + right_length + sizeof(int) * 2 + sizeof(uint64_t)];
+            char *src = read_buffer;
+            fread(read_buffer, sizeof(char), left_length + right_length + sizeof(int) * 2 + sizeof(uint64_t), read_file_ptr);
+            memcpy(&left, src, left_length);
+            src += left_length;
+            memcpy(&right, src, right_length);
+            src += right_length;
+            memcpy(&cmp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&resp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&timestamp, src, sizeof(uint64_t));
+
+            // if (memcmp(&left, &req->left, left_length) || memcmp(&right, &req->right, right_length)) {
+            //     print_error("string cmp/like(%d) fail at %ld, contents mismatch", op, ftell(read_file_ptr));
+            //     return -RETRY_FAILED;
+            // }
             req->cmp = cmp;
         }
         else if (req_control->reqType == CMD_STRING_SUBSTRING) {
             SubstringRequestData *req = (SubstringRequestData *)req_buffer;
-            char b64_begin[ENC_INT32_LENGTH_B64], b64_end[ENC_INT32_LENGTH_B64];
+            EncStr str;
             EncInt begin, end;
-            fscanf(read_file_ptr, "%d %s %s %s %s %d\n",
-                   &op,
-                   b64_left,
-                   b64_begin,
-                   b64_end,
-                   b64_res,
-                   &resp);
-            base64_decode((const char *)&b64_left, strlen(b64_left), (unsigned char *)&left);
-            base64_decode((const char *)&b64_begin, strlen(b64_begin), (unsigned char *)&begin);
-            base64_decode((const char *)&b64_end, strlen(b64_end), (unsigned char *)&end);
-            base64_decode((const char *)&b64_res, strlen(b64_res), (unsigned char *)&res);
-            if (op != reqType)
-            {
-                // memcmp(&left, &req->str, encstr_size(req->str)) || memcmp(&begin, &req->begin, ENC_INT32_LENGTH) || memcmp(&end, &req->end, ENC_INT32_LENGTH)
-                print_info("string substring fail at %ld, op: %d, reqType: %d, str len: %d %d\n", ftell(read_file_ptr), op, reqType, req->str.len, left.len);
+            int str_length, result_length;
+            fread(&str_length, sizeof(int), 1, read_file_ptr);
+            fread(&result_length, sizeof(int), 1, read_file_ptr);
+
+            if (str_length != encstr_size(req->str)) {
+                print_error("string substring fail at %ld, length not right", ftell(read_file_ptr));
                 return -RETRY_FAILED;
             }
-            memcpy(&req->res, &res, encstr_size(res));
-            // req->res = res;
+
+            char read_buffer[str_length + result_length + sizeof(int) + ENC_INT32_LENGTH * 2 + sizeof(uint64_t)];
+            char *src = read_buffer;
+            fread(read_buffer, sizeof(char), str_length + result_length + sizeof(int) + ENC_INT32_LENGTH * 2 + sizeof(uint64_t), read_file_ptr);
+            memcpy(&str, src, str_length);
+            src += str_length;
+            memcpy(&begin, src, ENC_INT32_LENGTH);
+            src += ENC_INT32_LENGTH;
+            memcpy(&end, src, ENC_INT32_LENGTH);
+            src += ENC_INT32_LENGTH;
+            memcpy(&res, src, result_length);
+            src += result_length;
+            memcpy(&resp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&timestamp, src, sizeof(uint64_t));
+
+            if (memcmp(&str, &req->str, str_length) || memcmp(&begin, &req->begin, ENC_INT32_LENGTH) || memcmp(&end, &req->end, ENC_INT32_LENGTH))
+            {
+                print_error("string substring fail at %ld, contents mismatch", ftell(read_file_ptr));
+                return -RETRY_FAILED;
+            }
+            memcpy(&req->res, &res, result_length);
         }
         else {
             EncStrCalcRequestData *req = (EncStrCalcRequestData *)req_buffer;
-            fscanf(read_file_ptr, "%d %s %s %s %d\n",
-                   &op,
-                   b64_left,
-                   b64_right,
-                   b64_res,
-                   &resp);
-            base64_decode((const char *)b64_left, strlen(b64_left), (unsigned char *)&left);
-            base64_decode((const char *)b64_right, strlen(b64_right), (unsigned char *)&right);
-            base64_decode((const char *)b64_res, strlen(b64_res), (unsigned char *)&res);
-            if (op != reqType)
-            {
-                // memcmp(&left, &req->left, encstr_size(req->left)) || memcmp(&right, &req->right, encstr_size(req->right))
-                print_info("string others fail at %ld", ftell(read_file_ptr));
+            int left_length, right_length, res_length;
+            fread(&left_length, sizeof(int), 1, read_file_ptr);
+            fread(&right_length, sizeof(int), 1, read_file_ptr);
+            fread(&res_length, sizeof(int), 1, read_file_ptr);
+
+
+            if (left_length != encstr_size(req->left) || right_length != encstr_size(req->right)) {
+                print_error("string ops fail at %ld, length not right", ftell(read_file_ptr));
                 return -RETRY_FAILED;
             }
-            memcpy(&req->res, &res, encstr_size(res));
-            // req->res = res;
+
+            char read_buffer[sizeof(int) + left_length + right_length + res_length + sizeof(uint64_t)];
+            fread(read_buffer, sizeof(char), sizeof(int) + left_length + right_length + res_length + sizeof(uint64_t), read_file_ptr);
+            char *src = read_buffer;
+            memcpy(&left, src, left_length);
+            src += left_length;
+            memcpy(&right, src, right_length);
+            src += right_length;
+            memcpy(&res, src, res_length);
+            src += res_length;
+            memcpy(&resp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&timestamp, src, sizeof(uint64_t));
+            
+            if (memcmp(&left, &req->left, left_length) || memcmp(&right, &req->right, right_length)) {
+                print_error("string ops fail at %ld, contents mismatch", ftell(read_file_ptr));
+                return -RETRY_FAILED;
+            }
+            
+            memcpy(&req->res, &res, res_length);
         }
     } else if (reqType >= 150 && reqType <= 153) {
         if (req_control->reqType == CMD_TIMESTAMP_CMP) {
-            char b64_left[ENC_TIMESTAMP_LENGTH_B64],b64_right[ENC_TIMESTAMP_LENGTH_B64];
             int cmp;
             EncTimestamp left, right;
             EncTimestampCmpRequestData *req = (EncTimestampCmpRequestData *)req_buffer;
+            char read_buffer[sizeof(int) * 2 + ENC_TIMESTAMP_LENGTH * 2 + sizeof(uint64_t)];
+            fread(read_buffer, sizeof(char), sizeof(int) * 2 + ENC_TIMESTAMP_LENGTH * 2 + sizeof(uint64_t), read_file_ptr);
+            char *src = read_buffer;
+            memcpy(&left, src, ENC_TIMESTAMP_LENGTH);
+            src += ENC_TIMESTAMP_LENGTH;
+            memcpy(&right, src, ENC_TIMESTAMP_LENGTH);
+            src += ENC_TIMESTAMP_LENGTH;
+            memcpy(&cmp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&resp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&timestamp, src, sizeof(uint64_t));
 
-            fscanf(read_file_ptr, "%d %s %s %d %d\n",
-                   &op,
-                   b64_left,
-                   b64_right,
-                   &cmp,
-                   &resp);
-            base64_decode((const char *)b64_left, strlen(b64_left), (unsigned char *)&left);
-            base64_decode((const char *)b64_right, strlen(b64_right), (unsigned char *)&right);
-            if (op != reqType || memcmp(&left, &req->left, ENC_TIMESTAMP_LENGTH) || memcmp(&right, &req->right, ENC_TIMESTAMP_LENGTH)) {
+            if (memcmp(&left, &req->left, ENC_TIMESTAMP_LENGTH) || memcmp(&right, &req->right, ENC_TIMESTAMP_LENGTH)) {
                 print_info("timestamp cmp fail at %ld", ftell(read_file_ptr));
                 return -RETRY_FAILED;
             }
             req->cmp = cmp;
         } else if (req_control->reqType == CMD_TIMESTAMP_EXTRACT_YEAR) {
-            char b64_in[ENC_TIMESTAMP_LENGTH_B64], b64_out[ENC_INT32_LENGTH_B64];
             EncTimestamp in;
             EncInt out;
             EncTimestampExtractYearRequestData *req = (EncTimestampExtractYearRequestData *) req_buffer;
-            fscanf(read_file_ptr, "%d %s %s %d\n",
-                   &op,
-                   b64_in,
-                   b64_out,
-                   &resp);
-            base64_decode((const char *)b64_in, strlen(b64_in), (unsigned char *) &in);
-            base64_decode((const char *)b64_out, strlen(b64_out), (unsigned char *) &out);
-            if (op != reqType || memcmp(&in, &req->in, ENC_TIMESTAMP_LENGTH)) {
+            char read_buffer[sizeof(int) + ENC_TIMESTAMP_LENGTH + ENC_INT32_LENGTH + sizeof(uint64_t)];
+            fread(read_buffer, sizeof(char), sizeof(int) + ENC_TIMESTAMP_LENGTH + ENC_INT32_LENGTH + sizeof(uint64_t), read_file_ptr);
+            char *src = read_buffer;
+            memcpy(&in, src, ENC_TIMESTAMP_LENGTH);
+            src += ENC_TIMESTAMP_LENGTH;
+            memcpy(&out, src, ENC_INT32_LENGTH);
+            src += ENC_INT32_LENGTH;
+            memcpy(&resp, src, sizeof(int));
+            src += sizeof(int);
+            memcpy(&timestamp, src, sizeof(uint64_t));
+
+            if (memcmp(&in, &req->in, ENC_TIMESTAMP_LENGTH)) {
                 print_info("timestamp extract fail at %ld", ftell(read_file_ptr));
                 return -RETRY_FAILED;
             }
             memcpy(&req->res, &out, ENC_INT32_LENGTH);
         }
     }
+    previous_op = op;
     return resp;
 }
 
@@ -629,7 +741,7 @@ int replay_request(void *req){
     static FILE *read_file_ptr = nullptr; 
     if(read_file_ptr == nullptr){
         for(int i = 0; i < records_cnt; i ++){
-            read_file_ptr = fopen(record_names[i],"r+");
+            read_file_ptr = fopen(record_names[i],"r+b");
             int ret = try_replay_request(req, read_file_ptr);
             if(ret == -RETRY_FAILED){
                 fclose(read_file_ptr);
@@ -796,48 +908,66 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
     && req_control->reqType >= 101
     && req_control->reqType <= 109
     ){
-        char b64_left[ENC_FLOAT4_LENGTH_B64],b64_right[ENC_FLOAT4_LENGTH_B64],b64_res[ENC_FLOAT4_LENGTH_B64];
-        memset(b64_left, 0, sizeof(b64_left));
-        memset(b64_right, 0, sizeof(b64_right));
-        memset(b64_res, 0, sizeof(b64_res));
         if(req_control->reqType == CMD_FLOAT_CMP){
             EncFloatCmpRequestData *req = (EncFloatCmpRequestData *) req_buffer;
-            base64_encode((const unsigned char *)&req->left, ENC_FLOAT4_LENGTH, b64_left);
-            base64_encode((const unsigned char *)&req->right, ENC_FLOAT4_LENGTH, b64_right);
+            char write_buffer[sizeof(int) * 3 + ENC_FLOAT4_LENGTH * 2 + sizeof(uint64_t)];
+            char *dst = write_buffer;
+            memcpy(dst, &req_control->reqType, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req->left, ENC_FLOAT4_LENGTH);
+            dst += ENC_FLOAT4_LENGTH;
+            memcpy(dst, &req->right, ENC_FLOAT4_LENGTH);
+            dst += ENC_FLOAT4_LENGTH;
+            memcpy(dst, &req->cmp, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req_control->resp, sizeof(int));
+            dst += sizeof(int);
+            uint64_t timestamp = arm64_pmccntr();
+            memcpy(dst, &timestamp, sizeof(uint64_t));
 
-            fprintf(write_file_ptr,"%d %s %s %d %d\n",
-                    req_control->reqType, 
-                    b64_left,
-                    b64_right,
-                    req->cmp,
-                    req_control->resp);
+            fwrite(write_buffer, sizeof(char), sizeof(int) * 3 + ENC_FLOAT4_LENGTH * 2 + sizeof(uint64_t), write_file_ptr);
         }else if(req_control->reqType == CMD_FLOAT_SUM_BULK){
             EncFloatBulkRequestData *req = (EncFloatBulkRequestData *) req_buffer;
-            base64_encode((const unsigned char *)&req->res, ENC_FLOAT4_LENGTH, b64_res);
-            fprintf(write_file_ptr,"%d %d %s %d",
-                req_control->reqType, 
-                req->bulk_size,
-                b64_res,
-                req_control->resp);
+            char write_buffer[sizeof(int) * 3 + ENC_FLOAT4_LENGTH + sizeof(uint64_t)];
+            char *dst = write_buffer;
+            memcpy(dst, &req_control->reqType, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req->bulk_size, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req->res, ENC_FLOAT4_LENGTH);
+            dst += ENC_FLOAT4_LENGTH;
+            memcpy(dst, &req_control->resp, sizeof(int));
+            dst += sizeof(int);
+            uint64_t timestamp = arm64_pmccntr();
+            memcpy(dst, &timestamp, sizeof(uint64_t));
+            fwrite(write_buffer, sizeof(char), sizeof(int) * 3 + ENC_FLOAT4_LENGTH + sizeof(uint64_t), write_file_ptr);
 
+            char write_buffer_operators[req->bulk_size * ENC_FLOAT4_LENGTH];
+            dst = write_buffer_operators;
             for(int i = 0; i < req->bulk_size; i++){
-                base64_encode((const unsigned char *)&req->items[i], ENC_FLOAT4_LENGTH, b64_left);
-                fprintf(write_file_ptr," %s", b64_left);
+                memcpy(dst, &req->items[i], ENC_FLOAT4_LENGTH);
+                dst += ENC_FLOAT4_LENGTH;
             }
-            fprintf(write_file_ptr, "\n");
+            fwrite(write_buffer_operators, sizeof(char), req->bulk_size * ENC_FLOAT4_LENGTH, write_file_ptr);
         }
         else {
             EncFloatCalcRequestData *req = (EncFloatCalcRequestData *) req_buffer;
-            base64_encode((const unsigned char *)&req->left, ENC_FLOAT4_LENGTH, b64_left);
-            base64_encode((const unsigned char *)&req->right, ENC_FLOAT4_LENGTH, b64_right);
-            base64_encode((const unsigned char *)&req->res, ENC_FLOAT4_LENGTH, b64_res);
+            char write_buffer[sizeof(int) * 2 + ENC_FLOAT4_LENGTH * 3 + sizeof(uint64_t)];
+            char *dst = write_buffer;
+            memcpy(dst, &req->op, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req->left, ENC_FLOAT4_LENGTH);
+            dst += ENC_FLOAT4_LENGTH;
+            memcpy(dst, &req->right, ENC_FLOAT4_LENGTH);
+            dst += ENC_FLOAT4_LENGTH;
+            memcpy(dst, &req->res, ENC_FLOAT4_LENGTH);
+            dst += ENC_FLOAT4_LENGTH;
+            memcpy(dst, &req_control->resp, sizeof(int));
+            dst += sizeof(int);
+            uint64_t timestamp = arm64_pmccntr();
+            memcpy(dst, &timestamp, sizeof(uint64_t));
 
-            fprintf(write_file_ptr,"%d %s %s %s %d\n",
-                req->op, 
-                b64_left,
-                b64_right,
-                b64_res,
-                req_control->resp); 
+            fwrite(write_buffer, sizeof(char), sizeof(int) * 2 + ENC_FLOAT4_LENGTH * 3 + sizeof(uint64_t), write_file_ptr);
         }
 
     } // end of float
@@ -846,94 +976,147 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
     && req_control->reqType != CMD_INT_ENC 
     && req_control->reqType != CMD_INT_DEC
     ){
-        char b64_left[ENC_INT32_LENGTH_B64],b64_right[ENC_INT32_LENGTH_B64],b64_res[ENC_INT32_LENGTH_B64];
-        memset(b64_left, 0, sizeof(b64_left));
-        memset(b64_right, 0, sizeof(b64_right));
-        memset(b64_res, 0, sizeof(b64_res));
         if(req_control->reqType == CMD_INT_CMP){
             EncIntCmpRequestData *req = (EncIntCmpRequestData *) req_buffer;
-            base64_encode((const unsigned char *)&req->left, ENC_INT32_LENGTH, b64_left);
-            base64_encode((const unsigned char *)&req->right, ENC_INT32_LENGTH, b64_right);
-            fprintf(write_file_ptr,"%d %s %s %d %d\n",
-                req_control->reqType, 
-                b64_left,
-                b64_right,
-                req->cmp,
-                req_control->resp);
-        }else if(req_control->reqType == CMD_INT_SUM_BULK){
+            char write_buffer[sizeof(int) * 3 + ENC_INT32_LENGTH * 2 + sizeof(uint64_t)];
+            char *dst = write_buffer;
+            memcpy(dst, &req_control->reqType, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req->left, ENC_INT32_LENGTH);
+            dst += ENC_INT32_LENGTH;
+            memcpy(dst, &req->right, ENC_INT32_LENGTH);
+            dst += ENC_INT32_LENGTH;
+            memcpy(dst, &req->cmp, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req_control->resp, sizeof(int));
+            dst += sizeof(int);
+            uint64_t timestamp = arm64_pmccntr();
+            memcpy(dst, &timestamp, sizeof(uint64_t));
+
+            fwrite(write_buffer, sizeof(char), sizeof(int) * 3 + ENC_INT32_LENGTH * 2 + sizeof(uint64_t), write_file_ptr);
+        } else if(req_control->reqType == CMD_INT_SUM_BULK){
             EncIntBulkRequestData *req = (EncIntBulkRequestData *) req_buffer;
-            base64_encode((const unsigned char *)&req->res, ENC_INT32_LENGTH, b64_res);
-            fprintf(write_file_ptr,"%d %d %s %d",
-                req_control->reqType, 
-                req->bulk_size,
-                b64_res,
-                req_control->resp);
+            char write_buffer[sizeof(int) * 3 + ENC_INT32_LENGTH + sizeof(uint64_t)];
+            char *dst;
+            memcpy(dst, &req_control->reqType, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req->bulk_size, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req->res, ENC_INT32_LENGTH);
+            dst += ENC_INT32_LENGTH;
+            memcpy(dst, &req_control->resp, sizeof(int));
+            dst += sizeof(int);
+            uint64_t timestamp = arm64_pmccntr();
+            memcpy(dst, &timestamp, sizeof(uint64_t));
+            fwrite(write_buffer, sizeof(char), sizeof(int) * 3 + ENC_INT32_LENGTH + sizeof(uint64_t), write_file_ptr);
+
+            char write_buffer_operators[req->bulk_size * ENC_INT32_LENGTH];
+            dst = write_buffer_operators;
             for(int i = 0; i < req->bulk_size; i++){
-                base64_encode((const unsigned char *)&req->items[i], ENC_INT32_LENGTH, b64_left);
-                fprintf(write_file_ptr," %s", b64_left);
+                memcpy(dst, &req->items[i], ENC_INT32_LENGTH);
+                dst += ENC_INT32_LENGTH;
             }
-            fprintf(write_file_ptr, "\n");
+            fwrite(write_buffer_operators, sizeof(char), req->bulk_size * ENC_INT32_LENGTH, write_file_ptr);
         }
         else {
             EncIntCalcRequestData *req = (EncIntCalcRequestData *) req_buffer;
-            base64_encode((const unsigned char *)&req->left, ENC_INT32_LENGTH, b64_left);
-            base64_encode((const unsigned char *)&req->right, ENC_INT32_LENGTH, b64_right);
-            base64_encode((const unsigned char *)&req->res, ENC_INT32_LENGTH, b64_res);
+            char write_buffer[sizeof(int) * 2 + ENC_INT32_LENGTH * 3 + sizeof(uint64_t)];
+            char *dst = write_buffer;
+            memcpy(dst, &req->op, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req->left, ENC_INT32_LENGTH);
+            dst += ENC_INT32_LENGTH;
+            memcpy(dst, &req->right, ENC_INT32_LENGTH);
+            dst += ENC_INT32_LENGTH;
+            memcpy(dst, &req->res, ENC_INT32_LENGTH);
+            dst += ENC_INT32_LENGTH;
+            memcpy(dst, &req_control->resp, sizeof(int));
+            dst += sizeof(int);
+            uint64_t timestamp = arm64_pmccntr();
+            memcpy(dst, &timestamp, sizeof(uint64_t));
 
-            fprintf(write_file_ptr,"%d %s %s %s %d\n",
-                req->op, 
-                b64_left,
-                b64_right,
-                b64_res,
-                req_control->resp);
+            fwrite(write_buffer, sizeof(char), sizeof(int) * 2 + ENC_INT32_LENGTH * 3 + sizeof(uint64_t), write_file_ptr);
         } 
     }else if(req_control->reqType != CMD_STRING_ENC 
     && req_control->reqType != CMD_STRING_DEC
     && req_control->reqType >= 201
     && req_control->reqType <= 206
     ){
-        char b64_left[ENC_STRING_LENGTH_B64],b64_right[ENC_STRING_LENGTH_B64],b64_res[ENC_STRING_LENGTH_B64];
-        memset(b64_left, 0, sizeof(b64_left));
-        memset(b64_right, 0, sizeof(b64_right));
-        memset(b64_res, 0, sizeof(b64_res));
         if(req_control->reqType == CMD_STRING_CMP ||
             req_control->reqType == CMD_STRING_LIKE){
             EncStrCmpRequestData *req = (EncStrCmpRequestData *) req_buffer;
-            base64_encode((const unsigned char *)&req->left, encstr_size(req->left), b64_left);
-            base64_encode((const unsigned char *)&req->right, encstr_size(req->right), b64_right);
-
-            fprintf(write_file_ptr, "%d %s %s %d %d\n",
-                req_control->reqType,
-                b64_left,
-                b64_right,
-                req->cmp,
-                req_control->resp);
+            int left_length = encstr_size(req->left), right_length = encstr_size(req->right);
+            char write_buffer[sizeof(int) * 5 + left_length + right_length + sizeof(uint64_t)];
+            char *dst = write_buffer;
+            memcpy(dst, &req_control->reqType, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &left_length, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &right_length, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req->left, left_length);
+            dst += left_length;
+            memcpy(dst, &req->right, right_length);
+            dst += right_length;
+            memcpy(dst, &req->cmp, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req_control->resp, sizeof(int));
+            dst += sizeof(int);
+            uint64_t timestamp = arm64_pmccntr();
+            memcpy(dst, &timestamp, sizeof(uint64_t));
+            
+            fwrite(write_buffer, sizeof(char), sizeof(int) * 5 + left_length + right_length + sizeof(uint64_t), write_file_ptr);
         }
         else if(req_control->reqType == CMD_STRING_SUBSTRING){
             SubstringRequestData *req = (SubstringRequestData *) req_buffer;
-            char begin[ENC_INT32_LENGTH_B64], end[ENC_INT32_LENGTH_B64];
-            base64_encode((const unsigned char *)&req->str, encstr_size(req->str), b64_left);
-            base64_encode((const unsigned char *)&req->begin, ENC_INT32_LENGTH, begin);
-            base64_encode((const unsigned char *)&req->end, ENC_INT32_LENGTH, end);
-            base64_encode((const unsigned char *)&req->res, encstr_size(req->res), b64_res);
-            fprintf(write_file_ptr,"%d %s %s %s %s %d\n",
-                req_control->reqType, 
-                b64_left,
-                begin,
-                end,
-                b64_res,
-                req_control->resp); 
+            int str_length = encstr_size(req->str), result_length = encstr_size(req->res);
+            char write_buffer[sizeof(int) * 4 + str_length + result_length + 2 * ENC_INT32_LENGTH + sizeof(uint64_t)];
+            char *dst = write_buffer;
+            memcpy(dst, &req_control->reqType, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &str_length, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &result_length, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req->str, str_length);
+            dst += str_length;
+            memcpy(dst, &req->begin, ENC_INT32_LENGTH);
+            dst += ENC_INT32_LENGTH;
+            memcpy(dst, &req->end, ENC_INT32_LENGTH);
+            dst += ENC_INT32_LENGTH;
+            memcpy(dst, &req->res, result_length);
+            dst += result_length;
+            memcpy(dst, &req_control->resp, sizeof(int));
+            dst += sizeof(int);
+            uint64_t timestamp = arm64_pmccntr();
+            memcpy(dst, &timestamp, sizeof(uint64_t));
+
+            fwrite(write_buffer, sizeof(char), sizeof(int) * 4 + str_length + result_length + 2 * ENC_INT32_LENGTH + sizeof(uint64_t), write_file_ptr);
         }else {
             EncStrCalcRequestData *req = (EncStrCalcRequestData *) req_buffer;
-            base64_encode((const unsigned char *)&req->left, encstr_size(req->left), b64_left);
-            base64_encode((const unsigned char *)&req->right, encstr_size(req->right), b64_right);
-            base64_encode((const unsigned char *)&req->res, encstr_size(req->res), b64_res);
-            fprintf(write_file_ptr,"%d %s %s %s %d\n",
-                req->op, 
-                b64_left,
-                b64_right,
-                b64_res,
-                req_control->resp);
+            int left_length = encstr_size(req->left), right_length = encstr_size(req->right), res_length = encstr_size(req->res);
+            char write_buffer[sizeof(int) * 5 + left_length + right_length + res_length + sizeof(uint64_t)];
+            char *dst = write_buffer;
+            memcpy(dst, &req->op, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &left_length, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &right_length, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &res_length, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req->left, left_length);
+            dst += left_length;
+            memcpy(dst, &req->right, right_length);
+            dst += right_length;
+            memcpy(dst, &req->res, res_length);
+            dst += res_length;
+            memcpy(dst, &req_control->resp, sizeof(int));
+            dst += sizeof(int);
+            uint64_t timestamp = arm64_pmccntr();
+            memcpy(dst, &timestamp, sizeof(uint64_t));
+
+            fwrite(write_buffer, sizeof(char), sizeof(int) * 5 + left_length + right_length + res_length + sizeof(uint64_t), write_file_ptr);
         } 
     } else if (req_control->reqType >= 150
     && req_control->reqType <= 153
@@ -941,32 +1124,39 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
     && req_control->reqType != CMD_TIMESTAMP_ENC
     ) {
         if (req_control->reqType == CMD_TIMESTAMP_CMP) {
-            char b64_left[ENC_TIMESTAMP_LENGTH_B64],b64_right[ENC_TIMESTAMP_LENGTH_B64];
-            memset(b64_left, 0, sizeof(b64_left));
-            memset(b64_right, 0, sizeof(b64_right));
             EncTimestampCmpRequestData *req = (EncTimestampCmpRequestData *) req_buffer;
-            base64_encode((const unsigned char *)&req->left, ENC_TIMESTAMP_LENGTH, b64_left);
-            base64_encode((const unsigned char *)&req->right, ENC_TIMESTAMP_LENGTH, b64_right);
+            char write_buffer[sizeof(int) * 3 + ENC_TIMESTAMP_LENGTH * 2 + sizeof(uint64_t)];
+            char *dst = write_buffer;
+            memcpy(dst, &req_control->reqType, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req->left, ENC_TIMESTAMP_LENGTH);
+            dst += ENC_TIMESTAMP_LENGTH;
+            memcpy(dst, &req->right, ENC_TIMESTAMP_LENGTH);
+            dst += ENC_TIMESTAMP_LENGTH;
+            memcpy(dst, &req->cmp, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req_control->resp, sizeof(int));
+            dst += sizeof(int);
+            uint64_t timestamp = arm64_pmccntr();
+            memcpy(dst, &timestamp, sizeof(uint64_t));
 
-            fprintf(write_file_ptr, "%d %s %s %d %d\n",
-                req_control->reqType,
-                b64_left,
-                b64_right,
-                req->cmp,
-                req_control->resp);
+            fwrite(write_buffer, sizeof(char), sizeof(int) * 3 + ENC_TIMESTAMP_LENGTH * 2 + sizeof(uint64_t), write_file_ptr);
         } else if (req_control->reqType == CMD_TIMESTAMP_EXTRACT_YEAR) {
-            char b64_in[ENC_TIMESTAMP_LENGTH_B64], b64_out[ENC_INT32_LENGTH_B64];
-            memset(b64_in, 0, sizeof(b64_in));
-            memset(b64_out, 0, sizeof(b64_out));
             EncTimestampExtractYearRequestData *req = (EncTimestampExtractYearRequestData *) req_buffer;
-            base64_encode((const unsigned char *)&req->in, ENC_TIMESTAMP_LENGTH, b64_in);
-            base64_encode((const unsigned char *)&req->res, ENC_INT32_LENGTH, b64_out);
+            char write_buffer[sizeof(int) * 2 + ENC_TIMESTAMP_LENGTH + ENC_INT32_LENGTH + sizeof(uint64_t)];
+            char *dst = write_buffer;
+            memcpy(dst, &req_control->reqType, sizeof(int));
+            dst += sizeof(int);
+            memcpy(dst, &req->in, ENC_TIMESTAMP_LENGTH);
+            dst += ENC_TIMESTAMP_LENGTH;
+            memcpy(dst, &req->res, ENC_INT32_LENGTH);
+            dst += ENC_INT32_LENGTH;
+            memcpy(dst, &req_control->resp, sizeof(int));
+            dst += sizeof(int);
+            uint64_t timestamp = arm64_pmccntr();
+            memcpy(dst, &timestamp, sizeof(uint64_t));
 
-            fprintf(write_file_ptr, "%d %s %s %d\n",
-                req_control->reqType,
-                b64_in,
-                b64_out,
-                req_control->resp);
+            fwrite(write_buffer, sizeof(char), sizeof(int) * 2 + ENC_TIMESTAMP_LENGTH + ENC_INT32_LENGTH + sizeof(uint64_t), write_file_ptr);
         }
     }
 }
