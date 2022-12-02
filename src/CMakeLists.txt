@@ -15,12 +15,35 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunused-variable -Wunused-but-set-variable"
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-find_package(PostgreSQL REQUIRED)
+find_package(PostgreSQL)
+if(PostgreSQL_FOUND)
 
 set(_link_flags "${PostgreSQL_SHARED_LINK_OPTIONS}")
 foreach(_dir ${PostgreSQL_SERVER_LIBRARY_DIRS})
     set(_link_flags "${_link_flags} -L${_dir}")
 endforeach()
+
+endif()
+
+
+# file(GLOB WRAPPER_SRCS 
+#     enclave/klee_wrapper/*.c
+# )
+# set(OLD_COMPILER ${CMAKE_C_COMPILER})
+# set(OLD_CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} )
+
+# set(CMAKE_C_COMPILER clang)
+# # set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} "-flto")
+# add_executable(klee_wrapper ${WRAPPER_SRCS})
+# target_include_directories(klee_wrapper 
+#         PRIVATE enclave/include
+#         PRIVATE klee_wrapper
+#         PRIVATE include
+#         )
+# target_compile_options(klee_wrapper PUBLIC -emit-llvm)
+
+# set(CMAKE_C_COMPILER ${OLD_COMPILER})
+# set(CMAKE_EXE_LINKER_FLAGS ${OLD_CMAKE_EXE_LINKER_FLAGS})
 
 
 # find_program(CCACHE_FOUND ccache)
@@ -146,17 +169,22 @@ elseif ( ${TEE_TYPE} STREQUAL "SIM" )
         PRIVATE extension/interface/simulate
         PRIVATE include
         )
+    
+    if(PostgreSQL_FOUND)
     target_include_directories(SimInterface 
         PRIVATE ${PostgreSQL_INCLUDE_DIRS}
         PRIVATE ${PostgreSQL_SERVER_INCLUDE_DIRS}
     )
+    endif()
 
 else()
     message( FATAL_ERROR "TEE_TYPE ${TEE_TYPE} not specified (SGX/TZ). CMake wil exit.")
 endif()
 
 ## for extension 
+if(PostgreSQL_FOUND)
 add_subdirectory(extension)
+endif()
 # ## for test
 # add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../test/ops-micro ${CMAKE_CURRENT_BINARY_DIR}/)
 ## KV and PARA is not compatible for now

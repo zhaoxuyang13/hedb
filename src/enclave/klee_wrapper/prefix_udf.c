@@ -1,6 +1,7 @@
 #include "prefix_udf.h"
-#include <stdbool.h>
-
+#include <string.h>
+#include <stdlib.h>
+#include <assert.h>
 /**
  * Helper function which builds a prefix_range from a prefix, a first
  * and a last component, making a copy of the prefix string.
@@ -8,12 +9,38 @@
 static inline
 prefix_range *build_pr(const char *prefix, char first, char last) {
   int s = strlen(prefix) + 1;
-  prefix_range *pr = palloc(sizeof(prefix_range) + s);
+  prefix_range *pr = malloc(sizeof(prefix_range) + s);
   memcpy(pr->prefix, prefix, s);
   pr->first = first;
   pr->last  = last;
   return pr;
 }
+
+
+static inline
+char *__greater_prefix(char *a, char *b, int alen, int blen)
+{
+  int i = 0;
+  char *result = NULL;
+
+  for(i=0; i<alen && i<blen && a[i] == b[i]; i++);
+
+  /* i is the last common char position in a, or 0 */
+  if( i == 0 ) {
+    /**
+     * return ""
+     */
+    result = (char *)malloc(sizeof(char));
+  }
+  else {
+    result = (char *)malloc((i+1) * sizeof(char));
+    memcpy(result, a, i);
+  }
+  result[i] = 0;
+
+  return result;
+}
+
 
 static inline
 prefix_range *pr_normalize(prefix_range *a) {
@@ -83,11 +110,11 @@ prefix_range *pr_inter(prefix_range *a, prefix_range *b) {
 		   a->last  > b->last  ? a->last  : b->last);
   }
   else if( gplen == alen ) {
-    Assert(gplen < blen);
+    assert(gplen < blen);
     res = build_pr(b->prefix, b->first, b->last);
   }
   else if( gplen == blen ) {
-    Assert(gplen < alen);
+    assert(gplen < alen);
     res = build_pr(a->prefix, a->first, a->last);
   }
 
