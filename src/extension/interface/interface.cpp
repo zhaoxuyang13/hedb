@@ -9,6 +9,8 @@
 #include <pthread.h>
 #include <unordered_map>
 #include <extension.hpp>
+#include <sys/mman.h>
+#include <fcntl.h>
 
 #define MAX_LOG_SIZE 50000
 
@@ -32,7 +34,7 @@ TEEInvoker *TEEInvoker::invoker = NULL;
 #define MAX_PARALLEL_WORKER_SIZE 16    //TODO: the database can only see one buffer allocated to it.
 #define MAX_RECORDS_NUM (MAX_PARALLEL_WORKER_SIZE + 1)
 
-bool recordMode = false;
+bool recordMode = true;
 bool replayMode = false;
 bool sequence_replay = true;
 int records_cnt = 0;
@@ -50,7 +52,7 @@ arm64_pmccntr(void)
 //    return tsc;
 }
 
-// FILE *write_ptr = 0;m
+// FILE *write_ptr = 0;
 // void flush_to_log_file(uint8_t *buffer, uint64_t size){
 //     if (write_ptr == 0)
 //     {
@@ -84,6 +86,36 @@ FILE *get_write_file_ptr(){
 void close_write_file_ptr(){
     if(write_file_ptr)
         fclose(write_file_ptr);
+}
+
+#define DATA_LENGTH (16 * 1024 * 1024UL)
+static unsigned long file_length = 0;
+static unsigned long file_cursor = 0;
+static char *write_addr = nullptr;
+static int write_fd = 0;
+
+void open_write_file() {
+    if (!write_fd) {
+        pid_t pid = getpid();
+        char filename[120];
+        sprintf(filename, "%s-%d.log", record_name_prefix, pid);
+        print_info("%s\n", filename);
+
+        write_fd = open(filename, O_RDWR | O_CREAT, 0666);
+    }
+}
+
+char *get_write_buffer(unsigned long length) {
+    if (file_cursor + length > file_length) {
+        // munmap(write_addr, file_length);
+        file_length += DATA_LENGTH;
+        ftruncate(write_fd, file_length);
+        write_addr = (char *)mmap(NULL, file_length, PROT_READ|PROT_WRITE, MAP_SHARED, write_fd, 0);
+        madvise(write_addr + file_cursor, DATA_LENGTH, MADV_SEQUENTIAL);
+    }
+    char *start = write_addr + file_cursor;
+    file_cursor += length;
+    return start;
 }
 
 FILE *read_file_ptr = 0;
@@ -901,7 +933,7 @@ void record_request_plaintext(void *req_buffer, FILE *write_file_ptr){
     }
 }
 
-void record_request_full(void *req_buffer, FILE *write_file_ptr){
+void record_request_full(void *req_buffer){
     BaseRequest *req_control = static_cast<BaseRequest *>(req_buffer);  
     if(req_control->reqType != CMD_FLOAT_ENC 
     && req_control->reqType != CMD_FLOAT_DEC
@@ -910,8 +942,8 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
     ){
         if(req_control->reqType == CMD_FLOAT_CMP){
             EncFloatCmpRequestData *req = (EncFloatCmpRequestData *) req_buffer;
-            char write_buffer[sizeof(int) * 3 + ENC_FLOAT4_LENGTH * 2 + sizeof(uint64_t)];
-            char *dst = write_buffer;
+            size_t length = sizeof(int) * 3 + ENC_FLOAT4_LENGTH * 2 + sizeof(uint64_t);
+            char *dst = get_write_buffer(length);
             memcpy(dst, &req_control->reqType, sizeof(int));
             dst += sizeof(int);
             memcpy(dst, &req->left, ENC_FLOAT4_LENGTH);
@@ -924,12 +956,10 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
             dst += sizeof(int);
             uint64_t timestamp = arm64_pmccntr();
             memcpy(dst, &timestamp, sizeof(uint64_t));
-
-            fwrite(write_buffer, sizeof(char), sizeof(int) * 3 + ENC_FLOAT4_LENGTH * 2 + sizeof(uint64_t), write_file_ptr);
         }else if(req_control->reqType == CMD_FLOAT_SUM_BULK){
             EncFloatBulkRequestData *req = (EncFloatBulkRequestData *) req_buffer;
-            char write_buffer[sizeof(int) * 3 + ENC_FLOAT4_LENGTH + sizeof(uint64_t)];
-            char *dst = write_buffer;
+            size_t length = sizeof(int) * 3 + ENC_FLOAT4_LENGTH + sizeof(uint64_t);
+            char *dst = get_write_buffer(length);
             memcpy(dst, &req_control->reqType, sizeof(int));
             dst += sizeof(int);
             memcpy(dst, &req->bulk_size, sizeof(int));
@@ -940,20 +970,17 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
             dst += sizeof(int);
             uint64_t timestamp = arm64_pmccntr();
             memcpy(dst, &timestamp, sizeof(uint64_t));
-            fwrite(write_buffer, sizeof(char), sizeof(int) * 3 + ENC_FLOAT4_LENGTH + sizeof(uint64_t), write_file_ptr);
-
-            char write_buffer_operators[req->bulk_size * ENC_FLOAT4_LENGTH];
-            dst = write_buffer_operators;
+            
+            dst = get_write_buffer(req->bulk_size * ENC_FLOAT4_LENGTH);
             for(int i = 0; i < req->bulk_size; i++){
                 memcpy(dst, &req->items[i], ENC_FLOAT4_LENGTH);
                 dst += ENC_FLOAT4_LENGTH;
             }
-            fwrite(write_buffer_operators, sizeof(char), req->bulk_size * ENC_FLOAT4_LENGTH, write_file_ptr);
         }
         else {
             EncFloatCalcRequestData *req = (EncFloatCalcRequestData *) req_buffer;
-            char write_buffer[sizeof(int) * 2 + ENC_FLOAT4_LENGTH * 3 + sizeof(uint64_t)];
-            char *dst = write_buffer;
+            size_t length = sizeof(int) * 2 + ENC_FLOAT4_LENGTH * 3 + sizeof(uint64_t);
+            char *dst = get_write_buffer(length);
             memcpy(dst, &req->op, sizeof(int));
             dst += sizeof(int);
             memcpy(dst, &req->left, ENC_FLOAT4_LENGTH);
@@ -966,8 +993,6 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
             dst += sizeof(int);
             uint64_t timestamp = arm64_pmccntr();
             memcpy(dst, &timestamp, sizeof(uint64_t));
-
-            fwrite(write_buffer, sizeof(char), sizeof(int) * 2 + ENC_FLOAT4_LENGTH * 3 + sizeof(uint64_t), write_file_ptr);
         }
 
     } // end of float
@@ -978,8 +1003,8 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
     ){
         if(req_control->reqType == CMD_INT_CMP){
             EncIntCmpRequestData *req = (EncIntCmpRequestData *) req_buffer;
-            char write_buffer[sizeof(int) * 3 + ENC_INT32_LENGTH * 2 + sizeof(uint64_t)];
-            char *dst = write_buffer;
+            size_t length = sizeof(int) * 3 + ENC_INT32_LENGTH * 2 + sizeof(uint64_t);
+            char *dst = get_write_buffer(length);
             memcpy(dst, &req_control->reqType, sizeof(int));
             dst += sizeof(int);
             memcpy(dst, &req->left, ENC_INT32_LENGTH);
@@ -992,12 +1017,10 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
             dst += sizeof(int);
             uint64_t timestamp = arm64_pmccntr();
             memcpy(dst, &timestamp, sizeof(uint64_t));
-
-            fwrite(write_buffer, sizeof(char), sizeof(int) * 3 + ENC_INT32_LENGTH * 2 + sizeof(uint64_t), write_file_ptr);
         } else if(req_control->reqType == CMD_INT_SUM_BULK){
             EncIntBulkRequestData *req = (EncIntBulkRequestData *) req_buffer;
-            char write_buffer[sizeof(int) * 3 + ENC_INT32_LENGTH + sizeof(uint64_t)];
-            char *dst;
+            size_t length = sizeof(int) * 3 + ENC_INT32_LENGTH + sizeof(uint64_t);
+            char *dst = get_write_buffer(length);
             memcpy(dst, &req_control->reqType, sizeof(int));
             dst += sizeof(int);
             memcpy(dst, &req->bulk_size, sizeof(int));
@@ -1008,20 +1031,17 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
             dst += sizeof(int);
             uint64_t timestamp = arm64_pmccntr();
             memcpy(dst, &timestamp, sizeof(uint64_t));
-            fwrite(write_buffer, sizeof(char), sizeof(int) * 3 + ENC_INT32_LENGTH + sizeof(uint64_t), write_file_ptr);
 
-            char write_buffer_operators[req->bulk_size * ENC_INT32_LENGTH];
-            dst = write_buffer_operators;
+            dst = get_write_buffer(req->bulk_size * ENC_INT32_LENGTH);
             for(int i = 0; i < req->bulk_size; i++){
                 memcpy(dst, &req->items[i], ENC_INT32_LENGTH);
                 dst += ENC_INT32_LENGTH;
             }
-            fwrite(write_buffer_operators, sizeof(char), req->bulk_size * ENC_INT32_LENGTH, write_file_ptr);
         }
         else {
             EncIntCalcRequestData *req = (EncIntCalcRequestData *) req_buffer;
-            char write_buffer[sizeof(int) * 2 + ENC_INT32_LENGTH * 3 + sizeof(uint64_t)];
-            char *dst = write_buffer;
+            size_t length = sizeof(int) * 2 + ENC_INT32_LENGTH * 3 + sizeof(uint64_t);
+            char *dst = get_write_buffer(length);
             memcpy(dst, &req->op, sizeof(int));
             dst += sizeof(int);
             memcpy(dst, &req->left, ENC_INT32_LENGTH);
@@ -1034,8 +1054,6 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
             dst += sizeof(int);
             uint64_t timestamp = arm64_pmccntr();
             memcpy(dst, &timestamp, sizeof(uint64_t));
-
-            fwrite(write_buffer, sizeof(char), sizeof(int) * 2 + ENC_INT32_LENGTH * 3 + sizeof(uint64_t), write_file_ptr);
         } 
     }else if(req_control->reqType != CMD_STRING_ENC 
     && req_control->reqType != CMD_STRING_DEC
@@ -1046,8 +1064,8 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
             req_control->reqType == CMD_STRING_LIKE){
             EncStrCmpRequestData *req = (EncStrCmpRequestData *) req_buffer;
             int left_length = encstr_size(req->left), right_length = encstr_size(req->right);
-            char write_buffer[sizeof(int) * 5 + left_length + right_length + sizeof(uint64_t)];
-            char *dst = write_buffer;
+            int length = sizeof(int) * 5 + left_length + right_length + sizeof(uint64_t);
+            char *dst = get_write_buffer(length);
             memcpy(dst, &req_control->reqType, sizeof(int));
             dst += sizeof(int);
             memcpy(dst, &left_length, sizeof(int));
@@ -1064,14 +1082,12 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
             dst += sizeof(int);
             uint64_t timestamp = arm64_pmccntr();
             memcpy(dst, &timestamp, sizeof(uint64_t));
-            
-            fwrite(write_buffer, sizeof(char), sizeof(int) * 5 + left_length + right_length + sizeof(uint64_t), write_file_ptr);
         }
         else if(req_control->reqType == CMD_STRING_SUBSTRING){
             SubstringRequestData *req = (SubstringRequestData *) req_buffer;
             int str_length = encstr_size(req->str), result_length = encstr_size(req->res);
-            char write_buffer[sizeof(int) * 4 + str_length + result_length + 2 * ENC_INT32_LENGTH + sizeof(uint64_t)];
-            char *dst = write_buffer;
+            size_t length = sizeof(int) * 4 + str_length + result_length + 2 * ENC_INT32_LENGTH + sizeof(uint64_t);
+            char *dst = get_write_buffer(length);
             memcpy(dst, &req_control->reqType, sizeof(int));
             dst += sizeof(int);
             memcpy(dst, &str_length, sizeof(int));
@@ -1090,13 +1106,11 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
             dst += sizeof(int);
             uint64_t timestamp = arm64_pmccntr();
             memcpy(dst, &timestamp, sizeof(uint64_t));
-
-            fwrite(write_buffer, sizeof(char), sizeof(int) * 4 + str_length + result_length + 2 * ENC_INT32_LENGTH + sizeof(uint64_t), write_file_ptr);
         }else {
             EncStrCalcRequestData *req = (EncStrCalcRequestData *) req_buffer;
             int left_length = encstr_size(req->left), right_length = encstr_size(req->right), res_length = encstr_size(req->res);
-            char write_buffer[sizeof(int) * 5 + left_length + right_length + res_length + sizeof(uint64_t)];
-            char *dst = write_buffer;
+            int length = sizeof(int) * 5 + left_length + right_length + res_length + sizeof(uint64_t);
+            char *dst = get_write_buffer(length);
             memcpy(dst, &req->op, sizeof(int));
             dst += sizeof(int);
             memcpy(dst, &left_length, sizeof(int));
@@ -1115,8 +1129,6 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
             dst += sizeof(int);
             uint64_t timestamp = arm64_pmccntr();
             memcpy(dst, &timestamp, sizeof(uint64_t));
-
-            fwrite(write_buffer, sizeof(char), sizeof(int) * 5 + left_length + right_length + res_length + sizeof(uint64_t), write_file_ptr);
         } 
     } else if (req_control->reqType >= 150
     && req_control->reqType <= 153
@@ -1125,8 +1137,8 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
     ) {
         if (req_control->reqType == CMD_TIMESTAMP_CMP) {
             EncTimestampCmpRequestData *req = (EncTimestampCmpRequestData *) req_buffer;
-            char write_buffer[sizeof(int) * 3 + ENC_TIMESTAMP_LENGTH * 2 + sizeof(uint64_t)];
-            char *dst = write_buffer;
+            int length = sizeof(int) * 3 + ENC_TIMESTAMP_LENGTH * 2 + sizeof(uint64_t);
+            char *dst = get_write_buffer(length);
             memcpy(dst, &req_control->reqType, sizeof(int));
             dst += sizeof(int);
             memcpy(dst, &req->left, ENC_TIMESTAMP_LENGTH);
@@ -1139,12 +1151,10 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
             dst += sizeof(int);
             uint64_t timestamp = arm64_pmccntr();
             memcpy(dst, &timestamp, sizeof(uint64_t));
-
-            fwrite(write_buffer, sizeof(char), sizeof(int) * 3 + ENC_TIMESTAMP_LENGTH * 2 + sizeof(uint64_t), write_file_ptr);
         } else if (req_control->reqType == CMD_TIMESTAMP_EXTRACT_YEAR) {
             EncTimestampExtractYearRequestData *req = (EncTimestampExtractYearRequestData *) req_buffer;
-            char write_buffer[sizeof(int) * 2 + ENC_TIMESTAMP_LENGTH + ENC_INT32_LENGTH + sizeof(uint64_t)];
-            char *dst = write_buffer;
+            size_t length = sizeof(int) * 2 + ENC_TIMESTAMP_LENGTH + ENC_INT32_LENGTH + sizeof(uint64_t);
+            char *dst = get_write_buffer(length);
             memcpy(dst, &req_control->reqType, sizeof(int));
             dst += sizeof(int);
             memcpy(dst, &req->in, ENC_TIMESTAMP_LENGTH);
@@ -1155,8 +1165,6 @@ void record_request_full(void *req_buffer, FILE *write_file_ptr){
             dst += sizeof(int);
             uint64_t timestamp = arm64_pmccntr();
             memcpy(dst, &timestamp, sizeof(uint64_t));
-
-            fwrite(write_buffer, sizeof(char), sizeof(int) * 2 + ENC_TIMESTAMP_LENGTH + ENC_INT32_LENGTH + sizeof(uint64_t), write_file_ptr);
         }
     }
 }
@@ -1224,15 +1232,14 @@ void record_request(void *req){
     static int first_record = true ;
     if(first_record){
         first_record = false;
-        record_request_full(req, get_write_file_ptr());
+        open_write_file();
+        record_request_full(req);
     }else {
         #if RR_MINIMUM
             record_request_res(req, write_file_ptr);
         #else 
-            record_request_full(req, get_write_file_ptr());
+            record_request_full(req);
         #endif
-        
-        
     }
 }
 
@@ -1337,6 +1344,9 @@ void exit_handler(){
     print_info("EXIT handler called\n");
     TEEInvoker *invoker = TEEInvoker::getInstance();
     delete invoker;
+    if (write_fd) {
+        close(write_fd);
+    }
     // if(write_ptr != 0)
     //     fclose(write_ptr);
 
