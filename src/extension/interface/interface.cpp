@@ -34,7 +34,7 @@ TEEInvoker *TEEInvoker::invoker = NULL;
 #define MAX_PARALLEL_WORKER_SIZE 16    //TODO: the database can only see one buffer allocated to it.
 #define MAX_RECORDS_NUM (MAX_PARALLEL_WORKER_SIZE + 1)
 
-bool recordMode = true;
+bool recordMode = false;
 bool replayMode = false;
 bool sequence_replay = true;
 int records_cnt = 0;
@@ -118,32 +118,21 @@ char *get_write_buffer(unsigned long length) {
     return start;
 }
 
-FILE *read_file_ptr = 0;
-FILE *get_read_file_ptr(int id){
-    if (read_file_ptr == 0)
-    { 
-        char filename[120];
-        sprintf(filename, "%s-%d.log", record_name_prefix, id); 
-        read_file_ptr = fopen(filename,"r+b"); 
-    }
-    return read_file_ptr;
-}
+// FILE *read_file_ptr = 0;
+// FILE *get_read_file_ptr(int id){
+//     if (read_file_ptr == 0)
+//     { 
+//         char filename[120];
+//         sprintf(filename, "%s-%d.log", record_name_prefix, id); 
+//         read_file_ptr = fopen(filename,"r+b"); 
+//     }
+//     return read_file_ptr;
+// }
 
-void close_read_file_ptr(){
-    fclose(read_file_ptr);
-    read_file_ptr = 0;
-}
-
-// TODO: not implemented yet
-std::unordered_map<string, string> log_map;
-void read_log()
-{
-    for(int i = 0; i < records_cnt; i ++){
-        read_file_ptr = fopen(record_names[i],"r+b");
-
-        fclose(read_file_ptr);
-    }
-}
+// void close_read_file_ptr(){
+//     fclose(read_file_ptr);
+//     read_file_ptr = 0;
+// }
 
 
 /* ----- */
@@ -793,6 +782,7 @@ int replay_request(void *req){
         #endif
     }
 }
+/*
 void record_request_plaintext(void *req_buffer, FILE *write_file_ptr){
     BaseRequest *req_control = static_cast<BaseRequest *>(req_buffer);  
     if(req_control->reqType != CMD_FLOAT_ENC 
@@ -932,6 +922,7 @@ void record_request_plaintext(void *req_buffer, FILE *write_file_ptr){
         } 
     }
 }
+*/
 
 void record_request_full(void *req_buffer){
     BaseRequest *req_control = static_cast<BaseRequest *>(req_buffer);  
