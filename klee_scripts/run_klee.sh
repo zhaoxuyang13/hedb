@@ -9,6 +9,7 @@ FUNC_NAME=$2
 # we have a ktest file with users data named ${SECRET_INPUT_FILE}
 SECRET_INPUT_FILE=$3
 
+
 # we use klee to run the input, and generate path constraints (as smt2 file);
 klee \
     --write-smt2s \

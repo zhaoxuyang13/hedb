@@ -2,6 +2,9 @@
 #include <defs.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
+#include <stdio.h>
+
 #if defined(TEE_TZ)
 extern double pow(double x, int y);
 #else 

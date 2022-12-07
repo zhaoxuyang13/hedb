@@ -1,23 +1,22 @@
-#include <sys/shm.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdio.h>
+#include <pthread.h>
+#include <fcntl.h>
+#include <sched.h>
+#include <mutex>
+#include <sys/wait.h>
+#include <sys/shm.h>
+#include <sys/mman.h>
+
 #include "crypto.h"
 #include "enc_ops.h"
 #include "sync.h"
 #include "sim.hpp"
 #include "request_types.h"
-#include <pthread.h>
 #include "ops_server.h"
-#include <sys/wait.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sched.h>
-#include <mutex>
-
-
+// #include "desenitizer.h"
 
 #include <map> // for profile 
 
@@ -166,8 +165,8 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 
 	if (resp !=0)
 	{
-		static __thread pid_t tid = gettid();
-		printf("tid %d, resp %d\n", tid,  resp);
+		// static __thread pid_t tid = gettid();
+		// printf("tid %d, resp %d\n", tid,  resp);
 		_print_hex("dec from ", pSrc, src_len);
 		_print_hex("dec to ", pDst, dst_len);
 	}
@@ -320,8 +319,11 @@ pid_t fork_ops_process(void *shm_addr){
 			counters[req->reqType] ++;
 			// if (counter % 100000 == 0)
 			// 	printf("counter %d\n", counter++);
-
-			handle_ops(req);
+			if(req->reqType > 0)
+				handle_ops(req);
+			else 
+				;
+				// desenitize_ops(req);
 
 			if (req->resp != 0)
 			{

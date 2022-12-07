@@ -5,12 +5,28 @@ include config.mk
 all: build
 
 build: 
-	cmake --build build 
+	cmake --build build
 
-klee_wrapper:
-	clang -I src/include -I src/enclave/include -emit-llvm -c -g src/enclave/klee_wrapper/wrapper.c
-	clang -I src/enclave/klee_wrapper -emit-llvm -c -g src/enclave/klee_wrapper/prefix_udf.c
-	llvm-link wrapper.bc prefix_udf.bc -o whole.bc
+BUILDDIR := build
+TYPES := int text timestamp
+SOURCES :=  ${addsuffix _ops.c, ${addprefix plain_, ${TYPES}}}
+SOURCE_DIR := src/enclave/plain_ops
+
+BC_OBJECTS := ${addprefix ${BUILDDIR}/, $(SOURCES:%.c=%.bc)} 
+
+
+CLANG_FLAGS := -I src/include -I src/enclave/include -I src/enclave -emit-llvm -c -g
+
+${BUILDDIR}/%.bc: ${SOURCE_DIR}/%.c
+	mkdir -p build
+	@echo from file $@ $<
+	clang ${CLANG_FLAGS} $< -o $@
+
+klee_wrapper: ${BC_OBJECTS}
+	clang ${CLANG_FLAGS} src/enclave/like_match.c -o ${BUILDDIR}/like_match.bc
+	clang ${CLANG_FLAGS} src/enclave/klee_wrapper/wrapper.c -o ${BUILDDIR}/wrapper.bc
+	clang ${CLANG_FLAGS} -I src/enclave/klee_wrapper src/enclave/klee_wrapper/prefix_udf.c -o ${BUILDDIR}/prefix_udf.bc
+	llvm-link ${BUILDDIR}/wrapper.bc ${BUILDDIR}/like_match.bc ${BC_OBJECTS} ${BUILDDIR}/prefix_udf.bc  -o ${BUILDDIR}/whole.bc
 
 configure_sgx:
 	cmake -B build -S ./src -DTEE_TYPE=SGX
