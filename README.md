@@ -1,6 +1,6 @@
-### Usage 
+# Usage 
 
-1. 安装 Postgresql 
+1. ## 安装 Postgresql 
 
 ```shell
 sudo apt-get install postgresql postgresql-server-dev-all
@@ -10,9 +10,11 @@ or
 build from source. https://www.postgresql.org/docs/current/install-short.html
 ```
 
-2. 安装OP-TEE  [ref]( https://optee.readthedocs.io/en/latest/building/gits/build.html)
 
-   1. Install prerequisite
+2. ## Run HEDB-extension as TrustZone TA  [ref]( https://optee.readthedocs.io/en/latest/building/gits/build.html)
+
+   
+   1. Install OPTEE prerequisite
 
       ```bash
       sudo apt-get install android-tools-adb android-tools-fastboot autoconf \
@@ -37,7 +39,7 @@ build from source. https://www.postgresql.org/docs/current/install-short.html
       git config --global user.email "you@example.com" 
       ```
 
-   3. Get source code 
+   3. Get OPTEE source code 
 
       ``` bash
       mkdir <work-dir>
@@ -64,7 +66,7 @@ build from source. https://www.postgresql.org/docs/current/install-short.html
       	run
       ```
 
-3. 编译安装EDB扩展（In Qemu ）
+   5. 编译安装EDB扩展（In Qemu ）
 
    会弹出两个窗口，一个是secure ，一个是normal，在qemu侧输入c开始执行。
 
@@ -81,37 +83,50 @@ build from source. https://www.postgresql.org/docs/current/install-short.html
    sudo make install
    ```
 
-4. 安装encdb 插件  (在Host机器上)
+3. ## Run HEDB-extension as a CVM process 
 
-```bash
-# qemu里，已经通过ssh将pg端口转发到host上54322端口
-psql -U postgres -p 54322 -h localhost
-```
+   ```bash
+   sudo apt install libmedtls-dev
 
-```psql
-CREATE USER test WITH PASSWORD 'password';
-CREATE database test;
-\c test
-CREATE extension encdb;
-SELECT pg_enc_int4_encrypt(1) + pg_enc_int4_encrypt(2);
-SELECT pg_enc_int4_decrypt(pg_enc_int4_encrypt(1) + pg_enc_int4_encrypt(2));
+   make configure_sim
+   make 
+   make install
+   ```
 
-```
 
-5. TPCC benchmark （事务型）
+4. ## Benchmark
 
-```bash
-cd benchmark 
-java -Dlog4j.configuration=log4j.properties -jar bin/oltp.jar -b tpcc -o output -s 100 --config config/tpcc_config.xml --load true --execute false
-java -Dlog4j.configuration=log4j.properties -jar bin/oltp.jar -b tpcc -o output -s 100 --config config/tpcc_config.xml --load false --execute true
-```
+   6. 安装encdb 插件 
 
-6. TPCH benchmark （分析型）
+   ```bash
+   psql -U postgres -p 5432 -h localhost
+   ```
 
-```bash
-cd benchmark 
-./tool/dbgen -s 2 # 指定warehouse大小
-java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 10 --config config/tpch_config.xml --load true --execute false
-java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 10 --config config/tpch_config.xml --load false --execute true
-```
+   ```psql
+   CREATE USER test WITH PASSWORD 'password';
+   CREATE database test;
+   \c test
+   CREATE extension encdb;
+   SELECT pg_enc_int4_encrypt(1) + pg_enc_int4_encrypt(2);
+   SELECT pg_enc_int4_decrypt(pg_enc_int4_encrypt(1) + pg_enc_int4_encrypt(2));
 
+   ```
+
+   7. TPCC benchmark （事务型）
+
+   ```bash
+   cd benchmark 
+   java -Dlog4j.configuration=log4j.properties -jar bin/oltp.jar -b tpcc -o output -s 100 --config config/tpcc_config.xml --load true --execute false
+   java -Dlog4j.configuration=log4j.properties -jar bin/oltp.jar -b tpcc -o output -s 100 --config config/tpcc_config.xml --load false --execute true
+   ```
+
+   8. TPCH benchmark （分析型）
+
+   ```bash
+   cd benchmark 
+   ./tool/dbgen -s 2 # 指定warehouse大小
+   java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 10 --config config/tpch_config.xml --load true --execute false
+   java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 10 --config config/tpch_config.xml --load false --execute true
+   ```
+
+5. ## Use Klee + Z3 to solve constraint.

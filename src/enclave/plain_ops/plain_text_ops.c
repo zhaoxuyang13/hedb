@@ -32,5 +32,7 @@ void plain_text_concat(char *left, uint32_t *l_size, char *right, uint32_t r_siz
 
 int plain_text_substring(char *str, int begin, int end, char *substr)
 {
+    
     SubText(substr, str, begin, end);
+    return 0;
 }

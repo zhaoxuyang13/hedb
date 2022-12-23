@@ -69,7 +69,7 @@ prefix_range *pr_normalize(prefix_range *a) {
 
 
 static inline
-prefix_range *pr_inter(prefix_range *a, prefix_range *b) {
+ *pr_inter(prefix_range *a, prefix_range *b) {
   prefix_range *res = 0;
   int alen = strlen(a->prefix);
   int blen = strlen(b->prefix);
@@ -107,7 +107,7 @@ prefix_range *pr_inter(prefix_range *a, prefix_range *b) {
   else if( gplen == alen && alen == blen ) {
     res = build_pr(gp,
 		   a->first > b->first ? a->first : b->first,
-		   a->last  > b->last  ? a->last  : b->last);
+		   a->last  > b->last  ? a->last  : b->last); // bug here
   }
   else if( gplen == alen ) {
     assert(gplen < blen);

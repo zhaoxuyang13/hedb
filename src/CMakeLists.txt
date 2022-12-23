@@ -26,20 +26,27 @@ endforeach()
 endif()
 
 
-# file(GLOB WRAPPER_SRCS 
-#     enclave/klee_wrapper/*.c
-# )
+file(GLOB DES_SRCS
+    # enclave/plain_ops/*.c
+    enclave/desenitizer.cpp
+    enclave/simulate/crypto.c
+)
+add_executable(desenitizer ${DES_SRCS})
+target_include_directories(desenitizer 
+        PRIVATE enclave/include
+        PRIVATE enclave
+        PRIVATE include
+        PRIVATE enclave/simulate
+        )
+target_link_libraries(desenitizer mbedtls mbedcrypto pthread)
+
 # set(OLD_COMPILER ${CMAKE_C_COMPILER})
 # set(OLD_CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} )
 
 # set(CMAKE_C_COMPILER clang)
 # # set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} "-flto")
-# add_executable(klee_wrapper ${WRAPPER_SRCS})
-# target_include_directories(klee_wrapper 
-#         PRIVATE enclave/include
-#         PRIVATE klee_wrapper
-#         PRIVATE include
-#         )
+
+
 # target_compile_options(klee_wrapper PUBLIC -emit-llvm)
 
 # set(CMAKE_C_COMPILER ${OLD_COMPILER})
@@ -136,7 +143,8 @@ elseif ( ${TEE_TYPE} STREQUAL "SIM" )
 
     add_compile_definitions(TEE_SIM) 
     file(GLOB SRCS 
-        enclave/*.c  
+        enclave/enc_*.c  
+        enclave/like_match.c
         enclave/plain_ops/*.c
         enclave/kv/*.cpp 
         enclave/simulate/sim.cpp 
@@ -157,6 +165,9 @@ elseif ( ${TEE_TYPE} STREQUAL "SIM" )
     install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/sim_ops DESTINATION ${INSTALL_DIR})
     install(CODE "execute_process(COMMAND chown postgres:postgres ${INSTALL_DIR}/sim_ops )")
 
+
+
+    if(PostgreSQL_FOUND)
     file(GLOB USRCS
         utils/sync.c
         extension/interface/simulate/sim_interface.cpp
@@ -169,7 +180,6 @@ elseif ( ${TEE_TYPE} STREQUAL "SIM" )
         PRIVATE include
         )
     
-    if(PostgreSQL_FOUND)
     target_include_directories(SimInterface 
         PRIVATE ${PostgreSQL_INCLUDE_DIRS}
         PRIVATE ${PostgreSQL_SERVER_INCLUDE_DIRS}
@@ -180,8 +190,8 @@ else()
     message( FATAL_ERROR "TEE_TYPE ${TEE_TYPE} not specified (SGX/TZ). CMake wil exit.")
 endif()
 
-## for extension 
-if(PostgreSQL_FOUND)
+## for extension
+if(PostgreSQL_FOUND) 
 add_subdirectory(extension)
 endif()
 # ## for test
