@@ -17,8 +17,10 @@
 #include <sched.h>
 #include <mutex>
 
-
-
+// #include <chrono>
+// #include <ctime>
+// #include <sched.h>
+#include <iostream>
 #include <map> // for profile 
 
 /* this load barrier is only for arm */
@@ -283,6 +285,8 @@ pid_t fork_ops_process(void *shm_addr){
 	// for(int i = 0 ;i < 300; i++){
 	// 	counters[i] = 0;
 	// }
+	std::chrono::duration<double> sum(0);
+
 	BaseRequest *req = (BaseRequest *)shm_addr;
 	while(1){
 		if (req->status == EXIT)
@@ -293,7 +297,8 @@ pid_t fork_ops_process(void *shm_addr){
 					args_array[i].decrypt_status = EXIT;
 				}
 			}
-			printf("SIM-TA Exit, ops counter: %d, non-enc counter %d, dec counter: %ld, enc counter: %ld\n", counter, non_enc_counter, decrypt_counter, encrypt_counter);
+			std::cout << "SIM-TA Exit: Total ops elapse time " << sum.count() << std::endl;
+			printf("ops counter: %d, non-enc counter %d, dec counter: %ld, enc counter: %ld\n",counter, non_enc_counter, decrypt_counter, encrypt_counter);
 			for(int i = 0; i <= 299; i ++){
 				if(counters[i])
 					printf("%d: counter %d, ", i,  counters[i]);
@@ -305,7 +310,7 @@ pid_t fork_ops_process(void *shm_addr){
 		else if(req->status == SENT)
 		{
 			LOAD_BARRIER;
-			
+  			// auto start = std::chrono::system_clock::now();
 			// printf("request received %d\n", req->reqType);
 			counter ++;
 			if(req->reqType != CMD_INT_ENC
@@ -327,6 +332,9 @@ pid_t fork_ops_process(void *shm_addr){
 			{
 				printf("TA error %d, %d\n",req->resp,counter);
 			}
+			// auto end = std::chrono::system_clock::now();
+        	// std::chrono::duration<double> elapsed_seconds = end-start;
+			// sum += elapsed_seconds;
 			STORE_BARRIER;
 			req->status = DONE;
 		}
@@ -341,11 +349,7 @@ pid_t fork_ops_process(void *shm_addr){
 
 
 int main(int argc,char *argv[]){
-	// cpu_set_t mask;
-	// CPU_ZERO(&mask);
-	// for(int i = 0; i < 4;i ++)
-	// 	CPU_SET(i, &mask);
-	// int result = sched_setaffinity(0, sizeof(mask), &mask);
+
 	int key = 666;
 	if(argc == 2){
 		key = atoi(argv[1]);

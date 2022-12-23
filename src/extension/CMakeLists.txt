@@ -22,6 +22,7 @@ endif()
 
 file(GLOB SRC
   "interface/*.cpp"
+  "rr/*.cpp"
   "*.cpp"
   "../utils/*.c"
   )

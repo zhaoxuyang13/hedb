@@ -125,7 +125,6 @@ elseif ( ${TEE_TYPE} STREQUAL "TZ" )
                 PRIVATE extension/include/trustzone
                 PRIVATE extension/interface/trustzone
                 PRIVATE include
-                # PRIVATE enclave/trustzone
                 )
 
     target_link_libraries (${PROJECT_NAME} PRIVATE pthread)
@@ -190,5 +189,5 @@ endif()
 ## KV and PARA is not compatible for now
 # add_compile_definitions(ENABLE_KV)
 # add_compile_definitions(ENABLE_PARA)
-add_compile_definitions(ENABLE_LOCAL_SIM)
+# add_compile_definitions(ENABLE_LOCAL_SIM)
 
