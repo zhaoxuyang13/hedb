@@ -2,12 +2,13 @@
 
 HEDB is a novel encrypted database system. Its current form is based on PostgreSQL as the RDBMS.
 
-The implemented prototype can be run on any of the three types of trusted execution environments:
-- ARM TrustZone (OP-TEE based)
-- Intel SGX (SGX SDK based)
-- Confidential VMs such as ARMv9 CCA and Intel TDX (process based)
+The implemented prototype can be run on any of the three kinds of trusted execution environments:
 
-## How to Install? (Ubuntu + ARM OP-TEE based)
+- ARM TrustZone (OP-TEE based)
+- Confidential VMs such as ARMv9 CCA and Intel TDX (process based)
+- Intel SGX (SGX SDK based)
+
+## How to Install?
 
 1. Install Postgresql:
 
@@ -15,6 +16,8 @@ The implemented prototype can be run on any of the three types of trusted execut
 sudo apt-get install postgresql postgresql-server-dev-all
 ```
 or build from source: https://www.postgresql.org/docs/current/install-short.html
+
+### Choice-1: ARM OP-TEE
 
 2. Run HEDB Pg-extension as TrustZone TA [(see here)]( https://optee.readthedocs.io/en/latest/building/gits/build.html):
 
@@ -74,18 +77,33 @@ or build from source: https://www.postgresql.org/docs/current/install-short.html
    mount /dev/vda mnt
    ./mnt/mnt.sh
    ./init.sh 
-   cd edb
+   ```
+
+   6. Install HEDB extension:
+
+   ```bash
    make configure_tz
    make build 
    sudo make install
    ```
 
-3. Run HEDB Pg-extension:
+### Choice-2: ARM CCA
+
+   1. Install HEDB extension:
 
    ```bash
    sudo apt install libmedtls-dev
-   
    make configure_sim
+   make 
+   make install
+   ```
+
+### Choice-3: Intel SGX
+
+   1. Install HEDB extension:
+
+   ```bash
+   make configure_sgx
    make 
    make install
    ```
