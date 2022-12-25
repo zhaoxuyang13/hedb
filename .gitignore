@@ -1,7 +1,6 @@
 .idea/
 .vscode/
 build/
-test/
 cmake-build-debug/
 *.cmd
 *.o
