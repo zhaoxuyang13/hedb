@@ -1,6 +1,6 @@
 # HEDB
 
-HEDB is a novel encrypted database system. Its current form is based on PostgreSQL.
+HEDB is a novel encrypted database system. Its current form is based on PostgreSQL as the RDBMS.
 
 The implemented prototype can be run on any of the three types of trusted execution environments:
 - ARM TrustZone (OP-TEE based)
@@ -16,7 +16,7 @@ sudo apt-get install postgresql postgresql-server-dev-all
 ```
 or build from source: https://www.postgresql.org/docs/current/install-short.html
 
-2. Run HEDB Pg-extension as TrustZone TA  [(see here)]( https://optee.readthedocs.io/en/latest/building/gits/build.html)
+2. Run HEDB Pg-extension as TrustZone TA [(see here)]( https://optee.readthedocs.io/en/latest/building/gits/build.html):
 
   
    1. Install OPTEE prerequisite:
@@ -80,7 +80,7 @@ or build from source: https://www.postgresql.org/docs/current/install-short.html
    sudo make install
    ```
 
-3. Run HEDB Pg-extension
+3. Run HEDB Pg-extension:
 
    ```bash
    sudo apt install libmedtls-dev
@@ -90,8 +90,9 @@ or build from source: https://www.postgresql.org/docs/current/install-short.html
    make install
    ```
 
+## How to Benchmark?
 
-4. Run benchmarks
+1. Run psql:
 
    ```bash
    psql -U postgres -p 5432 -h localhost
@@ -107,7 +108,7 @@ or build from source: https://www.postgresql.org/docs/current/install-short.html
    
    ```
 
-TPCC benchmark:
+2. Run TPCC benchmark:
 
    ```bash
    cd benchmark 
@@ -115,7 +116,7 @@ TPCC benchmark:
    java -Dlog4j.configuration=log4j.properties -jar bin/oltp.jar -b tpcc -o output -s 100 --config config/tpcc_config.xml --load false --execute true
    ```
 
-TPCH benchmark:
+3. Run TPCH benchmarks:
 
    ```bash
    cd benchmark 
@@ -123,5 +124,3 @@ TPCH benchmark:
    java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 10 --config config/tpch_config.xml --load true --execute false
    java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 10 --config config/tpch_config.xml --load false --execute true
    ```
-
-5. Use Klee + Z3 for testing (TODO)
