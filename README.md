@@ -1,20 +1,25 @@
-# Usage 
+# HEDB
 
-1. ## 安装 Postgresql 
+HEDB is a novel encrypted database system. Its current form is based on PostgreSQL.
+
+The implemented prototype can be run on any of the three types of trusted execution environments:
+- ARM TrustZone (OP-TEE based)
+- Intel SGX (SGX SDK based)
+- Confidential VMs such as ARMv9 CCA and Intel TDX (process based)
+
+## How to Install? (Ubuntu + ARM OP-TEE based)
+
+1. Install Postgresql:
 
 ```shell
 sudo apt-get install postgresql postgresql-server-dev-all
-
-or 
-
-build from source. https://www.postgresql.org/docs/current/install-short.html
 ```
+or build from source: https://www.postgresql.org/docs/current/install-short.html
 
+2. Run HEDB Pg-extension as TrustZone TA  [(see here)]( https://optee.readthedocs.io/en/latest/building/gits/build.html)
 
-2. ## Run HEDB-extension as TrustZone TA  [ref]( https://optee.readthedocs.io/en/latest/building/gits/build.html)
-
-   
-   1. Install OPTEE prerequisite
+  
+   1. Install OPTEE prerequisite:
 
       ```bash
       sudo apt-get install android-tools-adb android-tools-fastboot autoconf \
@@ -28,7 +33,7 @@ build from source. https://www.postgresql.org/docs/current/install-short.html
               rsync unzip uuid-dev xdg-utils xterm xz-utils zlib1g-dev
       ```
 
-   2. Install REPO
+   2. Install REPO:
 
       ```bash
       mkdir ~/bin
@@ -39,7 +44,7 @@ build from source. https://www.postgresql.org/docs/current/install-short.html
       git config --global user.email "you@example.com" 
       ```
 
-   3. Get OPTEE source code 
+   3. Get OPTEE source code:
 
       ``` bash
       mkdir <work-dir>
@@ -54,49 +59,39 @@ build from source. https://www.postgresql.org/docs/current/install-short.html
       mv ramdisk img/ramdisk
       ```
 
-   4. build and run OP-TEE
+   4. Build and run OP-TEE:
 
       ```bash
       cd build
       make toolchains
-      make \
-      	QEMU_VIRTFS_ENABLE=y \
-        QEMU_USERNET_ENABLE=y \  # 用于共享文件夹
-        CFG_WITH_PAGER=y \  
-      	run
+      make QEMU_VIRTFS_ENABLE=y QEMU_USERNET_ENABLE=y CFG_WITH_PAGER=y run
       ```
 
-   5. 编译安装EDB扩展（In Qemu ）
-
-   会弹出两个窗口，一个是secure ，一个是normal，在qemu侧输入c开始执行。
-
-   在normal侧输入root登陆
+   5. Build QEMU:
 
    ```bash
    mkdir mnt
-   mount /dev/vda mnt # 挂载准备的包含postgres的img
-   ./mnt/mnt.sh # chroot
+   mount /dev/vda mnt
+   ./mnt/mnt.sh
    ./init.sh 
    cd edb
-   make configure_tz #选择trustzone作为TEE
+   make configure_tz
    make build 
    sudo make install
    ```
 
-3. ## Run HEDB-extension as a CVM process 
+3. Run HEDB Pg-extension
 
    ```bash
    sudo apt install libmedtls-dev
-
+   
    make configure_sim
    make 
    make install
    ```
 
 
-4. ## Benchmark
-
-   6. 安装encdb 插件 
+4. Run benchmarks
 
    ```bash
    psql -U postgres -p 5432 -h localhost
@@ -109,10 +104,10 @@ build from source. https://www.postgresql.org/docs/current/install-short.html
    CREATE extension encdb;
    SELECT pg_enc_int4_encrypt(1) + pg_enc_int4_encrypt(2);
    SELECT pg_enc_int4_decrypt(pg_enc_int4_encrypt(1) + pg_enc_int4_encrypt(2));
-
+   
    ```
 
-   7. TPCC benchmark （事务型）
+TPCC benchmark:
 
    ```bash
    cd benchmark 
@@ -120,13 +115,13 @@ build from source. https://www.postgresql.org/docs/current/install-short.html
    java -Dlog4j.configuration=log4j.properties -jar bin/oltp.jar -b tpcc -o output -s 100 --config config/tpcc_config.xml --load false --execute true
    ```
 
-   8. TPCH benchmark （分析型）
+TPCH benchmark:
 
    ```bash
    cd benchmark 
-   ./tool/dbgen -s 2 # 指定warehouse大小
+   ./tool/dbgen -s 2
    java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 10 --config config/tpch_config.xml --load true --execute false
    java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 10 --config config/tpch_config.xml --load false --execute true
    ```
 
-5. ## Use Klee + Z3 to solve constraint.
+5. Use Klee + Z3 for testing (TODO)
