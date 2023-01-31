@@ -1,5 +1,21 @@
 # HEDB
 
+- 如何安装？
+- 如何登录测试平台？注意说明我们平台的特殊性
+
+1. 提供一个kick-off案例，用于评委验证所需环境已经ready。需要评委们协商各自运行的时间安排（避免冲突）
+
+2. 针对图X，运行哪个脚本（命名：figure-1.sh）？每个脚本预计运行多久？
+- 预期效果：某些数据，可以说明文中的的什么结论（claims）
+- 一键生成对应figure，和文中直接对比
+
+注意事项：
+- license
+- 如果出现问题，如何快速回滚环境，进行下一轮测试
+
+参考：
+- https://github.com/ucbrise/snoopy
+
 HEDB is a novel encrypted database system. Its current form is based on PostgreSQL as the RDBMS.
 
 The implemented prototype can be run on any of the three kinds of trusted execution environments:
