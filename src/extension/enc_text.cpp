@@ -117,7 +117,7 @@ Datum
     }
     
     if (enc_text_cmp(str1, str2, &ans) < 0) {
-        print_info("text eq");
+        // print_info("text eq");
         exit(0);
     }
 
@@ -150,7 +150,7 @@ Datum
     }
     
     if (enc_text_cmp(str1, str2, &ans) < 0) {
-        print_info("text ne");
+        // print_info("text ne");
         exit(0);
     }
 
@@ -184,7 +184,7 @@ Datum
     }
     
     if (enc_text_cmp(str1, str2, &ans) < 0) {
-        print_info("text le");
+        // print_info("text le");
         exit(0);
     }
 
@@ -218,7 +218,7 @@ Datum
     }
 
     if (enc_text_cmp(str1, str2, &ans) < 0) {
-        print_info("text lt");
+        // print_info("text lt");
         exit(0);
     }
 
@@ -251,7 +251,7 @@ Datum
     }
     
     if (enc_text_cmp(str1, str2, &ans) < 0) {
-        print_info("text ge");
+        // print_info("text ge");
         exit(0);
     }
 
@@ -321,7 +321,7 @@ Datum
     }
     
     if (enc_text_cmp(str1, str2, &ans) < 0) {
-        print_info("text cmp");
+        // print_info("text cmp");
         exit(0);
     }
 
@@ -402,7 +402,7 @@ Datum
     EncStr* pattern = (EncStr *) VARDATA(s2);
     int result = 0 ;
     if (enc_text_like(str,pattern, &result) < 0) {
-        print_info("text like");
+        // print_info("text like");
         exit(0);
     }
 

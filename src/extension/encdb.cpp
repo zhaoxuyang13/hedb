@@ -10,6 +10,7 @@ PG_FUNCTION_INFO_V1(launch);
 PG_FUNCTION_INFO_V1(enable_debug_mode);
 PG_FUNCTION_INFO_V1(enable_record_mode);
 PG_FUNCTION_INFO_V1(enable_replay_mode);
+// void close_write_file_ptr();
 }
 
 
@@ -26,7 +27,6 @@ extern bool sequence_replay;
 extern char record_name_prefix[MAX_NAME_LENGTH];
 extern char record_names[MAX_RECORDS_NUM][MAX_NAME_LENGTH];
 extern int records_cnt;
-void close_write_file_ptr();
 
 // void print_info(const char *str,...)
 // {
@@ -58,7 +58,7 @@ Datum
     recordMode = true;
     char* s = PG_GETARG_CSTRING(0);
     strncpy(record_name_prefix, s, strlen(s));
-    print_info("%s\n", s);
+    // print_info("%s\n", s);
     PG_RETURN_INT32(0);
 }
 Datum
@@ -66,13 +66,13 @@ Datum
 {
     if(recordMode){
         recordMode = false;
-        close_write_file_ptr();
+        // close_write_file_ptr();
     }
     replayMode = true;
     char* s = PG_GETARG_CSTRING(0);
     strncpy(record_name_prefix, s, strlen(s));
     strcat(record_name_prefix, "-");
-    print_info("%s\n", s);
+    // print_info("%s\n", s);
 
     DIR *dir;
     struct dirent *ent;
@@ -90,11 +90,11 @@ Datum
         for(int i = 0; i < records_cnt; i ++){
             sprintf(tmp + strlen(tmp), "%d: %s\n", i, record_names[i]);
         }
-        print_info("%s\n",tmp);
+        // print_info("%s\n",tmp);
         closedir (dir);
     } else {
         /* could not open directory */
-        print_info("could not open directory\n");
+        // print_info("could not open directory\n");
         return EXIT_FAILURE;
     }
 
@@ -103,7 +103,7 @@ Datum
         sequence_replay = false;
     }
 
-    print_info("mode: %s, seq: %d", mode, (int)sequence_replay);
+    // print_info("mode: %s, seq: %d", mode, (int)sequence_replay);
 
     PG_RETURN_INT32(0);
 }

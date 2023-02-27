@@ -101,5 +101,5 @@ void print_base64(const void *cipher, int length, int base64_length, char* messa
 {
     char base64_str[base64_length];
     base64_encode((const unsigned char *)cipher, length, base64_str);
-    print_info("%s length: %d, contents: %s", message, length, base64_str);
+    // print_info("%s length: %d, contents: %s", message, length, base64_str);
 }

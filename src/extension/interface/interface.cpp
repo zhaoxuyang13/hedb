@@ -115,7 +115,7 @@ void exit_handler(){
 void enter_replay_mode(){
     if(recordMode){
         recordMode = false;
-        print_info("record file could be not fully written\n");
+        // print_info("record file could be not fully written\n");
         /* should add flush */
     }
     replayMode = true;
