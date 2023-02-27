@@ -32,10 +32,9 @@ add_postgresql_extension(
     VERSION 0.0.1
     SOURCES ${SRC}
     SCRIPTS encdb--0.0.1.sql
-    REGRESS basic
   )
 
-# extension depend on enclave interface to be build first. (enclave_u.* files)
+# extension depend on enclave interface to be build first. (e.g. on sgx, enclave_u.* files)
 add_dependencies(encdb ${interface})
 target_link_libraries(encdb ${interface})
 

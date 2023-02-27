@@ -58,6 +58,7 @@ load-tpch:
 load-tpch-native: 
 	cd $(BENCHMARK_DIR) && psql -h ${PG_SERVER_IP} -p ${PG_SERVER_PORT} -U postgres -d test -f db_schemas/tpch-schema.sql 
 	cd $(BENCHMARK_DIR) && psql -h ${PG_SERVER_IP} -p ${PG_SERVER_PORT} -U postgres -d test -f db_schemas/tpch-index.sql 
+	cd $(BENCHMARK_DIR) && sed -i 's#<DBUrl>.*</DBUrl>#<DBUrl>jdbc:postgresql://${PG_SERVER_IP}:${PG_SERVER_PORT}/test</DBUrl>#' config/tpch_config.xml
 	cd $(BENCHMARK_DIR) && java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 100 --config config/tpch_config.xml --load true --execute false
 
 run:

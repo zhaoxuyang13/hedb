@@ -499,7 +499,7 @@ Datum pg_enc_float4_avg_simple(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    print_info("avg simple");
+    // print_info("avg simple");
     ArrayType *v = PG_GETARG_ARRAYTYPE_P(0);
     bool isnull;
     Datum value;
