@@ -36,15 +36,6 @@ extern int records_cnt;
 // {
 //     ereport(ERROR, (errmsg(fmt)));
 // }
-Datum
-    launch(PG_FUNCTION_ARGS)
-{
-    ereport(LOG, (errmsg("launch was called")));
-
-    int64_t ret = 0;
-    
-    PG_RETURN_INT32(ret);
-}
 
 Datum
     enable_debug_mode(PG_FUNCTION_ARGS)
@@ -106,4 +97,16 @@ Datum
     // print_info("mode: %s, seq: %d", mode, (int)sequence_replay);
 
     PG_RETURN_INT32(0);
+}
+Datum
+    launch(PG_FUNCTION_ARGS)
+{
+    ereport(LOG, (errmsg("launch was called")));
+    // recordMode = true;
+
+    // char* s = "tpcc";
+    // strncpy(record_name_prefix, s, strlen(s));
+    int64_t ret = 0;
+    
+    PG_RETURN_INT32(ret);
 }

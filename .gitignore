@@ -7,3 +7,5 @@ cmake-build-debug/
 *.d
 benchmark
 */ramdisk
+__pycache__
+*.eps

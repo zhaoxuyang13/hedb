@@ -352,8 +352,8 @@ CREATE OR REPLACE FUNCTION enc_int4(int8)
     AS 'MODULE_PATHNAME', 'pg_int8_to_enc_int4'
     LANGUAGE C STRICT IMMUTABLE;
 
-CREATE CAST (int4 AS enc_int4) WITH FUNCTION enc_int4(int4) AS ASSIGNMENT;
-CREATE CAST (int8 AS enc_int4) WITH FUNCTION enc_int4(int8) AS ASSIGNMENT;
+CREATE CAST (int4 AS enc_int4) WITH FUNCTION enc_int4(int4) AS IMPLICIT;
+CREATE CAST (int8 AS enc_int4) WITH FUNCTION enc_int4(int8) AS IMPLICIT;
 
 --------------------------------------------------------------------------------
 --ENCRYPTED STRING TYPE (randomized)
@@ -547,7 +547,7 @@ CREATE OR REPLACE FUNCTION enc_text(varchar)
     AS 'MODULE_PATHNAME', 'varchar_to_enc_text'
     LANGUAGE C STRICT IMMUTABLE ;
 
-CREATE CAST (varchar AS enc_text) WITH FUNCTION enc_text(varchar) AS ASSIGNMENT;
+CREATE CAST (varchar AS enc_text) WITH FUNCTION enc_text(varchar) AS IMPLICIT;
 
 --------------------------------------------------------------------------------
 --ENCRYPTED FLOAT4 TYPE (randomized)
@@ -857,11 +857,11 @@ CREATE OR REPLACE FUNCTION enc_float4(int4)
     AS 'MODULE_PATHNAME', 'int4_to_enc_float4'
     LANGUAGE C STRICT IMMUTABLE ;
 
-CREATE CAST (float4 AS enc_float4) WITH FUNCTION enc_float4(float4) AS ASSIGNMENT;
-CREATE CAST (double precision AS enc_float4) WITH FUNCTION enc_float4(double precision) AS ASSIGNMENT;
-CREATE CAST (numeric AS enc_float4) WITH FUNCTION enc_float4(numeric) AS ASSIGNMENT;
-CREATE CAST (int8 AS enc_float4) WITH FUNCTION enc_float4(int8) AS ASSIGNMENT;
-CREATE CAST (int4 AS enc_float4) WITH FUNCTION enc_float4(int4) AS ASSIGNMENT;
+CREATE CAST (float4 AS enc_float4) WITH FUNCTION enc_float4(float4) AS IMPLICIT;
+CREATE CAST (double precision AS enc_float4) WITH FUNCTION enc_float4(double precision) AS IMPLICIT;
+CREATE CAST (numeric AS enc_float4) WITH FUNCTION enc_float4(numeric) AS IMPLICIT;
+CREATE CAST (int8 AS enc_float4) WITH FUNCTION enc_float4(int8) AS IMPLICIT;
+CREATE CAST (int4 AS enc_float4) WITH FUNCTION enc_float4(int4) AS IMPLICIT;
 --------------------------------------------------------------------------------
 --ENCRYPTED TIMESTAMP TYPE (randomized)
 --------------------------------------------------------------------------------
@@ -1010,9 +1010,9 @@ CREATE OR REPLACE FUNCTION enc_timestamp(timestamp)
     AS 'MODULE_PATHNAME', 'pg_enc_timestamp_encrypt'
     LANGUAGE C STRICT IMMUTABLE ;
 
-CREATE CAST (timestamp AS enc_timestamp) WITH FUNCTION enc_timestamp(timestamp) AS ASSIGNMENT;
+CREATE CAST (timestamp AS enc_timestamp) WITH FUNCTION enc_timestamp(timestamp) AS IMPLICIT;
 
--- CREATE CAST (varchar AS enc_timestamp) WITH FUNCTION enc_timestamp(varchar) AS ASSIGNMENT;
+-- CREATE CAST (varchar AS enc_timestamp) WITH FUNCTION enc_timestamp(varchar) AS IMPLICIT;
 -- CREATE OR REPLACE FUNCTION enc_text(varchar)
 --     RETURNS enc_text
 --     AS 'MODULE_PATHNAME', 'varchar_to_enc_timestamp'
