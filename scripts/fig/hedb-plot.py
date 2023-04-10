@@ -4,12 +4,18 @@ import pandas as pd
 import numpy as np
 import sys
 
+import argparse
+# from util_py3.data_util import *
+from util import parse_args
 
-def plot_replay():
+
+# data_filename = './TPCH Query Results (client & server) - v4.xlsx' # default data_filename
+
+def plot_replay(data_filename, sheet_name='s=1_vm_replay', eps_filename='replay.eps'):
     print('show replay overhead')
     data = pd.read_excel(
-        './TPCH Query Results (client & server) - v4.xlsx',
-        sheet_name='s=1_vm_replay',
+        data_filename,
+        sheet_name,
         engine='openpyxl'
     )
 
@@ -61,14 +67,13 @@ def plot_replay():
     fig.set_size_inches(10, 4.5, forward=True)
     fig.tight_layout()
     
-    plt.savefig('replay.eps', dpi=1000)
+    plt.savefig(eps_filename, dpi=1000)
 
 
-def plot_exp():
+def plot_exp(data_filename, sheet_name='exp_s=0.1', eps_filename='exp.eps'):
     print('expression')
     data = pd.read_excel(
-        './TPCH Query Results (client & server).xlsx',
-        sheet_name='exp_s=0.1',
+        data_filename,
         engine='openpyxl',
     )
 
@@ -101,14 +106,14 @@ def plot_exp():
     ax.legend(title='expression type')
 
     fig.tight_layout()
-    # plt.savefig('exp_micro.eps', dpi=1000)
+    # plt.savefig(eps_filename, dpi=1000)
 
 
-def plot_optimization():
+def plot_optimization(data_filename, sheet_name='s=1_vm', eps_filename='optimization.eps'):
     print('show optimization')
     data = pd.read_excel(
-        './TPCH Query Results (client & server) - v4.xlsx',
-        sheet_name='s=1_vm',
+        data_filename,
+        sheet_name,
         engine='openpyxl'
     )
 
@@ -176,14 +181,15 @@ def plot_optimization():
 
     fig.set_size_inches(16, 3.8, forward=True)
     fig.tight_layout()
-    plt.savefig("optimization.eps", dpi=1000, format='eps')
+    plt.savefig(eps_filename, dpi=1000, format='eps')
 
 
-def plot_record():
+def plot_record(data_filename, sheet_name = 's=1_vm', eps_filename = 'record.eps'):
     print('record overhead')
     data = pd.read_excel(
-        './TPCH Query Results (client & server) - v4.xlsx',
-        sheet_name='s=1_vm',
+        data_filename,
+        # sheet_name='s=1_vm',
+        sheet_name,
         engine='openpyxl',
     )
 
@@ -225,13 +231,13 @@ def plot_record():
 
     fig.set_size_inches(10, 4.5, forward=True)
     fig.tight_layout()
-    plt.savefig("record.eps", dpi=1000, format='eps')
+    plt.savefig(eps_filename, dpi=1000, format='eps')
 
 
-def plot_desenitize():
+def plot_desenitize(data_filename, eps_filename = 'desenitize.eps'):
     print('show hedb desenitize')
     data = pd.read_excel(
-        './desenitize-plot.xlsx',
+        data_filename,
         engine='openpyxl'
     )
 
@@ -286,26 +292,34 @@ def plot_desenitize():
 
     fig.set_size_inches(10, 4.5, forward=True)
     fig.tight_layout()
-    plt.savefig("desenitize.eps", dpi=1000, format='eps')
+    plt.savefig(eps_filename, dpi=1000, format='eps')
 
 
 def main():
-    if len(sys.argv) <= 1:
-        print('input argument')
+    if len(sys.argv) <= 2:
+        print('usage python3 plot.py [graph] [datafile] e.g., python3 plot.py replay data.xlsx')
         return
-
+    
+    parser = argparse.ArgumentParser(description='basic graph plot')
+    args = parse_args(parser)
+    in_name, out_name = args.input, args.output
+    print(in_name, out_name)
     plt.rcParams['hatch.linewidth'] = 1.5
-    if sys.argv[1] == 'replay':
-        plot_replay()
-    if sys.argv[1] == 'record':
-        plot_record()
-    if sys.argv[1] == 'exp':
-        plot_exp()
-    if sys.argv[1] == 'optimization':
-        plot_optimization()
-    if sys.argv[1] == 'desenitize':
-        plot_desenitize()
-
+    # if len(sys.argv) > 2:
+    data_filename = in_name
+    eps_filename = out_name
+    
+    if args.figure == 'replay':
+        plot_replay(data_filename, eps_filename=eps_filename)
+    if args.figure == 'record':
+        plot_record(data_filename, eps_filename=eps_filename)
+    if args.figure == 'exp':
+        plot_exp(data_filename, eps_filename=eps_filename)
+    if args.figure == 'optimization':
+        plot_optimization(data_filename, eps_filename=eps_filename)
+    if args.figure == 'desenitize':
+        plot_desenitize(data_filename, eps_filename=eps_filename)
+    
     plt.show()
 
 if __name__ == '__main__':

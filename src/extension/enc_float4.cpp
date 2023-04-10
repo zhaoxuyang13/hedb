@@ -178,7 +178,7 @@ Datum numeric_to_enc_float4(PG_FUNCTION_ARGS)
 
     src = pg_float4_in(tmp);
     enc_float_encrypt(src,f);
-    pfree(tmp);
+    // pfree(tmp);
     PG_RETURN_POINTER(f);
 }
 
@@ -197,7 +197,7 @@ Datum double_to_enc_float4(PG_FUNCTION_ARGS)
 
     src = pg_float4_in(tmp);
     enc_float_encrypt(src, f);
-    pfree(tmp);
+    // pfree(tmp);
     PG_RETURN_POINTER(f);
 }
 
@@ -216,7 +216,7 @@ Datum int8_to_enc_float4(PG_FUNCTION_ARGS)
 
     src = pg_float4_in(tmp);
     enc_float_encrypt(src, f);
-    pfree(tmp);
+    // pfree(tmp);
     PG_RETURN_POINTER(f);
 }
 
@@ -235,7 +235,7 @@ Datum int4_to_enc_float4(PG_FUNCTION_ARGS)
 
     src = pg_float4_in(tmp);
     enc_float_encrypt(src, f);
-    pfree(tmp);
+    // pfree(tmp);
     PG_RETURN_POINTER(f);
 }
 
