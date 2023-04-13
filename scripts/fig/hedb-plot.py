@@ -20,9 +20,9 @@ def plot_replay(data_filename, sheet_name='s=1_vm_replay', eps_filename='replay.
     )
 
     query = data['Query']
-    insecure = data['Native'].astype('float64')
-    encrypted = data['ARM-version StealthDB'].astype('float64')
-    replay = data['Replay'].astype('float64')
+    insecure = data['Vanilla (w/o encryption)'].astype('float64')
+    encrypted = data['UDF-based replay'].astype('float64')
+    replay = data['Log-based replay'].astype('float64')
 
     data_norm = []
     for i in range(len(query)):
