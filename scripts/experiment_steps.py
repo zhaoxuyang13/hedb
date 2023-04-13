@@ -105,8 +105,8 @@ def runBenchmark(propFile = DEFAULT_TPCH_CONFIG):
     pgIp = properties['pg_ip']
     
     # mkdir tmp for the experiment.
-    tmpResultPath =  Path("scripts/tmp/") / experimentName
-    executeCommand("mkdir -p %s" % tmpResultPath)
+    # tmpResultPath =  Path("scripts/tmp/") / experimentName
+    # executeCommand("mkdir -p %s" % tmpResultPath)
      
     #
     sqlsPath = properties['sqls_path']
@@ -124,7 +124,7 @@ def runBenchmark(propFile = DEFAULT_TPCH_CONFIG):
             assert(time_match is not None)
             queryTime = time_match.group(1)
             queryTimes.append(queryTime)
-            time.sleep(5)
+            time.sleep(1)
             
         # print(queryTime)
         results.append({
@@ -156,11 +156,19 @@ def graphData(propFile = DEFAULT_TPCH_CONFIG):
     # add elif statement here add new pictures. 
     
     if figure == "record":
-        figName = 'record.pdf'
+        figName = 'record.eps'
+        pdfName = 'record.pdf'
         title = "Figure record"
         script = scriptPath / 'fig' / 'hedb-plot.py'
         paperDataFile =  scriptPath / 'fig' / 'paper-data.xlsx'
         artifactDataFile = scriptPath / 'tmp' / 'record.xlsx'
+    elif figure == "replay":
+        figName = 'replay.eps'
+        pdfName = 'replay.pdf'
+        title = "Figure replay"
+        script = scriptPath / 'fig' / 'hedb-plot.py'
+        paperDataFile =  scriptPath / 'fig' / 'paper-data.xlsx'
+        artifactDataFile = scriptPath / 'tmp' / 'replay.xlsx'
     else:
         print("Unsupported figure:", figure)
         return    
@@ -168,17 +176,27 @@ def graphData(propFile = DEFAULT_TPCH_CONFIG):
     # graph in paper
     cmd = f'python3 {script} -l -t "Paper {title}" {figure} {paperDataFile} {paperFigDir / figName}'
     executeCommand(cmd)
+    cmd = f'epstopdf {paperFigDir / figName}'
+    executeCommand(cmd)
+    
     # graph in AE
     cmd = f'python3 {script} -l -t "Artifact Evaluation" {figure}  {artifactDataFile} {artifactFigDir / figName}'
     executeCommand(cmd)
+    cmd = f'epstopdf {artifactFigDir / figName}'
+    executeCommand(cmd)
+    
     # jam two figures together
-    cmd = f"pdfjam --landscape --nup 2x1 {artifactFigDir / figName} {paperFigDir / figName} --outfile {cmpFigDir / figName}"
+    cmd = f"pdfjam {artifactFigDir / pdfName} {paperFigDir / pdfName} --landscape --nup 2x1 --outfile {cmpFigDir / pdfName}"
     executeCommand(cmd)
 
 def shutdownVMs():
     cmd = r"ps aux | grep ./qemu-system-aarch64 | awk '{print $2}' | head -n -1 | xargs kill -9"
     executeCommand(cmd)
     print("qemu vm shut down")
+    
+def cleanLogs():
+    print("clean logs")
 
 def cleanupExperiment():
     shutdownVMs()
+    cleanLogs()
