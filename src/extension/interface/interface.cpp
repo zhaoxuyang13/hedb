@@ -94,7 +94,7 @@ int TEEInvoker::sendRequest(Request *req) {
     
     /* record */
     if(recordMode){
-        static Recorder& recorder = Recorder::getInstance();
+        static Recorder& recorder = Recorder::getInstance(record_name_prefix);
         recorder.record(req_buffer);
     }
 

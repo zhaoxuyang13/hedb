@@ -3,6 +3,7 @@
 #include <request_types.h>
 #include <request.hpp>
 
+
 static inline uint64_t get_timestamp(void){
     uint64_t tsc;
 #if defined(__aarch64__) && 0 // this can be opened if kernel enables user space read of pmccntr reg. 
@@ -15,9 +16,11 @@ static inline uint64_t get_timestamp(void){
 
 char *Recorder::get_write_buffer(unsigned long length){
         if(write_fd == 0){
-            if(filename == ""){
-                pid_t pid = getpid();
+            pid_t pid = getpid();
+            if(prefix == ""){
                 filename = "record-" + std::to_string(pid) + ".log";
+            } else {
+                filename = prefix + "-" + std::to_string(pid) + ".log";
             }
             write_fd = open(filename.c_str(), O_RDWR | O_CREAT, 0666);
         }
