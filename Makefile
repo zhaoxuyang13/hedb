@@ -36,6 +36,9 @@ configure_tz:
 
 configure_sim:
 	cmake -B build -S ./src -DTEE_TYPE=SIM
+
+configure_sim_parallel:
+	cmake -B build -S ./src -DTEE_TYPE=SIM -DENABLE_PARALLEL=ON
  
 install: 
 	sudo cmake --install build
