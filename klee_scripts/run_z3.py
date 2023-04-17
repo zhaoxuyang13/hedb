@@ -74,6 +74,7 @@ if __name__ == "__main__":
     smt2_dir = sys.argv[1]
     outputfile_name = sys.argv[2]
     files = [f for f in listdir(smt2_dir) if f.endswith(".smt2")]
+    print("files num,", len(files))
     def atoi(text):
         return int(text) if text.isdigit() else text
     def natural_keys(text):
@@ -83,19 +84,24 @@ if __name__ == "__main__":
     cache = {}
     hit = 0
     miss = 0
+    print("files num", len(files))
     with open(outputfile_name, "w+") as f:
         for file in files:
             filepath = join(smt2_dir, file)
             # print(filepath)
-            file_hash = calc_hash(filepath)
-            if file_hash not in cache:
-                miss += 1
-                res = solve(filepath, 1)
-                cache[file_hash] = res 
-            else :
-                hit += 1    
-            f.write(cache[file_hash]+"\n")    
+            if 0: # this branch is for cached
+                file_hash = calc_hash(filepath)
+                if file_hash not in cache:
+                    miss += 1
+                    res = solve(filepath, 1)
+                    cache[file_hash] = res 
+                else :
+                    hit += 1   
+                f.write(cache[file_hash]+"\n")    
+            else: # this branch is no optimize
+                f.write(solve(filepath, 1)+"\n")    
 
-    print("done hit: ",hit, ", miss: ",miss)
+            
+    # print("done hit: ",hit, ", miss: ",miss)
         
         

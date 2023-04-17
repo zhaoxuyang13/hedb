@@ -1,10 +1,18 @@
 #!/bin/bash
 
-rm -rf desen
-mkdir desen
-for i in {1..22}
-do 
+outfile=$1 # this is log output 
+fullsqls=$(seq 1 22)
+minsqls=$(seq 2 6)
+if [ $2 = "min" ]; then
+    sqls=$minsqls
+else
+    sqls=$fullsqls
+fi
+for i in $sqls; do 
     LOG_FILE=~/001-log/Q${i}.log
     OUT_FILE=desen/Q${i}-desen.log
-    /usr/bin/time -v ../klee_scripts/desenitize.sh ${LOG_FILE} ${OUT_FILE} 2>&1 >> output.log
+    echo ${i} ${LOG_FILE} ${OUT_FILE}
+    ../klee_scripts/desenitize.sh ${LOG_FILE} ${OUT_FILE}  >>${outfile} 2>&1
+    #usr/bin/time -v ../klee_scripts/desenitize.sh ${LOG_FILE} ${OUT_FILE}  >>${outfile} 2>&1
+    sleep 10 # wait for system to be stable
 done
