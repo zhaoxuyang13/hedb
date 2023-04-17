@@ -8,16 +8,17 @@ SCRIPT_DIR=${ROOT_DIR}/klee_scripts
 BUILD_DIR=${ROOT_DIR}/build
 
 # decrypt and transform logfile to ktest files into directory ${BUILD}/ktests
-rm -rf ktest
+rm -rf ${BUILD_DIR}/ktests
+mkdir ${BUILD_DIR}/ktests
 ${BUILD_DIR}/desenitizer ${LOG_FILE}
+ls ${BUILD_DIR}/ktests/ | wc -l
 
 # use klee to generate constraints(SMT2 files) into directory ${BUILD}/klee-output-tmp
-rm -rf klee-output-tmp
-${SCRIPT_DIR}/gen_constraint.sh ${BUILD_DIR}/ktests
+rm -rf ${BUILD_DIR}/klee-output-tmp
+/usr/bin/time -v ${SCRIPT_DIR}/gen_constraint.sh ${BUILD_DIR}/ktests
 
 # use z3 to solve constraints and output to file
-rm ${DESEN_FILE}
-${SCRIPT_DIR}/run_z3.py ${BUILD_DIR}/klee-output-tmp ${DESEN_FILE}
+/usr/bin/time -v ${SCRIPT_DIR}/run_z3.py ${BUILD_DIR}/smt2-files ${DESEN_FILE}
 
 
 
