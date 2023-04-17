@@ -17,43 +17,30 @@ BUILD_DIR=${ROOT_DIR}/build
 
 # gen_constraint (pid.constraint) 
 
-KLEE=/home/klee/klee_src/build/bin/klee
-# KLEE=klee
+# KLEE=/home/klee/klee_src/build/bin/klee
+KLEE=klee
 
 # ${SCRIPT_DIR}/run_klee.sh ${BUILD_DIR}/whole.bc ops ${BUILD_DIR}/${KTEST_FILENAME} > /dev/null 2>&1
 rm -rf klee-output-tmp-*
 NUM=`ls ktests | wc -l`
 BEGIN=0
 STEP=10000
-echo total ${NUM} ktests, run with BATCH SIZE ${STEP}
-while [[ ${BEGIN} -le ${NUM} ]]; do 
-    echo start from ${BEGIN}
-    OUTPUT_TMP_DIR=klee-output-tmp-${BEGIN}
+# echo total ${NUM} ktests, run with BATCH SIZE ${STEP}
+for file in `ls ktests-tmp`
+do
     ${KLEE} \
         --write-smt2s \
         --entry-point=ops_wrapper \
         --warnings-only-to-file --output-stats=0 \
         --posix-runtime --libc=uclibc \
         --use-forked-solver=0 \
-        --seed-dir=${KTEST_FILE_DIR} \
+        --seed-file=${KTEST_FILE_DIR}/${file} \
         --named-seed-matching --only-replay-seeds \
         --always-output-seeds=0 --use-branch-cache=0 \
-        --output-dir=${OUTPUT_TMP_DIR} \
         ${BUILD_DIR}/whole.bc  
-   
-    BEGIN=$((${BEGIN}+${STEP}))
 done
 
-sleep 10
 
-rm -rf ${SMT_OUTPUT_DIR}
-mkdir ${SMT_OUTPUT_DIR}
-BEGIN=0
-while [[ ${BEGIN} -le ${NUM} ]]; do 
-    OUTPUT_TMP_DIR=klee-output-tmp-${BEGIN}
-    cp ${OUTPUT_TMP_DIR}/*.smt2 ${SMT_OUTPUT_DIR}/
-    BEGIN=$((${BEGIN}+${STEP}))
-done
 
 
 
