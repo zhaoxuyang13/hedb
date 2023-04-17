@@ -10,7 +10,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <pthread.h>
-
+#include <cmath>
 #include <map>
 #include <queue>
 using namespace std;
@@ -171,7 +171,9 @@ int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_l
 
 
 
-#define STR_SYMBOL_SIZE 100
+#define STR_SYMBOL_SIZE 500
+
+uint32_t max_str_len = 0;
 int gen_ktest_file(BaseRequest *base_req, const char *name)
 {
     // base_req->reqType = - base_req->reqType;
@@ -220,20 +222,53 @@ int gen_ktest_file(BaseRequest *base_req, const char *name)
         }
         push_int(&b, "int_bulk_type", bulk_type);
         push_int(&b, "int_bulk_size", size);
-        push_obj(&b, "int_bulk_array",sizeof(array), (unsigned char *)array);
+        push_obj(&b, "int_bulk_array", BULK_SIZE * sizeof(int) , (unsigned char *)array);
         break;
-    }    
-    /* FLOAT are not supported currrently */
+    }  
+    /* FLOAT are not supported currrently, use int to repalce float */
 
     case CMD_FLOAT_PLUS:
     case CMD_FLOAT_MINUS:
     case CMD_FLOAT_MULT: 
     case CMD_FLOAT_DIV:
     case CMD_FLOAT_EXP: 
-    case CMD_FLOAT_MOD:
-    case CMD_FLOAT_CMP:
-    case CMD_FLOAT_SUM_BULK:
+    case CMD_FLOAT_MOD:{
+      EncFloatCalcRequestData *req = (EncFloatCalcRequestData *) base_req;
+      float left, right;
+      decrypt_bytes((uint8_t*)&req->left, sizeof(req->left),(uint8_t*)&left, sizeof(left));
+      decrypt_bytes((uint8_t*)&req->right, sizeof(req->right),(uint8_t*)&right, sizeof(right));
+      push_int(&b, "int_calc_type", base_req->reqType - 100);
+      push_int(&b, "int_calc_left", (int)left);
+      push_int(&b, "int_calc_right", (int)right);
+
+      break;
+    }
+
+    case CMD_FLOAT_CMP:{
+        float left, right;
+        EncFloatCmpRequestData *req = (EncFloatCmpRequestData *)base_req;
+        decrypt_bytes((uint8_t*)&req->left, sizeof(req->left),(uint8_t*)&left, sizeof(left));
+        decrypt_bytes((uint8_t*)&req->right, sizeof(req->right),(uint8_t*)&right, sizeof(right));
+        push_int(&b, "int_cmp_left", (int)left);
+        push_int(&b, "int_cmp_right", (int)right);
+      break;
+    }
+    case CMD_FLOAT_SUM_BULK: {
+        EncFloatBulkRequestData *req = (EncFloatBulkRequestData *)base_req;
+        int bulk_type = CMD_INT_SUM_BULK, size = req->bulk_size; // use int_sum_bulk to repalce float sum bulk
+        int *array = (int *)malloc(size * sizeof(int));
+        float tmp;
+        for(int i = 0; i < size; i ++){
+            decrypt_bytes((uint8_t*)&(req->items[i]), sizeof(req->items[0]),(uint8_t*)&tmp, sizeof(tmp));
+            array[i] = tmp;
+        }
+        push_int(&b, "int_bulk_type", bulk_type);
+        push_int(&b, "int_bulk_size", size);
+        push_obj(&b, "int_bulk_array", BULK_SIZE * sizeof(int), (unsigned char *)array);
+      break;
+    }
     case CMD_FLOAT_EVAL_EXPR:
+        /* not implemented */
         break;
 
     /* timestamp*/
@@ -264,9 +299,11 @@ int gen_ktest_file(BaseRequest *base_req, const char *name)
         decrypt_bytes((uint8_t*)&req->str.enc_cstr, req->str.len,(uint8_t*)&str.data, str.len);
         decrypt_bytes((uint8_t*)&req->begin, sizeof(req->begin),(uint8_t*)&begin, sizeof(begin));
         decrypt_bytes((uint8_t*)&req->end, sizeof(req->end),(uint8_t*)&end, sizeof(end));
+        str.data[str.len] = '\0';
         push_string(&b, "text_substring_str", STR_SYMBOL_SIZE, (const char *)str.data);
         push_int(&b, "text_substring_begin", begin);
         push_int(&b, "text_substring_end", end);
+        max_str_len = max(max_str_len, str.len);
         break;
     }
     case CMD_STRING_CONCAT:{
@@ -276,8 +313,12 @@ int gen_ktest_file(BaseRequest *base_req, const char *name)
         right.len = req->right.len - IV_SIZE - TAG_SIZE;
         decrypt_bytes((uint8_t*)&req->left.enc_cstr, req->left.len,(uint8_t*)&left.data, left.len);
         decrypt_bytes((uint8_t*)&req->right.enc_cstr, req->right.len,(uint8_t*)&right.data, right.len);
+        left.data[left.len] = '\0';
+        right.data[right.len] = '\0';
         push_string(&b, "text_concat_left", STR_SYMBOL_SIZE, (const char *)left.data);
         push_string(&b, "text_concat_right", STR_SYMBOL_SIZE, (const char *)right.data); 
+        max_str_len = max(max_str_len, left.len);
+        max_str_len = max(max_str_len, right.len);
         break;
     }
     case CMD_STRING_LIKE:
@@ -288,8 +329,12 @@ int gen_ktest_file(BaseRequest *base_req, const char *name)
         right.len = req->right.len - IV_SIZE - TAG_SIZE;
         decrypt_bytes((uint8_t*)&req->left.enc_cstr, req->left.len,(uint8_t*)&left.data, left.len);
         decrypt_bytes((uint8_t*)&req->right.enc_cstr, req->right.len,(uint8_t*)&right.data, right.len);
+        left.data[left.len] = '\0';
+        right.data[right.len] = '\0';
         push_string(&b, "text_cmp_left", STR_SYMBOL_SIZE, (const char *)left.data);
         push_string(&b, "text_cmp_right", STR_SYMBOL_SIZE, (const char *)right.data); 
+        max_str_len = max(max_str_len, left.len);
+        max_str_len = max(max_str_len, right.len);
         break;
     }
     default:
@@ -482,11 +527,13 @@ static int retrieve_request_from_file(FILE *f, char* req_buffer){
         }
 
         case CMD_FLOAT_EVAL_EXPR:
+          /* not implemented yet */
         default:
             printf("unknown ops, critical error\n");
             exit(0);
             break;
     }
+    return 0;
 }
 
 pthread_mutex_t mutex;
@@ -508,14 +555,14 @@ void *thread_entry(void *arg){
         // pthread_mutex_unlock(&mutex);
 
         if(resp < 0){
-            printf("retrieve request failed\n");
+            printf("retrieve request failed %d, max strlen %d\n", resp, max_str_len);
             break;
         }
-        if(br->reqType > 100 && br->reqType < 110){
-            continue; // float
+        if(br->reqType > 100 && br->reqType <= 110){
+            continue; // float just skip
         }
-        if(br->reqType < 200)
-            continue;
+        // if(br->reqType < 200)
+        //     continue;
         sprintf(ktest_file, "ktests/%d-gen.ktest", cur_rec_num);
         gen_ktest_file((BaseRequest *)req_buffer, ktest_file);
         // gen_tmp_constraints((BaseRequest *)req_buffer, ktest_file);

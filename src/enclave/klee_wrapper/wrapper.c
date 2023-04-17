@@ -22,7 +22,7 @@ int prefix_overlap_wrapper(){
     return 0; 
 }
 
-#define MAX_TEXT_LENGTH 100
+#define MAX_TEXT_LENGTH 500
 int text_cmp_wrapper(){
     char left[MAX_TEXT_LENGTH];
     char right[MAX_TEXT_LENGTH];
