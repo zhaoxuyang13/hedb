@@ -5,9 +5,9 @@
 #ifndef GUARD_TEE_MATHAPI_H
 #define GUARD_TEE_MATHAPI_H
 
-#include <stddef.h>		/* for size_t */
-#include <stdint.h>		/* for uint32_t and friends */
-#include <stdbool.h>		/* for bool (!) */
+#include <stdbool.h> /* for bool (!) */
+#include <stddef.h> /* for size_t */
+#include <stdint.h> /* for uint32_t and friends */
 
 /*************************************************************
  *

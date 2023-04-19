@@ -3,12 +3,12 @@
 
 #include <request_types.h>
 #include <stdarg.h>
-#include <stdio.h>      /* vsnprintf */
+#include <stdio.h> /* vsnprintf */
 #include <sync.h>
 
-void printf(const char *fmt, ...)
+void printf(const char* fmt, ...)
 {
-    char buf[BUFSIZ] = {'\0'};
+    char buf[BUFSIZ] = { '\0' };
     va_list ap;
     va_start(ap, fmt);
     vsnprintf(buf, BUFSIZ, fmt, ap);
@@ -57,8 +57,7 @@ sgx_aes_ctr_128bit_key_t* p_key = NULL;
 
 void free_allocated_memory(void* pointer)
 {
-    if (pointer != NULL)
-    {
+    if (pointer != NULL) {
         free(pointer);
         pointer = NULL;
     }
@@ -128,10 +127,10 @@ int loadKeyEnclave(uint8_t* sealed_key, size_t sealedkey_len)
 */
 int decrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t dst_len)
 {
-    uint8_t *iv_pos = pSrc;
-	uint8_t *tag_pos = pSrc+IV_SIZE;
-	uint8_t *data_pos = pSrc+IV_SIZE+TAG_SIZE;
-	
+    uint8_t* iv_pos = pSrc;
+    uint8_t* tag_pos = pSrc + IV_SIZE;
+    uint8_t* data_pos = pSrc + IV_SIZE + TAG_SIZE;
+
     int resp = sgx_rijndael128GCM_decrypt(
         p_key,
         data_pos, // cipher
@@ -171,10 +170,10 @@ int encrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t dst_len)
     memset(nonce, 0, SGX_AESGCM_IV_SIZE);
     /* end ope alternative */
 
-    uint8_t *iv_pos = pDst;
-	uint8_t *tag_pos = pDst+IV_SIZE;
-	uint8_t *data_pos = pDst+IV_SIZE+TAG_SIZE;
-	
+    uint8_t* iv_pos = pDst;
+    uint8_t* tag_pos = pDst + IV_SIZE;
+    uint8_t* data_pos = pDst + IV_SIZE + TAG_SIZE;
+
     memcpy(iv_pos, nonce, SGX_AESGCM_IV_SIZE);
     resp = sgx_rijndael128GCM_encrypt(
         p_key,
@@ -186,7 +185,7 @@ int encrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t dst_len)
         NULL,
         0,
         (sgx_aes_gcm_128bit_tag_t*)(tag_pos));
-    
+
     /* ope */
     // if(src_len == INT32_LENGTH || src_len == FLOAT4_LENGTH){
     //     memcpy(pDst + ENC_INT32_GCD_LENGTH, pSrc, INT32_LENGTH);
@@ -199,11 +198,11 @@ int encrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t dst_len)
     return resp;
 }
 
-
 uint64_t current_cycles()
 {
     uint32_t low, high;
-    asm volatile("rdtsc" : "=a"(low), "=d"(high));
+    asm volatile("rdtsc"
+                 : "=a"(low), "=d"(high));
     return ((uint64_t)low) | ((uint64_t)high << 32);
 }
 
@@ -212,23 +211,21 @@ int enclaveProcess(void* arg1)
     // printf("enclave process called %p\n", arg1);
     if (arg1 == NULL)
         return -1;
-    BaseRequest *req = (BaseRequest *)arg1; 
+    BaseRequest* req = (BaseRequest*)arg1;
     uint64_t start, end;
     uint64_t total_time = 0;
-    while (true)
-    {
+    while (true) {
         if (req->status != SENT)
             YIELD_PROCESSOR;
-        else
-        {
+        else {
             start = current_cycles();
             // printf("ops called %d", req->reqType);
-            handle_ops(req);     
+            handle_ops(req);
             // printf("req returned %d\n",req->reqType);
             req->status = DONE;
             end = current_cycles();
             total_time += end - start;
-            printf("time: %d\n",total_time);
+            printf("time: %d\n", total_time);
         }
     }
 

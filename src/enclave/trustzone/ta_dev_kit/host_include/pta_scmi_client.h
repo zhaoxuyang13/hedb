@@ -5,8 +5,13 @@
 #ifndef PTA_SCMI_CLIENT_H
 #define PTA_SCMI_CLIENT_H
 
-#define PTA_SCMI_UUID { 0xa8cfe406, 0xd4f5, 0x4a2e, \
-		{ 0x9f, 0x8d, 0xa2, 0x5d, 0xc7, 0x54, 0xc0, 0x99 } }
+#define PTA_SCMI_UUID                                      \
+    {                                                      \
+        0xa8cfe406, 0xd4f5, 0x4a2e,                        \
+        {                                                  \
+            0x9f, 0x8d, 0xa2, 0x5d, 0xc7, 0x54, 0xc0, 0x99 \
+        }                                                  \
+    }
 
 #define PTA_SCMI_NAME "PTA-SCMI"
 
@@ -16,7 +21,7 @@
  * [out]    value[0].a: Capabilities bit mask (PTA_SCMI_CAPS_*)
  * [out]    value[0].b: Extended capabilities or 0
  */
-#define PTA_SCMI_CMD_CAPABILITIES	0
+#define PTA_SCMI_CMD_CAPABILITIES 0
 
 /*
  * PTA_SCMI_CMD_PROCESS_SMT_CHANNEL - Process SCMI message in SMT buffer
@@ -29,7 +34,7 @@
  * The memory uses SMT header to carry SCMI meta-data (protocol ID and
  * protocol message ID).
  */
-#define PTA_SCMI_CMD_PROCESS_SMT_CHANNEL	1
+#define PTA_SCMI_CMD_PROCESS_SMT_CHANNEL 1
 
 /*
  * PTA_SCMI_CMD_PROCESS_SMT_CHANNEL_MESSAGE - Process SCMI message in
@@ -44,7 +49,7 @@
  * The memory uses SMT header to carry SCMI meta-data (protocol ID and
  * protocol message ID).
  */
-#define PTA_SCMI_CMD_PROCESS_SMT_CHANNEL_MESSAGE	2
+#define PTA_SCMI_CMD_PROCESS_SMT_CHANNEL_MESSAGE 2
 
 /*
  * PTA_SCMI_CMD_GET_CHANNEL_HANDLE - Get handle for an SCMI channel
@@ -56,13 +61,13 @@
  * [in]     value[0].b: Requested capabilities mask (PTA_SCMI_CAPS_*)
  * [out]    value[0].a: Returned channel handle
  */
-#define PTA_SCMI_CMD_GET_CHANNEL_HANDLE		3
+#define PTA_SCMI_CMD_GET_CHANNEL_HANDLE 3
 
 /*
  * Capabilities
  */
 
 /* Channel supports shared memory using the SMT header protocol */
-#define PTA_SCMI_CAPS_SMT_HEADER			BIT32(0)
+#define PTA_SCMI_CAPS_SMT_HEADER BIT32(0)
 
 #endif /* SCMI_PTA_SCMI_CLIENT_H */

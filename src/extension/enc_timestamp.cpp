@@ -50,13 +50,12 @@ Timestamp pg_timestamp_in(char* str)
     if (dterr != 0)
         DateTimeParseError(dterr, str, "timestamp");
 
-    switch (dtype)
-    {
+    switch (dtype) {
     case DTK_DATE:
         if (tm2timestamp(tm, fsec, NULL, &result) != 0)
             ereport(ERROR,
-                    (errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
-                     errmsg("timestamp out of range: \"%s\"", str)));
+                (errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
+                    errmsg("timestamp out of range: \"%s\"", str)));
         break;
 
     case DTK_EPOCH:
@@ -71,10 +70,9 @@ Timestamp pg_timestamp_in(char* str)
         TIMESTAMP_NOBEGIN(result);
         break;
 
-
     default:
         elog(ERROR, "unexpected dtype %d while parsing timestamp \"%s\"",
-             dtype, str);
+            dtype, str);
         TIMESTAMP_NOEND(result);
     }
 
@@ -86,12 +84,11 @@ Timestamp pg_timestamp_in(char* str)
  * @input: string as a postgres arg
  * @return: enc_timestamp element as a string
  */
-Datum
-    pg_enc_timestamp_in(PG_FUNCTION_ARGS)
+Datum pg_enc_timestamp_in(PG_FUNCTION_ARGS)
 {
     char* pSrc = PG_GETARG_CSTRING(0);
     TIMESTAMP time;
-    EncTimestamp* t = (EncTimestamp *)palloc0(ENC_TIMESTAMP_LENGTH);
+    EncTimestamp* t = (EncTimestamp*)palloc0(ENC_TIMESTAMP_LENGTH);
     time = pg_timestamp_in(pSrc);
     // char ch[100];
     // sprintf(ch, "time is %lx", time);
@@ -104,10 +101,9 @@ Datum
  * @input: enc_timestamp element
  * @return: string
  */
-Datum
-    pg_enc_timestamp_out(PG_FUNCTION_ARGS)
+Datum pg_enc_timestamp_out(PG_FUNCTION_ARGS)
 {
-    EncTimestamp *t = PG_GETARG_ENCTimestamp(0);
+    EncTimestamp* t = PG_GETARG_ENCTimestamp(0);
     TIMESTAMP timestamp;
     char* result = (char*)palloc0(TIMESTAMP_LENGTH * sizeof(char));
     struct pg_tm tt, *tm = &tt;
@@ -118,11 +114,10 @@ Datum
 
     if (timestamp2tm(timestamp, NULL, tm, &fsec, NULL, NULL) == 0)
         EncodeDateTime(tm, fsec, false, 0, NULL, 1, buf);
-    else
-    {
+    else {
         ereport(ERROR,
-                (errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
-                    errmsg("timestamp out of range")));
+            (errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
+                errmsg("timestamp out of range")));
     }
     result = pstrdup(buf);
     PG_RETURN_CSTRING(result);
@@ -134,8 +129,7 @@ Datum
  *    @input: string
  *    @return: a string describing enc_timestamp element.
  */
-Datum
-    pg_enc_timestamp_encrypt(PG_FUNCTION_ARGS)
+Datum pg_enc_timestamp_encrypt(PG_FUNCTION_ARGS)
 {
     char* arg = PG_GETARG_CSTRING(0);
 #ifdef NOT_USED
@@ -144,7 +138,7 @@ Datum
     // int32 typmod = PG_GETARG_INT32(2);
 
     Timestamp time;
-    EncTimestamp* t = (EncTimestamp *)palloc0(ENC_TIMESTAMP_LENGTH);
+    EncTimestamp* t = (EncTimestamp*)palloc0(ENC_TIMESTAMP_LENGTH);
 
     time = pg_timestamp_in(arg);
     enc_timestamp_encrypt(&time, t);
@@ -156,10 +150,9 @@ Datum
  *  @input: enc_timestamp element
  *   @return: string
  */
-Datum
-    pg_enc_timestamp_decrypt(PG_FUNCTION_ARGS)
+Datum pg_enc_timestamp_decrypt(PG_FUNCTION_ARGS)
 {
-    EncTimestamp *t = PG_GETARG_ENCTimestamp(0); 
+    EncTimestamp* t = PG_GETARG_ENCTimestamp(0);
     Timestamp timestamp;
     // int resp;
     char* result;
@@ -171,11 +164,10 @@ Datum
 
     if (timestamp2tm(timestamp, NULL, tm, &fsec, NULL, NULL) == 0)
         EncodeDateTime(tm, fsec, false, 0, NULL, 1, buf);
-    else
-    {
+    else {
         ereport(ERROR,
-                (errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
-                 errmsg("timestamp out of range")));
+            (errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
+                errmsg("timestamp out of range")));
     }
     result = pstrdup(buf);
     PG_RETURN_CSTRING(result);
@@ -188,14 +180,13 @@ Datum
  * @return: true, if the first integer is equal to the second one.
  *       false, otherwise
  */
-Datum
-    pg_enc_timestamp_eq(PG_FUNCTION_ARGS)
+Datum pg_enc_timestamp_eq(PG_FUNCTION_ARGS)
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
     EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
 
     int ans = 0;
-    enc_timestamp_cmp(t1,t2,&ans);
+    enc_timestamp_cmp(t1, t2, &ans);
 
     PG_RETURN_BOOL((ans == 0) ? true : false);
 }
@@ -207,14 +198,13 @@ Datum
  * @return: true, if the first integer is equal to the second one.
  *       false, otherwise
  */
-Datum
-    pg_enc_timestamp_ne(PG_FUNCTION_ARGS)
+Datum pg_enc_timestamp_ne(PG_FUNCTION_ARGS)
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
     EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
 
     int ans = 0;
-    enc_timestamp_cmp(t1,t2,&ans);
+    enc_timestamp_cmp(t1, t2, &ans);
 
     PG_RETURN_BOOL((ans != 0) ? true : false);
 }
@@ -226,14 +216,13 @@ Datum
  * @return: true, if the first integer is equal to the second one.
  *       false, otherwise
  */
-Datum
-    pg_enc_timestamp_lt(PG_FUNCTION_ARGS)
+Datum pg_enc_timestamp_lt(PG_FUNCTION_ARGS)
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
     EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
 
     int ans = 0;
-    enc_timestamp_cmp(t1,t2,&ans);
+    enc_timestamp_cmp(t1, t2, &ans);
 
     PG_RETURN_BOOL((ans == -1) ? true : false);
 }
@@ -245,14 +234,13 @@ Datum
  * @return: true, if the first integer is equal to the second one.
  *       false, otherwise
  */
-Datum
-    pg_enc_timestamp_le(PG_FUNCTION_ARGS)
+Datum pg_enc_timestamp_le(PG_FUNCTION_ARGS)
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
     EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
 
     int ans = 0;
-    enc_timestamp_cmp(t1,t2,&ans);
+    enc_timestamp_cmp(t1, t2, &ans);
 
     PG_RETURN_BOOL((ans <= 0) ? true : false);
 }
@@ -264,14 +252,13 @@ Datum
  * @return: true, if the first integer is equal to the second one.
  *       false, otherwise
  */
-Datum
-    pg_enc_timestamp_gt(PG_FUNCTION_ARGS)
+Datum pg_enc_timestamp_gt(PG_FUNCTION_ARGS)
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
     EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
 
     int ans = 0;
-    enc_timestamp_cmp(t1,t2,&ans);
+    enc_timestamp_cmp(t1, t2, &ans);
     PG_RETURN_BOOL((ans > 0) ? true : false);
 }
 
@@ -282,14 +269,13 @@ Datum
  * @return: true, if the first integer is equal to the second one.
  *       false, otherwise
  */
-Datum
-    pg_enc_timestamp_ge(PG_FUNCTION_ARGS)
+Datum pg_enc_timestamp_ge(PG_FUNCTION_ARGS)
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
     EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
 
     int ans = 0;
-    enc_timestamp_cmp(t1,t2,&ans);
+    enc_timestamp_cmp(t1, t2, &ans);
     PG_RETURN_BOOL((ans >= 0) ? true : false);
 }
 
@@ -299,30 +285,25 @@ Datum
  * @input: two enc_timestamp values
  * @return: -1, 0 ,1
  */
-Datum
-    pg_enc_timestamp_cmp(PG_FUNCTION_ARGS)
+Datum pg_enc_timestamp_cmp(PG_FUNCTION_ARGS)
 {
     EncTimestamp* t1 = PG_GETARG_ENCTimestamp(0);
-    EncTimestamp *t2 = PG_GETARG_ENCTimestamp(1);
+    EncTimestamp* t2 = PG_GETARG_ENCTimestamp(1);
 
     int ans = 0;
-    enc_timestamp_cmp(t1,t2,&ans);
+    enc_timestamp_cmp(t1, t2, &ans);
 
     PG_RETURN_INT32(ans);
 }
 
-
-
-Datum
-    date_part(PG_FUNCTION_ARGS)
+Datum date_part(PG_FUNCTION_ARGS)
 {
     char* get = text_to_cstring(PG_GETARG_TEXT_P(0));
-    if (strcmp(get, "year") != 0)
-    {
+    if (strcmp(get, "year") != 0) {
         ereport(ERROR, (errmsg("Only date_part('year', enc_timestamp) is currently implemented.")));
     }
     EncTimestamp* timestamp = PG_GETARG_ENCTimestamp(1);
-    EncInt* result = (EncInt *) palloc(sizeof(EncInt));
+    EncInt* result = (EncInt*)palloc(sizeof(EncInt));
 
     enc_timestamp_extract_year(timestamp, result);
     PG_RETURN_POINTER(result);
