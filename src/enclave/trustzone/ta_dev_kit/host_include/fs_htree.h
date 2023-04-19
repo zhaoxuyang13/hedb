@@ -20,18 +20,18 @@
 #include <tee_api_types.h>
 #include <utee_defines.h>
 
-#define TEE_FS_HTREE_HASH_SIZE		TEE_SHA256_HASH_SIZE
-#define TEE_FS_HTREE_IV_SIZE		U(16)
-#define TEE_FS_HTREE_FEK_SIZE		U(16)
-#define TEE_FS_HTREE_TAG_SIZE		U(16)
+#define TEE_FS_HTREE_HASH_SIZE TEE_SHA256_HASH_SIZE
+#define TEE_FS_HTREE_IV_SIZE U(16)
+#define TEE_FS_HTREE_FEK_SIZE U(16)
+#define TEE_FS_HTREE_TAG_SIZE U(16)
 
 /* Internal struct provided to let the rpc callbacks know the size if needed */
 struct tee_fs_htree_node_image {
-	/* Note that calc_node_hash() depends on hash first in struct */
-	uint8_t hash[TEE_FS_HTREE_HASH_SIZE];
-	uint8_t iv[TEE_FS_HTREE_IV_SIZE];
-	uint8_t tag[TEE_FS_HTREE_TAG_SIZE];
-	uint16_t flags;
+    /* Note that calc_node_hash() depends on hash first in struct */
+    uint8_t hash[TEE_FS_HTREE_HASH_SIZE];
+    uint8_t iv[TEE_FS_HTREE_IV_SIZE];
+    uint8_t tag[TEE_FS_HTREE_TAG_SIZE];
+    uint16_t flags;
 };
 
 /*
@@ -39,22 +39,22 @@ struct tee_fs_htree_node_image {
  * the interface to update etc if needed.
  */
 struct tee_fs_htree_meta {
-	uint64_t length;
+    uint64_t length;
 };
 
 /* Internal struct needed by struct tee_fs_htree_image */
 struct tee_fs_htree_imeta {
-	struct tee_fs_htree_meta meta;
-	uint32_t max_node_id;
+    struct tee_fs_htree_meta meta;
+    uint32_t max_node_id;
 };
 
 /* Internal struct provided to let the rpc callbacks know the size if needed */
 struct tee_fs_htree_image {
-	uint8_t iv[TEE_FS_HTREE_IV_SIZE];
-	uint8_t tag[TEE_FS_HTREE_TAG_SIZE];
-	uint8_t enc_fek[TEE_FS_HTREE_FEK_SIZE];
-	uint8_t imeta[sizeof(struct tee_fs_htree_imeta)];
-	uint32_t counter;
+    uint8_t iv[TEE_FS_HTREE_IV_SIZE];
+    uint8_t tag[TEE_FS_HTREE_TAG_SIZE];
+    uint8_t enc_fek[TEE_FS_HTREE_FEK_SIZE];
+    uint8_t imeta[sizeof(struct tee_fs_htree_imeta)];
+    uint32_t counter;
 };
 
 /**
@@ -64,9 +64,9 @@ struct tee_fs_htree_image {
  * @TEE_FS_HTREE_TYPE_BLOCK: indicates a data block
  */
 enum tee_fs_htree_type {
-	TEE_FS_HTREE_TYPE_HEAD,
-	TEE_FS_HTREE_TYPE_NODE,
-	TEE_FS_HTREE_TYPE_BLOCK,
+    TEE_FS_HTREE_TYPE_HEAD,
+    TEE_FS_HTREE_TYPE_NODE,
+    TEE_FS_HTREE_TYPE_BLOCK,
 };
 
 struct tee_fs_rpc_operation;
@@ -85,16 +85,16 @@ struct tee_fs_rpc_operation;
  * memory where the encrypted data is stored.
  */
 struct tee_fs_htree_storage {
-	size_t block_size;
-	TEE_Result (*rpc_read_init)(void *aux, struct tee_fs_rpc_operation *op,
-				    enum tee_fs_htree_type type, size_t idx,
-				    uint8_t vers, void **data);
-	TEE_Result (*rpc_read_final)(struct tee_fs_rpc_operation *op,
-				     size_t *bytes);
-	TEE_Result (*rpc_write_init)(void *aux, struct tee_fs_rpc_operation *op,
-				     enum tee_fs_htree_type type, size_t idx,
-				     uint8_t vers, void **data);
-	TEE_Result (*rpc_write_final)(struct tee_fs_rpc_operation *op);
+    size_t block_size;
+    TEE_Result (*rpc_read_init)(void* aux, struct tee_fs_rpc_operation* op,
+        enum tee_fs_htree_type type, size_t idx,
+        uint8_t vers, void** data);
+    TEE_Result (*rpc_read_final)(struct tee_fs_rpc_operation* op,
+        size_t* bytes);
+    TEE_Result (*rpc_write_init)(void* aux, struct tee_fs_rpc_operation* op,
+        enum tee_fs_htree_type type, size_t idx,
+        uint8_t vers, void** data);
+    TEE_Result (*rpc_write_final)(struct tee_fs_rpc_operation* op);
 };
 
 struct tee_fs_htree;
@@ -110,26 +110,26 @@ struct tee_fs_htree;
  *		tee_fs_htree_storage
  * @ht:		returned hash tree on success
  */
-TEE_Result tee_fs_htree_open(bool create, uint8_t *hash, const TEE_UUID *uuid,
-			     const struct tee_fs_htree_storage *stor,
-			     void *stor_aux, struct tee_fs_htree **ht);
+TEE_Result tee_fs_htree_open(bool create, uint8_t* hash, const TEE_UUID* uuid,
+    const struct tee_fs_htree_storage* stor,
+    void* stor_aux, struct tee_fs_htree** ht);
 /**
  * tee_fs_htree_close() - close a hash tree
  * @ht:		hash tree
  */
-void tee_fs_htree_close(struct tee_fs_htree **ht);
+void tee_fs_htree_close(struct tee_fs_htree** ht);
 
 /**
  * tee_fs_htree_get_meta() - get a pointer to associated struct
  * tee_fs_htree_meta
  * @ht:		hash tree
  */
-struct tee_fs_htree_meta *tee_fs_htree_get_meta(struct tee_fs_htree *ht);
+struct tee_fs_htree_meta* tee_fs_htree_get_meta(struct tee_fs_htree* ht);
 
 /**
  * tee_fs_htree_meta_set_dirty() - tell hash tree that meta were modified
  */
-void tee_fs_htree_meta_set_dirty(struct tee_fs_htree *ht);
+void tee_fs_htree_meta_set_dirty(struct tee_fs_htree* ht);
 
 /**
  * tee_fs_htree_sync_to_storage() - synchronize hash tree to storage
@@ -138,8 +138,8 @@ void tee_fs_htree_meta_set_dirty(struct tee_fs_htree *ht);
  *
  * Frees the hash tree and sets *ht to NULL on failure and returns an error code
  */
-TEE_Result tee_fs_htree_sync_to_storage(struct tee_fs_htree **ht,
-					uint8_t *hash);
+TEE_Result tee_fs_htree_sync_to_storage(struct tee_fs_htree** ht,
+    uint8_t* hash);
 
 /**
  * tee_fs_htree_truncate() - truncate a hash tree
@@ -148,7 +148,7 @@ TEE_Result tee_fs_htree_sync_to_storage(struct tee_fs_htree **ht,
  *
  * Frees the hash tree and sets *ht to NULL on failure and returns an error code
  */
-TEE_Result tee_fs_htree_truncate(struct tee_fs_htree **ht, size_t block_num);
+TEE_Result tee_fs_htree_truncate(struct tee_fs_htree** ht, size_t block_num);
 
 /**
  * tee_fs_htree_write_block() - encrypt and write a data block to storage
@@ -158,8 +158,8 @@ TEE_Result tee_fs_htree_truncate(struct tee_fs_htree **ht, size_t block_num);
  *
  * Frees the hash tree and sets *ht to NULL on failure and returns an error code
  */
-TEE_Result tee_fs_htree_write_block(struct tee_fs_htree **ht, size_t block_num,
-				    const void *block);
+TEE_Result tee_fs_htree_write_block(struct tee_fs_htree** ht, size_t block_num,
+    const void* block);
 /**
  * tee_fs_htree_write_block() - read and decrypt a data block from storage
  * @ht:		hash tree
@@ -168,7 +168,7 @@ TEE_Result tee_fs_htree_write_block(struct tee_fs_htree **ht, size_t block_num,
  *
  * Frees the hash tree and sets *ht to NULL on failure and returns an error code
  */
-TEE_Result tee_fs_htree_read_block(struct tee_fs_htree **ht, size_t block_num,
-				   void *block);
+TEE_Result tee_fs_htree_read_block(struct tee_fs_htree** ht, size_t block_num,
+    void* block);
 
 #endif /*__TEE_FS_HTREE_H*/

@@ -1,11 +1,10 @@
 #ifndef ENCLAVE_T_H__
 #define ENCLAVE_T_H__
 
+#include "sgx_edger8r.h" /* for sgx_ocall etc. */
+#include <stddef.h>
 #include <stdint.h>
 #include <wchar.h>
-#include <stddef.h>
-#include "sgx_edger8r.h" /* for sgx_ocall etc. */
-
 
 #include <stdlib.h> /* for size_t */
 

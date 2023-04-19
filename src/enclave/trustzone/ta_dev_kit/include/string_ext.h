@@ -18,20 +18,20 @@
  * will be copied.  Always NUL terminates (unless siz == 0).
  * Returns strlen(src); if retval >= siz, truncation occurred.
  */
-size_t strlcpy(char *dst, const char *src, size_t size);
-size_t strlcat(char *dst, const char *src, size_t size);
+size_t strlcpy(char* dst, const char* src, size_t size);
+size_t strlcat(char* dst, const char* src, size_t size);
 
 /* A constant-time version of memcmp() */
-int consttime_memcmp(const void *p1, const void *p2, size_t nb);
+int consttime_memcmp(const void* p1, const void* p2, size_t nb);
 
 /* Deprecated. For backward compatibility. */
-static inline int buf_compare_ct(const void *s1, const void *s2, size_t n)
+static inline int buf_compare_ct(const void* s1, const void* s2, size_t n)
 {
-	return consttime_memcmp(s1, s2, n);
+    return consttime_memcmp(s1, s2, n);
 }
 
 /* Variant of strdup() that uses nex_malloc() instead of malloc() */
-char *nex_strdup(const char *s);
+char* nex_strdup(const char* s);
 
 /*
  * Like memset(s, 0, count) but prevents the compiler from optimizing the call
@@ -50,6 +50,6 @@ char *nex_strdup(const char *s);
  *   data (such as keys, passwords, cryptographic state);
  * - Otherwise, use memset().
  */
-void memzero_explicit(void *s, size_t count);
+void memzero_explicit(void* s, size_t count);
 
 #endif /* STRING_EXT_H */
