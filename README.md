@@ -1,160 +1,275 @@
 # HEDB
 
-- 如何安装？
-- 如何登录测试平台？注意说明我们平台的特殊性
+![Status](https://img.shields.io/badge/Version-Experimental-green.svg)
+[![License: MIT](https://img.shields.io/badge/License-Mulan-brightgreenn.svg)](http://license.coscl.org.cn/MulanPubL-2.0)
 
-1. 提供一个kick-off案例，用于评委验证所需环境已经ready。需要评委们协商各自运行的时间安排（避免冲突）
+HEDB is named after He (Helium), the 2nd element, for several reasons. The 2nd element implies its two modes---execution mode and maintenance mode. The neutrality of He implies its isolation from the rest. It can also mean H-EDB which means a hybrid of EBD (combining the advantages of both Type-I and Type-I). And at last, Happy Ending DataBase!
 
-2. 针对图X，运行哪个脚本（命名：figure-1.sh）？每个脚本预计运行多久？
-- 预期效果：某些数据，可以说明文中的的什么结论（claims）
-- 一键生成对应figure，和文中直接对比
+HEDB's design removes the trade-off between security and maintenance. Its dual-mode design accomplishes two goals: 1) achieving interface security by preventig illegal invocations to UDFs in the execution mode, and 2) allowing DBA common maintenance tasks by replaying legal invocations in the maintenance mode.
 
-注意事项：
-- license
-- 如果出现问题，如何快速回滚环境，进行下一轮测试
+Currently, HEDB supports PostgreSQL and TPC-H workloads.
 
-参考：
-- https://github.com/ucbrise/snoopy
+- [HEDB](#hedb)
+  - [Paper](#paper)
+  - [Artifact summary](#artifact-summary)
+  - [Artifact check-list](#artifact-check-list)
+  - [Supported platform](#supported-platform)
+  - [Repo structure](#repo-structure)
+  - [Build instructions](#build-instructions)
+    - [Configure](#configure)
+    - [Build](#build)
+    - [Setup](#setup)
+  - [Experiments](#experiments)
+    - [Prepare](#prepare)
+    - [Kick-off functional](#kick-off-functional)
+      - [A kick-off functional experiment](#a-kick-off-functional-experiment)
+    - [Claims](#claims)
+    - [One push-button to run all experiments](#one-push-button-to-run-all-experiments)
+    - [Experiment 1: End-to-end performance (XXX mins)](#experiment-1-end-to-end-performance-xxx-mins)
+    - [Experiment 2: Replay overhead (XXX mins)](#experiment-2-replay-overhead-xxx-mins)
+    - [Experiment 3: Replay overhead (XXX mins)](#experiment-3-replay-overhead-xxx-mins)
+    - [Experiment 4: Anonymized log generation time (XXX mins)](#experiment-4-anonymized-log-generation-time-xxx-mins)
+  - [Limitations](#limitations)
+  - [Contacts](#contacts)
 
-HEDB is a novel encrypted database system. Its current form is based on PostgreSQL as the RDBMS.
+## Paper
 
-The implemented prototype can be run on any of the three kinds of trusted execution environments:
+* [Encrypted Databases Made Secure Yet Maintainable](https://www.usenix.org/conference/osdi23/presentation/li)<br>
+Mingyu Li, Xuyang Zhao, Le Chen, Cheng Tan, Huorong Li, Sheng Wang, Zeyu Mi, Yubin Xia, Feifei Li, Haibo Chen<br>
+The 17th USENIX Symposium on Operating Systems Design and Implementation (OSDI ‘23)
 
-- ARM TrustZone (OP-TEE based)
-- Confidential VMs such as ARMv9 CCA and Intel TDX (process based)
-- Intel SGX (SGX SDK based)
+## Artifact summary
 
-## How to Install?
+This artifact contains the implementation of HEDB and scripts for reproducing the main results of this work.
 
-1. Install Postgresql:
+## Artifact check-list
+
+- Code link: <https://github.com/XXX>
+- OS Version: Ubuntu XXX.
+- Linux kernel version: >= XXX
+- Python version: >= XXX.
+- Metrics: latency and accuracy.
+- Expected runtime: see the documents or runtime logs for each experiment.
+
+## Supported platform
+
+HEDB requires an ARM server that supports S-EL2, a hardware virtualization technology in ARM TrustZone.
+
+To reproduce HEDB functionality, you can run FVP on either an ARM or x86 platform.
+
+To reproduce HEDB performance, we strongly recommend you to run HEDB using two VMs on the ARM server.
+
+If you have trouble applying an cloudlab account, please contact us for assistance.
+
+## Repo structure
+
+```
+Github Repo Root
+├── benchmark
+│   ├── bin
+│   ├── config
+│   ├── db_schemas
+│   ├── patches
+│   └── tools
+├── klee_scripts
+├── scripts
+│   ├── config
+│   ├── fig
+│   ├── figures
+│   ├── sqls
+│   ├── tmp
+│   └── util_py3
+├── src
+│   ├── cmake
+│   ├── enclave
+│   ├── extension
+│   ├── include
+│   └── utils
+└── test
+    ├── ops-micro
+    ├── sqls
+    └── tpch
+```
+
+## Build instructions
+
+### Configure
+
+### Build
+
+### Setup
+
+## Experiments
+
+Unless otherwise specified, all HEDB's experiments run on top of a Kunpeng 96-core ARMv8.2 CPU machine with two VMs. Each experiment runs 3 times to warm up by default.
+
+### Prepare
+
+1. Please login to our cluster (ubuntu@192.168.122.158) using the key attached in HotCRP. We have
+   set up all necessary environments to run all the experiments.
+
+2. Each experiment will generate a figure in the `./figure` directory of this
+   repository. You can fetch generated figures to your email. You may wish to
+   use `scp` to send figures to your computer, but the gateway blocks this.
+
+**Please be noted that different evaluators cannot run experiments at the same time. You may check whether other evaluators are running the experiments before you run the artifact.**
+
+### Kick-off functional
+
+#### A kick-off functional experiment
+
+**Step 1:**
+Login to the ARM VM.
+
+**Step 2:**
+In the terminal, run the following commands to run a simple SQL query using HEDB.
 
 ```shell
-sudo apt-get install postgresql postgresql-server-dev-all
+psql
+
 ```
-or build from source: https://www.postgresql.org/docs/current/install-short.html
 
-### Choice-1: ARM OP-TEE
+**Output in VM:**
 
-2. Run HEDB Pg-extension as TrustZone TA [(see here)]( https://optee.readthedocs.io/en/latest/building/gits/build.html):
+```shell
+Time elapsed: 42286 ms.
+Time consuming: 42.286 ms for Q1.
+Completed successfully !!!
+```
 
-  
-   1. Install OPTEE prerequisite:
+### Claims
+- **(C1)** Figure 4: Type-II EBD's runtime overhead varies amongst TPC-H 22 queries. HEDB's optimizations speeds Type-II EDB.
+- **(C2)** Figure 5 (a): HEBD's record overhead is low and acceptable.
+- **(C3)** Figure 5 (b): HEBD's replay overhead is much faster than UDF-based replay.
+- **(C4)** Figure 5 (c): HEDB's optimizations boost the anonymized log generation time.
 
-      ```bash
-      sudo apt-get install android-tools-adb android-tools-fastboot autoconf \
-              automake bc bison build-essential ccache codespell \
-              cscope curl device-tree-compiler expect flex ftp-upload gdisk iasl \
-              libattr1-dev libcap-dev libcap-ng-dev \
-              libfdt-dev libftdi-dev libglib2.0-dev libgmp-dev libhidapi-dev \
-              libmpc-dev libncurses5-dev libpixman-1-dev libssl-dev libtool make \
-              mtools netcat ninja-build python3-crypto \
-              python3-pycryptodome python3-pyelftools python3-serial \
-              rsync unzip uuid-dev xdg-utils xterm xz-utils zlib1g-dev
-      ```
+### One push-button to run all experiments
 
-   2. Install REPO:
+To further ease the evaluation, you can run the following script which automatically runs all experiments.
 
-      ```bash
-      mkdir ~/bin
-      PATH=~/bin:$PATH
-      curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-      chmod a+x ~/bin/repo
-      git config --global user.name "Your Name" #repo need git name/email config.
-      git config --global user.email "you@example.com" 
-      ```
+**Step 1: Run all experiments (XXX hours)**
 
-   3. Get OPTEE source code:
+```shell
+cd ~/osdi23-artifact/HEDB/script/
+bash ./oneforall.sh
+```
 
-      ``` bash
-      mkdir <work-dir>
-      cd <work-dir>
-      repo init -u https://github.com/OP-TEE/manifest.git -m qemu_v8.xml
-      repo sync
-      # apply our own code.
-      mkdir -p share/edb
-      tar -xzf edb.tar.gz -C share/edb
-      cp share/edb/patch/qemu_v8.mk build/qemu_v8.mk
-      mkdir -p img
-      mv ramdisk img/ramdisk
-      ```
+**Step 2: Email figures to your computer**
 
-   4. Build and run OP-TEE:
+```shell
+cd ~/osdi23-artifact/HEDB/script/
+bash ./fetch.sh xxx@gmail.com
+```
 
-      ```bash
-      cd build
-      make toolchains
-      make QEMU_VIRTFS_ENABLE=y QEMU_USERNET_ENABLE=y CFG_WITH_PAGER=y run
-      ```
+After fetching all these figures, you can verify the abovementioned**Major
+Claims** by referring to the **Expected results** and **Important notes** below.
 
-   5. Build QEMU:
+Note that, you can also run each experiment by yourself with the steps described below.
 
-   ```bash
-   mkdir mnt
-   mount /dev/vda mnt
-   ./mnt/mnt.sh
-   ./init.sh 
-   ```
+### Experiment 1: End-to-end performance (XXX mins)
 
-   6. Install HEDB extension:
+This experiment runs HEDB and three optimization strategies (i.e., O1-Parallel Decryption, O2-
+Order-revealing Encryption, and O3-Expression Evaluation) TPC-H. The output reports each
+system's latency normalized to the SOTA---ARM-version StealthDB as the baseline. 
 
-   ```bash
-   make configure_tz
-   make build 
-   sudo make install
-   ```
+**Command to run:**
 
-### Choice-2: ARM CCA
+```shell
+cd ~/osdi23-artifact/HEDB/script/
+bash ./fig4.sh
+```
 
-   1. Install HEDB extension:
+**Output:**
 
-   ```bash
-   sudo apt install libmedtls-dev
-   make configure_sim
-   make 
-   make install
-   ```
+- `fig4.pdf`
 
-### Choice-3: Intel SGX
+**Expected results:**
 
-   1. Install HEDB extension:
+- O1 can improve all queries and reduce around 15% end-to-end query execution time on average (matching **C1**).
+- O2 makes the Q1’s overhead decreased by around 50% (matching **C1**).
+- O3 optimizes Q1’s to decrease its overhead by around 10% (matching **C1**).
 
-   ```bash
-   make configure_sgx
-   make 
-   make install
-   ```
+**Important notes of Experiment 1:**
 
-## How to Benchmark?
+- The reproduced results may not exactly match the results presented in the paper due to the noise nature of system such as scheduling, disk I/O, etc.
 
-1. Run psql:
+### Experiment 2: Replay overhead (XXX mins)
 
-   ```bash
-   psql -U postgres -p 5432 -h localhost
-   ```
+This experiment runs HEDB with log recording enabled, for replaying and debugging later on.
 
-   ```psql
-   CREATE USER test WITH PASSWORD 'password';
-   CREATE database test;
-   \c test
-   CREATE extension encdb;
-   SELECT pg_enc_int4_encrypt(1) + pg_enc_int4_encrypt(2);
-   SELECT pg_enc_int4_decrypt(pg_enc_int4_encrypt(1) + pg_enc_int4_encrypt(2));
-   
-   ```
+**Command to run:**
 
-2. Run TPCC benchmark:
+```shell
+cd ~/osdi23-artifact/HEDB/script/
+bash ./fig5a.sh
+```
 
-   ```bash
-   cd benchmark 
-   java -Dlog4j.configuration=log4j.properties -jar bin/oltp.jar -b tpcc -o output -s 100 --config config/tpcc_config.xml --load true --execute false
-   java -Dlog4j.configuration=log4j.properties -jar bin/oltp.jar -b tpcc -o output -s 100 --config config/tpcc_config.xml --load false --execute true
-   ```
+**Output:**
 
-3. Run TPCH benchmarks:
+- `figure5a.pdf`.
 
-   ```bash
-   cd benchmark 
-   ./tool/dbgen -s 2
-   java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 10 --config config/tpch_config.xml --load true --execute false
-   java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 10 --config config/tpch_config.xml --load false --execute true
-   ```
+**Expected results:**
+
+- HEDB's record incurs overhead no more than 10% (matching **C3**).
+
+**Important notes of Experiment 2:**
+
+- Owing to the randomness, the results may not exactly match the origial.
+
+### Experiment 3: Replay overhead (XXX mins)
+
+This experiment runs HEDB and re-executes TPC-H queries by calling UDF and replaying logs. The less time cost the better, which saves the DBA’s time and effort.
+
+**Command to run:**
+
+```shell
+cd ~/osdi23-artifact/HEDB/script/
+bash ./fig5b.sh
+```
+
+**Output:**
+- `figure5b.pdf`.
+
+**Expected results:**
+
+- HEDB’s log-based replay is faster than UDF-based replay (by honestly calling UDF), effectively saving the DBA’s time and effort (matching **C3**).
+- HEDB’s replay still incurs 5x slowdown compared with the vanilla without encryption (matching **C3**).
+
+### Experiment 4: Anonymized log generation time (XXX mins)
+
+This experiment translates the log recorded in Experiment 2 into an anonymized form. It firsr uses KLEE to collect the path constraint, and then uses masking rule constraint to generate new inputs.
+
+**Command to run:**
+
+```shell
+cd ~/osdi23-artifact/HEDB/script/
+bash ./fig5c.sh
+```
+
+**Output:**
+
+- `figure5c.pdf`.
+
+**Expected results:**
+
+- Baseline of KLEE/Z3 estimation is very long (matching **C4**).
+- HEDB's optimization achieves 10x to 200x (matching **C9**). 
+
+**Important notes of Experiment 4:**
+
+- We do not run KLEE/Z3 using the log, as it takes too long. Instead, we measure the cost for one invocation and time it with the invocation frequency. We measure the optimized KLEE/Z3 using real machine.
+- KLEE does not support floating-point numbers, hence Q18 is not supported.
+- Owing to the randomness, the results may not exactly match the origial.
+
+## Limitations
+
+This repo is a research prototype rather than a production-ready system. Its current implementation has two main limitations.
+
+1. HEDB relies on determistic record-replay to reproduce the DBMS bugs, hence falling short in providing read-write workloads such as TPC-C.
+2. HEDB depends on KLEE to reproduce the UDF bugs. The official version of KLEE cannot support floating-point numbers. HEDB inherits this limitation.
+
+## Contacts
+
+- Mingyu Li: maxulle [at] sjtu [dot] edu [dot] cn.
+- Xuyang Zhao: brokenbones [at] sjtu [doc] edu [doc] cn
+- Le Chen: cen-le [at] sjtu [dot] edu [dot] cn
