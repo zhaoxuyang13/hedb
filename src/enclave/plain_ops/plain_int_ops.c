@@ -1,13 +1,13 @@
-#include <plain_int_ops.h>
 #include <defs.h>
+#include <plain_int_ops.h>
 
 #if defined(TEE_TZ)
-double pow (double x, int y)
+double pow(double x, int y)
 {
     double temp;
     if (y == 0)
-    return 1;
-    temp = pow (x, y / 2);
+        return 1;
+    temp = pow(x, y / 2);
     if ((y % 2) == 0) {
         return temp * temp;
     } else {
@@ -21,7 +21,8 @@ double pow (double x, int y)
 #include <math.h>
 #endif
 
-int plain_int32_calc(int reqType, int left, int right){
+int plain_int32_calc(int reqType, int left, int right)
+{
     int res = 0;
     switch (reqType) /* req->common.op */
     {
@@ -31,14 +32,14 @@ int plain_int32_calc(int reqType, int left, int right){
     case CMD_INT_MINUS:
         res = left - right;
         break;
-    case CMD_INT_MULT: 
+    case CMD_INT_MULT:
         res = left * right;
         break;
     case CMD_INT_DIV:
         res = left / right;
         break;
-    case CMD_INT_EXP: 
-        res =  pow(left,right);
+    case CMD_INT_EXP:
+        res = pow(left, right);
         break;
     case CMD_INT_MOD:
         res = (int)left % (int)right;
@@ -49,17 +50,19 @@ int plain_int32_calc(int reqType, int left, int right){
     return res;
 }
 
-int plain_int32_cmp(int left, int right) {
-    return (left == right) ? 0 : (left < right) ? -1 : 1;
+int plain_int32_cmp(int left, int right)
+{
+    return (left == right) ? 0 : (left < right) ? -1
+                                                : 1;
 }
-int plain_int32_bulk(int reqType, int size, int *array){
+int plain_int32_bulk(int reqType, int size, int* array)
+{
     int res = 0;
-    switch (reqType)
-    {
+    switch (reqType) {
     case CMD_INT_SUM_BULK:
-        for(int i = 0; i < size; i ++){
+        for (int i = 0; i < size; i++) {
             res += array[i];
-        } 
+        }
         break;
     default:
         break;

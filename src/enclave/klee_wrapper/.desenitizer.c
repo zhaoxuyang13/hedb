@@ -17,7 +17,7 @@
 //     case CMD_INT_EXP:
 //     case CMD_INT_MOD:
 //         base_req->resp = enc_int32_calc((EncIntCalcRequestData *)base_req);
-//         break; 
+//         break;
 //     case CMD_INT_CMP:
 //         base_req->resp = enc_int32_cmp((EncIntCmpRequestData *)base_req);
 //         break;
@@ -43,18 +43,17 @@
 
 //     case CMD_FLOAT_PLUS:
 //     case CMD_FLOAT_MINUS:
-//     case CMD_FLOAT_MULT: 
+//     case CMD_FLOAT_MULT:
 //     case CMD_FLOAT_DIV:
-//     case CMD_FLOAT_EXP: 
+//     case CMD_FLOAT_EXP:
 //     case CMD_FLOAT_MOD:
 //         base_req->resp = enc_float32_calc((EncFloatCalcRequestData *)base_req);
 //         break;
-    
 
 //     case CMD_FLOAT_CMP:
 //         base_req->resp = enc_float32_cmp((EncFloatCmpRequestData *)base_req);
 //         break;
-    
+
 //     case CMD_FLOAT_SUM_BULK:
 //         base_req->resp = enc_float32_bulk((EncFloatBulkRequestData *) base_req);
 //         break;
@@ -64,7 +63,7 @@
 
 //     case CMD_FLOAT_ENC:{
 //         EncFloatEncRequestData *req = (EncFloatEncRequestData *) base_req;
-//         req->common.resp = encrypt_bytes((uint8_t*) &req->plaintext, sizeof(req->plaintext), 
+//         req->common.resp = encrypt_bytes((uint8_t*) &req->plaintext, sizeof(req->plaintext),
 //                                         (uint8_t *) &req->ciphertext, sizeof(req->ciphertext));
 //         break;
 //     }
@@ -79,15 +78,15 @@
 //     }
 
 //     /* timestamp*/
-//     case CMD_TIMESTAMP_EXTRACT_YEAR: 
+//     case CMD_TIMESTAMP_EXTRACT_YEAR:
 //         base_req->resp = enc_timestamp_extract_year((EncTimestampExtractYearRequestData *)base_req);
 //         break;
-//     case CMD_TIMESTAMP_CMP: 
+//     case CMD_TIMESTAMP_CMP:
 //         base_req->resp = enc_timestamp_cmp((EncTimestampCmpRequestData *)base_req);
 //         break;
 //     case CMD_TIMESTAMP_ENC:{
 //         EncTimestampEncRequestData *req = (EncTimestampEncRequestData *) base_req;
-//         req->common.resp = encrypt_bytes((uint8_t*) &req->plaintext, sizeof(req->plaintext), 
+//         req->common.resp = encrypt_bytes((uint8_t*) &req->plaintext, sizeof(req->plaintext),
 //                                         (uint8_t *) &req->ciphertext, sizeof(req->ciphertext));
 //         break;
 //     }
@@ -100,23 +99,23 @@
 
 //     /* text */
 
-//     case CMD_STRING_SUBSTRING: 
+//     case CMD_STRING_SUBSTRING:
 //         base_req->resp = enc_text_substring((SubstringRequestData *)base_req);
 //         break;
 //     case CMD_STRING_CONCAT: // like use calc data, because return enctext value.
-    
+
 //         base_req->resp = enc_text_concatenate((EncStrCalcRequestData *)base_req);
 //         break;
 //     case CMD_STRING_LIKE: // like use cmp data, because return boolean value.
 //         base_req->resp = enc_text_like((EncStrCmpRequestData *)base_req);
 //         break;
-//     case CMD_STRING_CMP: 
+//     case CMD_STRING_CMP:
 //         base_req->resp = enc_text_cmp((EncStrCmpRequestData *)base_req);
 //         break;
 //     case CMD_STRING_ENC:{
 //         EncStrEncRequestData *req = (EncStrEncRequestData *) base_req;
 //         req->ciphertext.len = req->plaintext.len + IV_SIZE + TAG_SIZE;
-//         req->common.resp = encrypt_bytes((uint8_t*) &req->plaintext.data, req->plaintext.len, 
+//         req->common.resp = encrypt_bytes((uint8_t*) &req->plaintext.data, req->plaintext.len,
 //                                         (uint8_t *) &req->ciphertext.enc_cstr, req->ciphertext.len);
 //         break;
 //     }
@@ -144,13 +143,11 @@
 //     return 0;
 // }
 
-
-
 // int main(int argc, char *argv[]){
 
 //     char buffer[sizeof(EncIntBulkRequestData)];
 //     /* first, get a buffer containing the encrypted request
-//         the buffer can be read from a file.    
+//         the buffer can be read from a file.
 //     or  read from a shared memory  */
 //     if(argc != 2){
 //         printf("should input a filename as parameter\n");
@@ -165,7 +162,6 @@
 //     }
 //     fread(buffer, (unsigned long)info.st_size, 1, read_file_ptr);
 
-
 //     handle_ops((BaseRequest *)buffer);
-    
+
 // }

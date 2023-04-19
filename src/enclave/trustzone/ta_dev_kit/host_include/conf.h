@@ -41,7 +41,7 @@
 #define CFG_CORE_WORKAROUND_SPECTRE_BP 1
 #define CFG_CORE_WORKAROUND_SPECTRE_BP_SEC 1
 #define CFG_CRYPTO 1
-#define CFG_CRYPTOLIB_DIR core/lib/libtomcrypt
+#define CFG_CRYPTOLIB_DIR core / lib / libtomcrypt
 #define CFG_CRYPTOLIB_NAME tomcrypt
 #define CFG_CRYPTOLIB_NAME_tomcrypt 1
 #define CFG_CRYPTO_AES 1
@@ -103,9 +103,9 @@
 /* CFG_HWRNG_PTA is not set */
 #define CFG_HWSUPP_MEM_PERM_PXN 1
 #define CFG_HWSUPP_MEM_PERM_WXN 1
-#define CFG_IN_TREE_EARLY_TAS trusted_keys/f04a0fe7-1f5d-4b9b-abf7-619b85b4ce8c
+#define CFG_IN_TREE_EARLY_TAS trusted_keys / f04a0fe7 - 1f5d - 4b9b - abf7 - 619b85b4ce8c
 #define CFG_KERN_LINKER_ARCH aarch64
-#define CFG_KERN_LINKER_FORMAT elf64-littleaarch64
+#define CFG_KERN_LINKER_FORMAT elf64 - littleaarch64
 #define CFG_LIBUTILS_WITH_ISOC 1
 /* CFG_LOCKDEP is not set */
 #define CFG_LOCKDEP_RECORD_STACK 1
@@ -169,7 +169,7 @@
 #define CFG_TA_MBEDTLS_MPI 1
 #define CFG_TA_MBEDTLS_SELF_TEST 1
 #define CFG_TA_STRICT_ANNOTATION_CHECKS 1
-#define CFG_TEE_API_VERSION GPD-1.1-dev
+#define CFG_TEE_API_VERSION GPD - 1.1 - dev
 /* CFG_TEE_BENCHMARK is not set */
 #define CFG_TEE_CORE_DEBUG 1
 #define CFG_TEE_CORE_EMBED_INTERNAL_TESTS 1
