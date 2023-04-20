@@ -5,8 +5,8 @@
 #define __MBEDTLS_AES_ALT_H
 
 typedef struct mbedtls_aes_context {
-	uint32_t key[60];
-	unsigned int round_count;
+    uint32_t key[60];
+    unsigned int round_count;
 } mbedtls_aes_context;
 
 #endif /*__MBEDTLS_AES_ALT_H*/

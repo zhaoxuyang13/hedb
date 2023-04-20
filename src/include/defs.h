@@ -1,26 +1,25 @@
-#pragma once 
+#pragma once
 
 #include <stdint.h>
 
 typedef unsigned char BYTE; // 1byte
 typedef unsigned short WORD; // 2bytes
-typedef unsigned long DWORD; //4bytes
+typedef unsigned long DWORD; // 4bytes
 
-#define IV_SIZE			12
-#define TAG_SIZE		16
+#define IV_SIZE 12
+#define TAG_SIZE 16
 
 #define SEALED_KEY_LENGTH 576
 
 #define INT32_LENGTH sizeof(int)
 #define ENC_INT32_GCD_LENGTH (INT32_LENGTH + IV_SIZE + TAG_SIZE)
-#define ENC_INT32_OPE_LENGTH 0 
+#define ENC_INT32_OPE_LENGTH 0
 #define ENC_INT32_LENGTH (ENC_INT32_OPE_LENGTH + ENC_INT32_GCD_LENGTH)
 
 #define FLOAT4_LENGTH sizeof(float)
 #define ENC_FLOAT4_GCD_LENGTH (FLOAT4_LENGTH + IV_SIZE + TAG_SIZE)
 #define ENC_FLOAT4_OPE_LENGTH 0
 #define ENC_FLOAT4_LENGTH (ENC_FLOAT4_GCD_LENGTH + ENC_FLOAT4_OPE_LENGTH)
-
 
 #define TIMESTAMP int64_t
 #define TIMESTAMP_LENGTH sizeof(int64_t)
@@ -30,11 +29,11 @@ typedef unsigned long DWORD; //4bytes
 #define STRING_LENGTH 1024
 #define ENC_STRING_GCD_LENGTH (STRING_LENGTH + IV_SIZE + TAG_SIZE)
 #define ENC_STRING_OPE_LENGTH 0 // TODO: CHANGE to correct value
-#define ENC_STRING_LENGTH (ENC_STRING_GCD_LENGTH + ENC_STRING_OPE_LENGTH) 
+#define ENC_STRING_LENGTH (ENC_STRING_GCD_LENGTH + ENC_STRING_OPE_LENGTH)
 
-#define BULK_SIZE (256)  //256
-#define EXPR_MAX_SIZE (8) //32
-#define EXPR_STACK_MAX_SIZE (16) //256
+#define BULK_SIZE (256) // 256
+#define EXPR_MAX_SIZE (8) // 32
+#define EXPR_STACK_MAX_SIZE (16) // 256
 
 // errors
 #define ENCLAVE_IS_NOT_RUNNING -2
@@ -87,14 +86,18 @@ typedef unsigned long DWORD; //4bytes
 
 /* for Trustzone TA */
 #ifdef TEE_TZ
-#define TA_OPS_UUID \
-	{ 0x64974d40, 0x92cd, 0x4714, \
-		{ 0x9e, 0x8f, 0x44, 0x2f, 0x3a, 0x4d, 0xb3, 0xaf} }
+#define TA_OPS_UUID                                        \
+    {                                                      \
+        0x64974d40, 0x92cd, 0x4714,                        \
+        {                                                  \
+            0x9e, 0x8f, 0x44, 0x2f, 0x3a, 0x4d, 0xb3, 0xaf \
+        }                                                  \
+    }
 
 /* The function IDs implemented in this TA */
-#define TA_OPS_CMD_INC_VALUE		0
-#define TA_OPS_CMD_DEC_VALUE		1
-#define TA_OPS_CMD_OPS_PROCESS      2
-#define TA_OPS_CMD_AES_GCM 			3
-#define TA_OPS_CMD_LOAD_KEY			4
+#define TA_OPS_CMD_INC_VALUE 0
+#define TA_OPS_CMD_DEC_VALUE 1
+#define TA_OPS_CMD_OPS_PROCESS 2
+#define TA_OPS_CMD_AES_GCM 3
+#define TA_OPS_CMD_LOAD_KEY 4
 #endif

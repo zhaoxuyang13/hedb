@@ -1,11 +1,11 @@
 #include <replayer.hpp>
 
-#include <request_types.h>
 #include <request.hpp>
+#include <request_types.h>
 
-
-int Replayer::replay_request(void *req_buffer){
-    BaseRequest *req_control = static_cast<BaseRequest *>(req_buffer);
+int Replayer::replay_request(void* req_buffer)
+{
+    BaseRequest* req_control = static_cast<BaseRequest*>(req_buffer);
     int reqType = req_control->reqType;
     int op, resp;
     uint64_t timestamp;
@@ -14,14 +14,14 @@ int Replayer::replay_request(void *req_buffer){
         // print_error("replay fail at %ld, op: %d, reqType: %d, previous_op: %d", ftell(file), op, reqType, previous_op);
         return -RETRY_FAILED;
     }
-    if(reqType>= 101 
-    && reqType<= 110){
-        EncFloat left,right,res;
+    if (reqType >= 101
+        && reqType <= 110) {
+        EncFloat left, right, res;
         int cmp;
-        if(reqType == CMD_FLOAT_CMP){
-            EncFloatCmpRequestData *req = (EncFloatCmpRequestData *) req_buffer; 
+        if (reqType == CMD_FLOAT_CMP) {
+            EncFloatCmpRequestData* req = (EncFloatCmpRequestData*)req_buffer;
             char read_buffer[sizeof(int) * 2 + ENC_FLOAT4_LENGTH * 2 + sizeof(uint64_t)];
-            char *src = read_buffer;
+            char* src = read_buffer;
             fread(read_buffer, sizeof(char), sizeof(int) * 2 + ENC_FLOAT4_LENGTH * 2 + sizeof(uint64_t), file);
             memcpy(&left, src, ENC_FLOAT4_LENGTH);
             src += ENC_FLOAT4_LENGTH;
@@ -32,17 +32,17 @@ int Replayer::replay_request(void *req_buffer){
             memcpy(&resp, src, sizeof(int));
             src += sizeof(int);
             memcpy(&timestamp, src, sizeof(uint64_t));
-            
+
             if (memcmp(&req->left, &left, ENC_FLOAT4_LENGTH) || memcmp(&req->right, &right, ENC_FLOAT4_LENGTH)) {
                 // print_error("float cmp fail at %ld", ftell(read_file_ptr));
                 return -RETRY_FAILED;
             }
             req->cmp = cmp;
-        }else if(reqType == CMD_FLOAT_SUM_BULK){
-            EncFloatBulkRequestData *req = (EncFloatBulkRequestData *) req_buffer;
+        } else if (reqType == CMD_FLOAT_SUM_BULK) {
+            EncFloatBulkRequestData* req = (EncFloatBulkRequestData*)req_buffer;
             int bulk_size;
             char read_buffer[sizeof(int) * 2 + ENC_FLOAT4_LENGTH + sizeof(uint64_t)];
-            char *src = read_buffer;
+            char* src = read_buffer;
             fread(read_buffer, sizeof(char), sizeof(int) * 2 + ENC_FLOAT4_LENGTH + sizeof(uint64_t), file);
             memcpy(&bulk_size, src, sizeof(int));
             src += sizeof(int);
@@ -71,11 +71,10 @@ int Replayer::replay_request(void *req_buffer){
             }
 
             memcpy(&req->res, &res, ENC_FLOAT4_LENGTH);
-        }
-        else {
-            EncFloatCalcRequestData *req = (EncFloatCalcRequestData *) req_buffer;
+        } else {
+            EncFloatCalcRequestData* req = (EncFloatCalcRequestData*)req_buffer;
             char read_buffer[sizeof(int) + ENC_FLOAT4_LENGTH * 3 + sizeof(uint64_t)];
-            char *src = read_buffer;
+            char* src = read_buffer;
             fread(read_buffer, sizeof(char), sizeof(int) + ENC_FLOAT4_LENGTH * 3 + sizeof(uint64_t), file);
             memcpy(&left, src, ENC_FLOAT4_LENGTH);
             src += ENC_FLOAT4_LENGTH;
@@ -91,18 +90,17 @@ int Replayer::replay_request(void *req_buffer){
                 // print_error("float ops fail at %ld", ftell(read_file_ptr));
                 return -RETRY_FAILED;
             }
-            
+
             memcpy(&req->res, &res, ENC_FLOAT4_LENGTH);
         }
-    }else if(reqType >= 1
-        && reqType <= 10
-    ){
-        EncInt left,right,res;
+    } else if (reqType >= 1
+        && reqType <= 10) {
+        EncInt left, right, res;
         int cmp;
-        if(reqType == CMD_INT_CMP){
-            EncIntCmpRequestData *req = (EncIntCmpRequestData *) req_buffer; 
+        if (reqType == CMD_INT_CMP) {
+            EncIntCmpRequestData* req = (EncIntCmpRequestData*)req_buffer;
             char read_buffer[sizeof(int) * 2 + ENC_INT32_LENGTH * 2 + sizeof(uint64_t)];
-            char *src = read_buffer;
+            char* src = read_buffer;
             fread(read_buffer, sizeof(char), sizeof(int) * 2 + ENC_INT32_LENGTH * 2 + sizeof(uint64_t), file);
             memcpy(&left, src, ENC_INT32_LENGTH);
             src += ENC_INT32_LENGTH;
@@ -120,11 +118,11 @@ int Replayer::replay_request(void *req_buffer){
             }
 
             req->cmp = cmp;
-        }else if(reqType == CMD_INT_SUM_BULK){
-            EncIntBulkRequestData *req = (EncIntBulkRequestData *) req_buffer;
+        } else if (reqType == CMD_INT_SUM_BULK) {
+            EncIntBulkRequestData* req = (EncIntBulkRequestData*)req_buffer;
             int bulk_size;
             char read_buffer[sizeof(int) * 2 + ENC_INT32_LENGTH + sizeof(uint64_t)];
-            char *src = read_buffer;
+            char* src = read_buffer;
             fread(read_buffer, sizeof(char), sizeof(int) * 2 + ENC_INT32_LENGTH + sizeof(uint64_t), file);
             memcpy(&bulk_size, src, sizeof(int));
             src += sizeof(int);
@@ -153,11 +151,10 @@ int Replayer::replay_request(void *req_buffer){
             }
 
             memcpy(&req->res, &res, ENC_INT32_LENGTH);
-        }
-        else {
-            EncIntCalcRequestData *req = (EncIntCalcRequestData *) req_buffer;
+        } else {
+            EncIntCalcRequestData* req = (EncIntCalcRequestData*)req_buffer;
             char read_buffer[sizeof(int) + ENC_INT32_LENGTH * 3 + sizeof(uint64_t)];
-            char *src = read_buffer;
+            char* src = read_buffer;
             fread(read_buffer, sizeof(char), sizeof(int) + ENC_INT32_LENGTH * 3 + sizeof(uint64_t), file);
             memcpy(&left, src, ENC_INT32_LENGTH);
             src += ENC_INT32_LENGTH;
@@ -173,16 +170,14 @@ int Replayer::replay_request(void *req_buffer){
                 // print_error("int ops fail at %ld", ftell(read_file_ptr));
                 return -RETRY_FAILED;
             }
-            
+
             memcpy(&req->res, &res, ENC_INT32_LENGTH);
         }
-    } else if (reqType >= 201 && reqType <= 206)
-    {
+    } else if (reqType >= 201 && reqType <= 206) {
         EncStr left, right, res;
         int cmp;
-        if (reqType == CMD_STRING_CMP ||
-            reqType == CMD_STRING_LIKE) {
-            EncStrCmpRequestData *req = (EncStrCmpRequestData *)req_buffer;
+        if (reqType == CMD_STRING_CMP || reqType == CMD_STRING_LIKE) {
+            EncStrCmpRequestData* req = (EncStrCmpRequestData*)req_buffer;
             int left_length, right_length;
             fread(&left_length, sizeof(int), 1, file);
             fread(&right_length, sizeof(int), 1, file);
@@ -193,7 +188,7 @@ int Replayer::replay_request(void *req_buffer){
             }
 
             char read_buffer[left_length + right_length + sizeof(int) * 2 + sizeof(uint64_t)];
-            char *src = read_buffer;
+            char* src = read_buffer;
             fread(read_buffer, sizeof(char), left_length + right_length + sizeof(int) * 2 + sizeof(uint64_t), file);
             memcpy(&left, src, left_length);
             src += left_length;
@@ -206,9 +201,8 @@ int Replayer::replay_request(void *req_buffer){
             memcpy(&timestamp, src, sizeof(uint64_t));
 
             req->cmp = cmp;
-        }
-        else if (req_control->reqType == CMD_STRING_SUBSTRING) {
-            SubstringRequestData *req = (SubstringRequestData *)req_buffer;
+        } else if (req_control->reqType == CMD_STRING_SUBSTRING) {
+            SubstringRequestData* req = (SubstringRequestData*)req_buffer;
             EncStr str;
             EncInt begin, end;
             int str_length, result_length;
@@ -221,7 +215,7 @@ int Replayer::replay_request(void *req_buffer){
             }
 
             char read_buffer[str_length + result_length + sizeof(int) + ENC_INT32_LENGTH * 2 + sizeof(uint64_t)];
-            char *src = read_buffer;
+            char* src = read_buffer;
             fread(read_buffer, sizeof(char), str_length + result_length + sizeof(int) + ENC_INT32_LENGTH * 2 + sizeof(uint64_t), file);
             memcpy(&str, src, str_length);
             src += str_length;
@@ -235,20 +229,17 @@ int Replayer::replay_request(void *req_buffer){
             src += sizeof(int);
             memcpy(&timestamp, src, sizeof(uint64_t));
 
-            if (memcmp(&str, &req->str, str_length) || memcmp(&begin, &req->begin, ENC_INT32_LENGTH) || memcmp(&end, &req->end, ENC_INT32_LENGTH))
-            {
+            if (memcmp(&str, &req->str, str_length) || memcmp(&begin, &req->begin, ENC_INT32_LENGTH) || memcmp(&end, &req->end, ENC_INT32_LENGTH)) {
                 // print_error("string substring fail at %ld, contents mismatch", ftell(read_file_ptr));
                 return -RETRY_FAILED;
             }
             memcpy(&req->res, &res, result_length);
-        }
-        else {
-            EncStrCalcRequestData *req = (EncStrCalcRequestData *)req_buffer;
+        } else {
+            EncStrCalcRequestData* req = (EncStrCalcRequestData*)req_buffer;
             int left_length, right_length, res_length;
             fread(&left_length, sizeof(int), 1, file);
             fread(&right_length, sizeof(int), 1, file);
             fread(&res_length, sizeof(int), 1, file);
-
 
             if (left_length != encstr_size(req->left) || right_length != encstr_size(req->right)) {
                 // print_error("string ops fail at %ld, length not right", ftell(read_file_ptr));
@@ -257,7 +248,7 @@ int Replayer::replay_request(void *req_buffer){
 
             char read_buffer[sizeof(int) + left_length + right_length + res_length + sizeof(uint64_t)];
             fread(read_buffer, sizeof(char), sizeof(int) + left_length + right_length + res_length + sizeof(uint64_t), file);
-            char *src = read_buffer;
+            char* src = read_buffer;
             memcpy(&left, src, left_length);
             src += left_length;
             memcpy(&right, src, right_length);
@@ -267,7 +258,7 @@ int Replayer::replay_request(void *req_buffer){
             memcpy(&resp, src, sizeof(int));
             src += sizeof(int);
             memcpy(&timestamp, src, sizeof(uint64_t));
-            
+
             if (memcmp(&left, &req->left, left_length) || memcmp(&right, &req->right, right_length)) {
                 // print_error("string ops fail at %ld, contents mismatch", ftell(read_file_ptr));
                 return -RETRY_FAILED;
@@ -278,10 +269,10 @@ int Replayer::replay_request(void *req_buffer){
         if (req_control->reqType == CMD_TIMESTAMP_CMP) {
             int cmp;
             EncTimestamp left, right;
-            EncTimestampCmpRequestData *req = (EncTimestampCmpRequestData *)req_buffer;
+            EncTimestampCmpRequestData* req = (EncTimestampCmpRequestData*)req_buffer;
             char read_buffer[sizeof(int) * 2 + ENC_TIMESTAMP_LENGTH * 2 + sizeof(uint64_t)];
             fread(read_buffer, sizeof(char), sizeof(int) * 2 + ENC_TIMESTAMP_LENGTH * 2 + sizeof(uint64_t), file);
-            char *src = read_buffer;
+            char* src = read_buffer;
             memcpy(&left, src, ENC_TIMESTAMP_LENGTH);
             src += ENC_TIMESTAMP_LENGTH;
             memcpy(&right, src, ENC_TIMESTAMP_LENGTH);
@@ -300,10 +291,10 @@ int Replayer::replay_request(void *req_buffer){
         } else if (req_control->reqType == CMD_TIMESTAMP_EXTRACT_YEAR) {
             EncTimestamp in;
             EncInt out;
-            EncTimestampExtractYearRequestData *req = (EncTimestampExtractYearRequestData *) req_buffer;
+            EncTimestampExtractYearRequestData* req = (EncTimestampExtractYearRequestData*)req_buffer;
             char read_buffer[sizeof(int) + ENC_TIMESTAMP_LENGTH + ENC_INT32_LENGTH + sizeof(uint64_t)];
             fread(read_buffer, sizeof(char), sizeof(int) + ENC_TIMESTAMP_LENGTH + ENC_INT32_LENGTH + sizeof(uint64_t), file);
-            char *src = read_buffer;
+            char* src = read_buffer;
             memcpy(&in, src, ENC_TIMESTAMP_LENGTH);
             src += ENC_TIMESTAMP_LENGTH;
             memcpy(&out, src, ENC_INT32_LENGTH);
@@ -323,27 +314,28 @@ int Replayer::replay_request(void *req_buffer){
     return resp;
 }
 
-int Replayer::replay(void *request_buffer){
-    int reqType = static_cast<BaseRequest *>(request_buffer) -> reqType;
-    if(reqType == CMD_FLOAT_ENC 
-    || reqType == CMD_FLOAT_DEC
-    || reqType == CMD_INT_ENC 
-    || reqType == CMD_INT_DEC
-    || reqType == CMD_STRING_ENC
-    || reqType == CMD_STRING_DEC
-    || reqType == CMD_TIMESTAMP_ENC
-    || reqType == CMD_TIMESTAMP_DEC){
+int Replayer::replay(void* request_buffer)
+{
+    int reqType = static_cast<BaseRequest*>(request_buffer)->reqType;
+    if (reqType == CMD_FLOAT_ENC
+        || reqType == CMD_FLOAT_DEC
+        || reqType == CMD_INT_ENC
+        || reqType == CMD_INT_DEC
+        || reqType == CMD_STRING_ENC
+        || reqType == CMD_STRING_DEC
+        || reqType == CMD_TIMESTAMP_ENC
+        || reqType == CMD_TIMESTAMP_DEC) {
         return NOT_REPLAY;
     }
-    if(file == nullptr){
+    if (file == nullptr) {
         /* initilize file by iterating through records, and find one that match the first */
-        for(auto filename : filenames){
+        for (auto filename : filenames) {
             file = fopen(filename.c_str(), "r+b");
             int ret = replay_request(request_buffer);
-            if(ret == RETRY_FAILED){
+            if (ret == RETRY_FAILED) {
                 fclose(file);
                 file = nullptr;
-            }else
+            } else
                 return ret;
         }
         return -1; // not valid record file found. error.

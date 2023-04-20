@@ -21,20 +21,20 @@
  * struct mempool_item - internal struct to keep track of an item
  */
 struct mempool_item {
-	size_t size;
-	ssize_t prev_item_offset;
-	ssize_t next_item_offset;
+    size_t size;
+    ssize_t prev_item_offset;
+    ssize_t next_item_offset;
 };
 
 struct mempool;
 
-#define MEMPOOL_ALIGN	__alignof__(long)
+#define MEMPOOL_ALIGN __alignof__(long)
 
 #if defined(__KERNEL__)
 /*
  * System wide memory pool for large temporary memory allocation.
  */
-extern struct mempool *mempool_default;
+extern struct mempool* mempool_default;
 #endif
 
 /*
@@ -46,8 +46,8 @@ extern struct mempool *mempool_default;
  *			ignored if NULL.
  * returns a pointer to a valid pool on success or NULL on failure.
  */
-struct mempool *mempool_alloc_pool(void *data, size_t size,
-				   void (*release_mem)(void *ptr, size_t size));
+struct mempool* mempool_alloc_pool(void* data, size_t size,
+    void (*release_mem)(void* ptr, size_t size));
 
 /*
  * mempool_alloc() - Allocate an item from a memory pool
@@ -55,7 +55,7 @@ struct mempool *mempool_alloc_pool(void *data, size_t size,
  * @size:		Size in bytes of the item to allocate
  * return a valid pointer on success or NULL on failure.
  */
-void *mempool_alloc(struct mempool *pool, size_t size);
+void* mempool_alloc(struct mempool* pool, size_t size);
 
 /*
  * mempool_calloc() - Allocate and zero initialize an array of elements from a
@@ -65,13 +65,13 @@ void *mempool_alloc(struct mempool *pool, size_t size);
  * @size:		Size in bytes of each element in the array
  * return a valid pointer on success or NULL on failure.
  */
-void *mempool_calloc(struct mempool *pool, size_t nmemb, size_t size);
+void* mempool_calloc(struct mempool* pool, size_t nmemb, size_t size);
 
 /*
  * mempool_free() - Frees a previously allocated item
  * @pool:		A memory pool create with mempool_alloc_pool()
  * @ptr:		A pointer to a previously allocated item
  */
-void mempool_free(struct mempool *pool, void *ptr);
+void mempool_free(struct mempool* pool, void* ptr);
 
 #endif /*__MEMPOOL_H*/

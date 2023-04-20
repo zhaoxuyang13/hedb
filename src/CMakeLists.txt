@@ -194,6 +194,12 @@ endif()
 if(PostgreSQL_FOUND) 
 add_subdirectory(extension)
 endif()
+
+OPTION(ENABLE_PARALLEL "parallel enc/dec in UDF" OFF) # disabled by default
+IF(ENABLE_PARALLEL)
+    add_compile_definitions(ENABLE_PARA)
+ENDIF(ENABLE_PARALLEL)
+
 # ## for test
 # add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../test/ops-micro ${CMAKE_CURRENT_BINARY_DIR}/)
 ## KV and PARA is not compatible for now
