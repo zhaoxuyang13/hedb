@@ -16,21 +16,12 @@ static inline uint64_t get_timestamp(void){
 }
 
 char *Recorder::get_write_buffer(unsigned long length){
-        if(write_fd == 0){
-            pid_t pid = getpid();
-            if(prefix == ""){
-                filename = "record-" + std::to_string(pid) + ".log";
-            } else {
-                filename = prefix + "-" + std::to_string(pid) + ".log";
-            }
-            write_fd = open(filename.c_str(), O_RDWR | O_CREAT, 0666);
-        }
-        if (file_cursor + length > file_length) {
-            // munmap(write_addr, file_length);
-            file_length += DATA_LENGTH;
-            ftruncate(write_fd, file_length);
-            write_addr = (char *)mmap(NULL, file_length, PROT_READ|PROT_WRITE, MAP_SHARED, write_fd, 0);
-            madvise(write_addr + file_cursor, DATA_LENGTH, MADV_SEQUENTIAL);
+    if(write_fd == 0){
+        pid_t pid = getpid();
+        if(prefix == ""){
+            filename = "record-" + std::to_string(pid) + ".log";
+        } else {
+            filename = prefix + "-" + std::to_string(pid) + ".log";
         }
         write_fd = open(filename.c_str(), O_RDWR | O_CREAT, 0666);
     }
@@ -38,9 +29,10 @@ char *Recorder::get_write_buffer(unsigned long length){
         // munmap(write_addr, file_length);
         file_length += DATA_LENGTH;
         ftruncate(write_fd, file_length);
-        write_addr = (char*)mmap(NULL, file_length, PROT_READ | PROT_WRITE, MAP_SHARED, write_fd, 0);
+        write_addr = (char *)mmap(NULL, file_length, PROT_READ|PROT_WRITE, MAP_SHARED, write_fd, 0);
         madvise(write_addr + file_cursor, DATA_LENGTH, MADV_SEQUENTIAL);
     }
+    
     char* start = write_addr + file_cursor;
     file_cursor += length;
     return start;
