@@ -53,15 +53,15 @@
 #endif
 
 #ifdef _JBLEN
-typedef	_JBTYPE jmp_buf[_JBLEN];
+typedef _JBTYPE jmp_buf[_JBLEN];
 #endif
 
 void __noreturn longjmp(jmp_buf env, int val);
 int setjmp(jmp_buf env);
 
 #ifdef CFG_FTRACE_SUPPORT
-void ftrace_longjmp(unsigned int *ret_idx);
-void ftrace_setjmp(unsigned int *ret_idx);
+void ftrace_longjmp(unsigned int* ret_idx);
+void ftrace_setjmp(unsigned int* ret_idx);
 #endif
 
 #endif /*__SETJMP_H*/

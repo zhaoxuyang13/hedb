@@ -12,21 +12,20 @@
 #define STDLIB_H
 
 #include <compiler.h>
-#include <stddef.h>
 #include <malloc.h>
+#include <stddef.h>
 
-void
-qsort(void *aa, size_t n, size_t es, int (*cmp)(const void *, const void *));
+void qsort(void* aa, size_t n, size_t es, int (*cmp)(const void*, const void*));
 
 void abort(void) __noreturn;
 
 int abs(int i);
 
 /* The largest number returned by rand() */
-#define	RAND_MAX	__INT_MAX__
+#define RAND_MAX __INT_MAX__
 int rand(void);
 
-unsigned long _strtoul (const char *nptr, char **endptr, int base);
-unsigned long strtoul (const char *s, char **ptr, int base);
+unsigned long _strtoul(const char* nptr, char** endptr, int base);
+unsigned long strtoul(const char* s, char** ptr, int base);
 
 #endif /* STDLIB_H */

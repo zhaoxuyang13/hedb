@@ -1,16 +1,16 @@
-#include <tee_interface.hpp>
-#include <sgx_interface.hpp>
 #include <enclave_u.h>
+#include <sgx_interface.hpp>
+#include <tee_interface.hpp>
 
-#include <defs.h>
-#include "sgx_urts.h"
-#include "sgx_tcrypto.h"
 #include "sgx_eid.h" /* sgx_enclave_id_t */
+#include "sgx_tcrypto.h"
+#include "sgx_urts.h"
 #include <algorithm>
+#include <defs.h>
 #include <fstream>
+#include <iostream>
 #include <thread>
 #include <unistd.h>
-#include <iostream>
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t global_eid = 0;
 
@@ -21,8 +21,8 @@ bool status = false;
 // #define  DATA_FILENAME "hedb.data" already defined in CMakefile, in install path
 
 // FILE *plain_file = 0;
-void ocall_print_string(const char *str)
-{   
+void ocall_print_string(const char* str)
+{
     printf(str);
     return;
     // if (plain_file == 0)
@@ -31,7 +31,7 @@ void ocall_print_string(const char *str)
     //     char filename[100];
     //     sprintf(filename, "plain-%d.log", pid);
     //     print_info(filename);
-    //     plain_file = fopen(filename,"w+"); 
+    //     plain_file = fopen(filename,"w+");
     // }
     // fprintf(plain_file, "%s", str);
 }
@@ -41,16 +41,14 @@ void sgxErrorHandler(int code)
     size_t i;
     size_t ttl = sizeof(sgx_errlist) / sizeof(sgx_errlist[0]);
     char ch[1000];
-    sprintf(ch,"error code %d\n", code);
+    sprintf(ch, "error code %d\n", code);
     print_info(ch);
-    if ((code > 1) || (code < -6))
-    {
-        for (i = 0; i < ttl; i++)
-        {
+    if ((code > 1) || (code < -6)) {
+        for (i = 0; i < ttl; i++) {
             if (sgx_errlist[i].err == code)
                 print_info("SGX_ERROR_CODE %d: %s \n", code, sgx_errlist[i].msg);
         }
-        //ereport(ERROR, (-1, errmsg("SGX_ERROR_CODE: %d \n", code)));
+        // ereport(ERROR, (-1, errmsg("SGX_ERROR_CODE: %d \n", code)));
     }
 
     if (code == -2)
@@ -80,30 +78,27 @@ int generateKey()
 {
 
     int resp, resp_enclave, flength;
-    uint8_t *sealed_key_b = new uint8_t[SEALED_KEY_LENGTH];
+    uint8_t* sealed_key_b = new uint8_t[SEALED_KEY_LENGTH];
 
     std::fstream data_file;
     data_file.open(DATA_FILENAME,
-                   std::fstream::in | std::fstream::out | std::fstream::binary);
+        std::fstream::in | std::fstream::out | std::fstream::binary);
     // std::cout << DATA_FILENAME;
-    if (data_file)
-    {
+    if (data_file) {
         data_file.seekg(0, data_file.end);
         flength = data_file.tellg();
 
         if (flength == SEALED_KEY_LENGTH)
             return 0;
 
-        else
-        {
+        else {
             resp = generateKeyEnclave(
                 global_eid, &resp_enclave, sealed_key_b, SEALED_KEY_LENGTH);
             if (resp != SGX_SUCCESS)
                 return resp;
-            data_file.write((char *)sealed_key_b, SEALED_KEY_LENGTH);
+            data_file.write((char*)sealed_key_b, SEALED_KEY_LENGTH);
         }
-    }
-    else
+    } else
         return NO_KEYS_STORAGE;
 
     data_file.close();
@@ -119,21 +114,19 @@ int loadKey(int item)
 
     std::fstream data_file;
     data_file.open(DATA_FILENAME, std::fstream::in | std::fstream::binary);
-    if (data_file)
-    {
+    if (data_file) {
         data_file.seekg(0, data_file.end);
         int flength = data_file.tellg();
         if (flength < item * SEALED_KEY_LENGTH + SEALED_KEY_LENGTH)
             return NO_KEY_ID;
 
         data_file.seekg(item * SEALED_KEY_LENGTH);
-        data_file.read((char *)sealed_key_b, SEALED_KEY_LENGTH);
+        data_file.read((char*)sealed_key_b, SEALED_KEY_LENGTH);
         resp = loadKeyEnclave(
             global_eid, &resp_enclave, sealed_key_b, SEALED_KEY_LENGTH);
         if (resp != SGX_SUCCESS)
             return resp;
-    }
-    else
+    } else
         return NO_KEYS_STORAGE;
 
     data_file.close();
@@ -142,7 +135,7 @@ int loadKey(int item)
 
 int launch_enclave()
 {
-    sgx_launch_token_t token = {0};
+    sgx_launch_token_t token = { 0 };
     int updated = 0;
     int resp = sgx_create_enclave(
         ENCLAVE_FILENAME, SGX_DEBUG_FLAG, &token, &updated, &global_eid, NULL);
@@ -150,7 +143,7 @@ int launch_enclave()
     return resp;
 }
 
-void enclaveThread(void *buffer)
+void enclaveThread(void* buffer)
 {
     int resp = 0;
     // print_info("into enclave thread\n");
@@ -163,9 +156,9 @@ void enclaveThread(void *buffer)
 }
 
 /* --------------------------------------------- */
-void *getSharedBuffer(size_t size)
+void* getSharedBuffer(size_t size)
 {
-    void *buffer = malloc(size);
+    void* buffer = malloc(size);
     int resp = launch_enclave();
     if (resp != 0)
         sgxErrorHandler(resp);
@@ -180,7 +173,7 @@ void *getSharedBuffer(size_t size)
 
     return buffer;
 }
-void freeBuffer(void *buffer)
+void freeBuffer(void* buffer)
 {
     /* stop enclave first TODO */
     free(buffer);
