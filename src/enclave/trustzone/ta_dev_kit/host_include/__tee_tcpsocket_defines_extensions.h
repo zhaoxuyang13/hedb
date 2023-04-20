@@ -7,7 +7,7 @@
 #define ____TEE_TCPSOCKET_DEFINES_EXTENSIONS_H
 
 /* Instance and implementation specific ioctl functions */
-#define TEE_TCP_SET_RECVBUF	0x65f00000
-#define TEE_TCP_SET_SENDBUF	0x65f00001
+#define TEE_TCP_SET_RECVBUF 0x65f00000
+#define TEE_TCP_SET_SENDBUF 0x65f00001
 
 #endif /*____TEE_TCPSOCKET_DEFINES_EXTENSIONS_H*/

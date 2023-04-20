@@ -19,6 +19,29 @@ from pathlib import Path, PurePath
 
 START_VM_CONFIG="scripts/config/vms.json"
 DEFAULT_TPCH_CONFIG="scripts/config/baseTPCH.json"
+GEN_ORDER_CONFIG="scripts/config/order.json"
+
+def generateOrder(propFile = GEN_ORDER_CONFIG):
+    properties = loadPropertyFile(propFile)
+    
+    orderScriptPath = properties['order_script_path']
+    pgPort = properties['pg_port']
+    pgIp = properties['pg_ip']
+    orderSqlName = properties['sql_name']
+    
+    executeCommand("cd %s && psql -h %s -p %s -U postgres -d test -f %s" % (orderScriptPath, pgIp, pgPort, orderSqlName))
+    pass
+
+def compileCodes(parallel = False):
+    # make before run vm, so that ops-server can be run in OPS VM.
+    if parallel:
+        executeCommand("make clean && make configure_sim_parallel && make")
+    else:
+        executeCommand("make clean && make configure_sim && make")
+    
+    executeCommand("mkdir -p scripts/tmp")
+
+    print("compilation done, trying to start VMs")
 
 
 # after VM started, ops-server and database will be automatically started.
@@ -33,13 +56,6 @@ def startVMs(propFile = START_VM_CONFIG):
     OpsVMScriptName = properties['ops_script']
     pgPort = properties['pg_port']
     pgIp = properties['pg_ip']
-    
-    # make before run vm, so that ops-server can be run in OPS VM.
-    executeCommand("make clean && make configure_sim && make")
-    
-    executeCommand("mkdir -p scripts/tmp")
-
-    print("compilation done, trying to start VMs")
     
     executeNonBlockingCommandNoOutput("cd %s && bash %s" %(vmScriptPath, DBVMScriptName))
     executeNonBlockingCommandNoOutput("cd %s && bash %s" %(vmScriptPath, OpsVMScriptName))
@@ -89,7 +105,7 @@ def prepBenchmark(propFile = DEFAULT_TPCH_CONFIG):
     # vaccum 
     executeCommand("psql -h %s -p %s -U postgres -d test -f scripts/sqls/util_sqls/vacuum.sql" %(pgIp, pgPort))
     
-    executeCommand("reset && clear")
+    executeCommand("clear")
     
     print("benchmark preparation finish")
     
@@ -105,8 +121,8 @@ def runBenchmark(propFile = DEFAULT_TPCH_CONFIG):
     pgIp = properties['pg_ip']
     
     # mkdir tmp for the experiment.
-    tmpResultPath =  Path("scripts/tmp/") / experimentName
-    executeCommand("mkdir -p %s" % tmpResultPath)
+    # tmpResultPath =  Path("scripts/tmp/") / experimentName
+    # executeCommand("mkdir -p %s" % tmpResultPath)
      
     #
     sqlsPath = properties['sqls_path']
@@ -124,7 +140,7 @@ def runBenchmark(propFile = DEFAULT_TPCH_CONFIG):
             assert(time_match is not None)
             queryTime = time_match.group(1)
             queryTimes.append(queryTime)
-            time.sleep(5)
+            time.sleep(1)
             
         # print(queryTime)
         results.append({
@@ -156,11 +172,26 @@ def graphData(propFile = DEFAULT_TPCH_CONFIG):
     # add elif statement here add new pictures. 
     
     if figure == "record":
-        figName = 'record.pdf'
+        figName = 'record.eps'
+        pdfName = 'record.pdf'
         title = "Figure record"
         script = scriptPath / 'fig' / 'hedb-plot.py'
         paperDataFile =  scriptPath / 'fig' / 'paper-data.xlsx'
         artifactDataFile = scriptPath / 'tmp' / 'record.xlsx'
+    elif figure == "replay":
+        figName = 'replay.eps'
+        pdfName = 'replay.pdf'
+        title = "Figure replay"
+        script = scriptPath / 'fig' / 'hedb-plot.py'
+        paperDataFile =  scriptPath / 'fig' / 'paper-data.xlsx'
+        artifactDataFile = scriptPath / 'tmp' / 'replay.xlsx'
+    elif figure == 'optimization':
+        figName = 'optimization.eps'
+        pdfName = 'optimization.pdf'
+        title = "Figure optimization"
+        script = scriptPath / 'fig' / 'hedb-plot.py'
+        paperDataFile =  scriptPath / 'fig' / 'paper-data.xlsx'
+        artifactDataFile = scriptPath / 'tmp' / 'optimization.xlsx'
     else:
         print("Unsupported figure:", figure)
         return    
@@ -168,17 +199,27 @@ def graphData(propFile = DEFAULT_TPCH_CONFIG):
     # graph in paper
     cmd = f'python3 {script} -l -t "Paper {title}" {figure} {paperDataFile} {paperFigDir / figName}'
     executeCommand(cmd)
+    cmd = f'epstopdf {paperFigDir / figName}'
+    executeCommand(cmd)
+    
     # graph in AE
     cmd = f'python3 {script} -l -t "Artifact Evaluation" {figure}  {artifactDataFile} {artifactFigDir / figName}'
     executeCommand(cmd)
+    cmd = f'epstopdf {artifactFigDir / figName}'
+    executeCommand(cmd)
+    
     # jam two figures together
-    cmd = f"pdfjam --landscape --nup 2x1 {artifactFigDir / figName} {paperFigDir / figName} --outfile {cmpFigDir / figName}"
+    cmd = f"pdfjam {artifactFigDir / pdfName} {paperFigDir / pdfName} --landscape --nup 2x1 --outfile {cmpFigDir / pdfName}"
     executeCommand(cmd)
 
 def shutdownVMs():
     cmd = r"ps aux | grep ./qemu-system-aarch64 | awk '{print $2}' | head -n -1 | xargs kill -9"
     executeCommand(cmd)
     print("qemu vm shut down")
+    
+def cleanLogs():
+    print("clean logs")
 
 def cleanupExperiment():
     shutdownVMs()
+    cleanLogs()

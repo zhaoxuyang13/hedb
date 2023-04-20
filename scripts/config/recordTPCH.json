@@ -1,6 +1,6 @@
 {
     "home_path" :"/home/gz/hedb",
-    "experiment_name": "base_tpch_run",
+    "experiment_name": "record_tpch_run",
     "pg_ip": "127.0.0.1",
     "pg_port": "15432",
     "data_size": "0.01",

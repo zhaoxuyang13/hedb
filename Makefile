@@ -36,6 +36,9 @@ configure_tz:
 
 configure_sim:
 	cmake -B build -S ./src -DTEE_TYPE=SIM
+
+configure_sim_parallel:
+	cmake -B build -S ./src -DTEE_TYPE=SIM -DENABLE_PARALLEL=ON
  
 install: 
 	sudo cmake --install build
@@ -53,7 +56,7 @@ load-tpcc-native:
 load-tpch: 
 	cd $(BENCHMARK_DIR) && psql -h ${PG_SERVER_IP} -p ${PG_SERVER_PORT} -U postgres -d test -f db_schemas/tpch-schema-encrypted.sql 
 	cd $(BENCHMARK_DIR) && psql -h ${PG_SERVER_IP} -p ${PG_SERVER_PORT} -U postgres -d test -f db_schemas/tpch-index.sql 
-	cd $(BENCHMARK_DIR) && java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 100 --config config/tpch_config.xml --load true --execute false
+	cd $(BENCHMARK_DIR) && java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 100 --config config/tmp.xml --load true --execute false
 
 load-tpch-native: 
 	cd $(BENCHMARK_DIR) && psql -h ${PG_SERVER_IP} -p ${PG_SERVER_PORT} -U postgres -d test -f db_schemas/tpch-schema.sql 

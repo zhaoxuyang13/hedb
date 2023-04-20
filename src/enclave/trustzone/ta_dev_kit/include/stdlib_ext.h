@@ -13,6 +13,6 @@
 #include <stddef.h>
 
 /* Overwrite buffer with a fixed pattern and free it. @ptr may be NULL. */
-void free_wipe(void *ptr);
+void free_wipe(void* ptr);
 
 #endif /* STDLIB_EXT_H */
