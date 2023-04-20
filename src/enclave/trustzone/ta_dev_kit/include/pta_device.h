@@ -10,8 +10,13 @@
 #ifndef __PTA_DEVICE_H
 #define __PTA_DEVICE_H
 
-#define PTA_DEVICE_UUID { 0x7011a688, 0xddde, 0x4053, \
-		{ 0xa5, 0xa9, 0x7b, 0x3c, 0x4d, 0xdf, 0x13, 0xb8 } }
+#define PTA_DEVICE_UUID                                    \
+    {                                                      \
+        0x7011a688, 0xddde, 0x4053,                        \
+        {                                                  \
+            0xa5, 0xa9, 0x7b, 0x3c, 0x4d, 0xdf, 0x13, 0xb8 \
+        }                                                  \
+    }
 
 /*
  * Get device UUIDs
@@ -23,7 +28,7 @@
  * TEE_ERROR_BAD_PARAMETERS - Incorrect input param
  * TEE_ERROR_SHORT_BUFFER - Output buffer size less than required
  */
-#define PTA_CMD_GET_DEVICES		0x0 /* before tee-supplicant run */
-#define PTA_CMD_GET_DEVICES_SUPP	0x1 /* after tee-supplicant run */
+#define PTA_CMD_GET_DEVICES 0x0 /* before tee-supplicant run */
+#define PTA_CMD_GET_DEVICES_SUPP 0x1 /* after tee-supplicant run */
 
 #endif /* __PTA_DEVICE_H */

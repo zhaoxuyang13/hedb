@@ -1,16 +1,14 @@
-#pragma once 
+#pragma once
 
-#include <request_types.h>
 #include <defs.h>
+#include <request_types.h>
 
-
-
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C" {
-#endif 
+#endif
 
 // int desenitize_ops(BaseRequest *req, const char *filename);
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 }
-#endif 
+#endif
