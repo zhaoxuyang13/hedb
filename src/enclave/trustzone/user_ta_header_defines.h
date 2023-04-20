@@ -35,32 +35,34 @@
 /* To get the TA UUID definition */
 #include <ops_ta.h>
 
-#define TA_UUID				TA_OPS_UUID
+#define TA_UUID TA_OPS_UUID
 
 /*
  * TA properties: multi-instance TA, no specific attribute
  * TA_FLAG_EXEC_DDR is meaningless but mandated.
  */
-#define TA_FLAGS			(TA_FLAG_EXEC_DDR)
+#define TA_FLAGS (TA_FLAG_EXEC_DDR)
 
 /* Provisioned stack size */
-#define TA_STACK_SIZE			(8 * 1024)
+#define TA_STACK_SIZE (8 * 1024)
 
 /* Provisioned heap size for TEE_Malloc() and friends */
-#define TA_DATA_SIZE			(64 * 1024)
+#define TA_DATA_SIZE (64 * 1024)
 
 /* The gpd.ta.version property */
-#define TA_VERSION	"1.0"
+#define TA_VERSION "1.0"
 
 /* The gpd.ta.description property */
-#define TA_DESCRIPTION	"Provide Secure Ops on encrypted records for encrypted database"
+#define TA_DESCRIPTION "Provide Secure Ops on encrypted records for encrypted database"
 
 /* Extra properties */
-#define TA_CURRENT_TA_EXT_PROPERTIES \
-    { "org.linaro.optee.examples.ops.property1", \
-	USER_TA_PROP_TYPE_STRING, \
-        "Some string- hey there" }, \
-    { "org.linaro.optee.examples.ops.property2", \
-	USER_TA_PROP_TYPE_U32, &(const uint32_t){ 0x0666 } }
+#define TA_CURRENT_TA_EXT_PROPERTIES                            \
+    { "org.linaro.optee.examples.ops.property1",                \
+        USER_TA_PROP_TYPE_STRING,                               \
+        "Some string- hey there" },                             \
+    {                                                           \
+        "org.linaro.optee.examples.ops.property2",              \
+            USER_TA_PROP_TYPE_U32, &(const uint32_t) { 0x0666 } \
+    }
 
 #endif /* USER_TA_HEADER_DEFINES_H */

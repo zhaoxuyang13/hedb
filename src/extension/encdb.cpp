@@ -1,10 +1,10 @@
-#include <stdafx.hpp>
-#include <extension.hpp>
-#include <stdarg.h>
 #include <dirent.h>
+#include <extension.hpp>
+#include <stdafx.hpp>
+#include <stdarg.h>
 #include <sys/types.h>
 
-extern "C"{
+extern "C" {
 PG_MODULE_MAGIC;
 PG_FUNCTION_INFO_V1(launch);
 PG_FUNCTION_INFO_V1(enable_debug_mode);
@@ -12,9 +12,6 @@ PG_FUNCTION_INFO_V1(enable_record_mode);
 PG_FUNCTION_INFO_V1(enable_replay_mode);
 // void close_write_file_ptr();
 }
-
-
-
 
 #define MAX_NAME_LENGTH 100
 #define MAX_PARALLEL_WORKER_SIZE 16
@@ -37,14 +34,12 @@ extern int records_cnt;
 //     ereport(ERROR, (errmsg(fmt)));
 // }
 
-Datum
-    enable_debug_mode(PG_FUNCTION_ARGS)
+Datum enable_debug_mode(PG_FUNCTION_ARGS)
 {
     debugMode = true;
     PG_RETURN_INT32(0);
 }
-Datum
-    enable_record_mode(PG_FUNCTION_ARGS)
+Datum enable_record_mode(PG_FUNCTION_ARGS)
 {
     recordMode = true;
     char* s = PG_GETARG_CSTRING(0);
@@ -52,10 +47,9 @@ Datum
     // print_info("%s\n", s);
     PG_RETURN_INT32(0);
 }
-Datum
-    enable_replay_mode(PG_FUNCTION_ARGS)
+Datum enable_replay_mode(PG_FUNCTION_ARGS)
 {
-    if(recordMode){
+    if (recordMode) {
         recordMode = false;
         // close_write_file_ptr();
     }
@@ -65,24 +59,24 @@ Datum
     strcat(record_name_prefix, "-");
     // print_info("%s\n", s);
 
-    DIR *dir;
-    struct dirent *ent;
-    if ((dir = opendir ("/usr/local/pgsql/data")) != NULL) {
+    DIR* dir;
+    struct dirent* ent;
+    if ((dir = opendir("/usr/local/pgsql/data")) != NULL) {
         // print_info("open directory success\n");
         /* print all the files and directories within directory */
         while ((ent = readdir(dir)) != NULL) {
-            if(0 == strncmp(record_name_prefix, ent->d_name, strlen(record_name_prefix))){ // if prefix match add to names list
+            if (0 == strncmp(record_name_prefix, ent->d_name, strlen(record_name_prefix))) { // if prefix match add to names list
                 strncpy(record_names[records_cnt], ent->d_name, strlen(ent->d_name));
-                records_cnt ++;
+                records_cnt++;
             }
         }
         char tmp[256];
         sprintf(tmp, "find %d log files\n", records_cnt);
-        for(int i = 0; i < records_cnt; i ++){
+        for (int i = 0; i < records_cnt; i++) {
             sprintf(tmp + strlen(tmp), "%d: %s\n", i, record_names[i]);
         }
         // print_info("%s\n",tmp);
-        closedir (dir);
+        closedir(dir);
     } else {
         /* could not open directory */
         // print_info("could not open directory\n");
@@ -98,8 +92,7 @@ Datum
 
     PG_RETURN_INT32(0);
 }
-Datum
-    launch(PG_FUNCTION_ARGS)
+Datum launch(PG_FUNCTION_ARGS)
 {
     ereport(LOG, (errmsg("launch was called")));
     // recordMode = true;
@@ -107,6 +100,6 @@ Datum
     // char* s = "tpcc";
     // strncpy(record_name_prefix, s, strlen(s));
     int64_t ret = 0;
-    
+
     PG_RETURN_INT32(ret);
 }

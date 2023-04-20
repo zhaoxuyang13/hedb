@@ -1,18 +1,18 @@
-#include <plain_float_ops.h>
 #include <defs.h>
+#include <plain_float_ops.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 
 #if defined(TEE_TZ)
 extern double pow(double x, int y);
-#else 
+#else
 #include <math.h>
 #endif
 
-
-float plain_float_calc(int reqType, float left, float right){
+float plain_float_calc(int reqType, float left, float right)
+{
     int res = 0;
     switch (reqType) /* req->common.op */
     {
@@ -22,14 +22,14 @@ float plain_float_calc(int reqType, float left, float right){
     case CMD_FLOAT_MINUS:
         res = left - right;
         break;
-    case CMD_FLOAT_MULT: 
+    case CMD_FLOAT_MULT:
         res = left * right;
         break;
     case CMD_FLOAT_DIV:
         res = left / right;
         break;
-    case CMD_FLOAT_EXP: 
-        res =  pow(left, right);
+    case CMD_FLOAT_EXP:
+        res = pow(left, right);
         break;
     case CMD_FLOAT_MOD:
         res = (int)left % (int)right;
@@ -40,18 +40,20 @@ float plain_float_calc(int reqType, float left, float right){
     return res;
 }
 
-float plain_float_cmp(float left, float right) {
-    return (left == right) ? 0 : (left < right) ? -1 : 1;
+float plain_float_cmp(float left, float right)
+{
+    return (left == right) ? 0 : (left < right) ? -1
+                                                : 1;
 }
 
-double plain_float_bulk(int reqType, int size, float *array){
+double plain_float_bulk(int reqType, int size, float* array)
+{
     double res = 0;
-    switch (reqType)
-    {
+    switch (reqType) {
     case CMD_FLOAT_SUM_BULK:
-        for(int i = 0; i < size; i ++){
+        for (int i = 0; i < size; i++) {
             res += array[i];
-        } 
+        }
         break;
     default:
         break;
@@ -61,11 +63,12 @@ double plain_float_bulk(int reqType, int size, float *array){
 
 /**
  * @brief evaluates and calculates prefix notation expression
- * 
- * @param expr 
- * @return float 
+ *
+ * @param expr
+ * @return float
  */
-float plain_float_eval_expr(char *expr, float *arr) {
+float plain_float_eval_expr(char* expr, float* arr)
+{
     float stack[EXPR_STACK_MAX_SIZE];
     size_t i;
     int stack_top_pos = -1;
@@ -92,28 +95,28 @@ float plain_float_eval_expr(char *expr, float *arr) {
                 }
                 op1 = (float)stack[stack_top_pos--];
                 op2 = (float)stack[stack_top_pos];
-                switch(c) {
-                    case '+':
-                        stack[stack_top_pos] = op2 + op1;
-                        break;
-                    case '-':
-                        stack[stack_top_pos] = op2 - op1;
-                        break;
-                    case '*':
-                        stack[stack_top_pos] = op2 * op1;
-                        break;
-                    case '/':
-                        stack[stack_top_pos] = op2 / op1;
-                        break;
-                    case '%':
-                        stack[stack_top_pos] = (float)((int)op2 % (int)op1);
-                        break;
-                    case '^':
-                        stack[stack_top_pos] = (float)pow((double)op2, (double)op1);
-                        break;
-                    default:
-                        printf("No matching operand!\n");
-                        // exit(0);
+                switch (c) {
+                case '+':
+                    stack[stack_top_pos] = op2 + op1;
+                    break;
+                case '-':
+                    stack[stack_top_pos] = op2 - op1;
+                    break;
+                case '*':
+                    stack[stack_top_pos] = op2 * op1;
+                    break;
+                case '/':
+                    stack[stack_top_pos] = op2 / op1;
+                    break;
+                case '%':
+                    stack[stack_top_pos] = (float)((int)op2 % (int)op1);
+                    break;
+                case '^':
+                    stack[stack_top_pos] = (float)pow((double)op2, (double)op1);
+                    break;
+                default:
+                    printf("No matching operand!\n");
+                    // exit(0);
                 }
                 if (c == '+') {
                     stack[stack_top_pos] = op1 + op2;
