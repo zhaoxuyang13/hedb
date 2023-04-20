@@ -67,79 +67,85 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  7:   return table2[index2];
 //  8: }
 #ifdef __aarch64__
-static inline size_t confine_array_index(size_t index, size_t size) {
-  size_t safe_index;
-  // Use a conditional select and a CSDB barrier to enforce validation of |index|.
-  // See "Cache Speculation Side-channels" whitepaper, section "Software Mitigation".
-  // "" The combination of both a conditional select/conditional move and the new barrier are
-  // sufficient to address this problem on ALL Arm implementations... ""
-  asm(
-    "cmp %1, %2\n"  // %1 holds the unsanitized index
-    "csel %0, %1, xzr, lo\n"  // Select index or zero based on carry (%1 within range)
-    "hint #20\n" // csdb
-  : "=r"(safe_index)
-  : "r"(index), "r"(size)
-  : "cc");
-  return safe_index;
+static inline size_t confine_array_index(size_t index, size_t size)
+{
+    size_t safe_index;
+    // Use a conditional select and a CSDB barrier to enforce validation of |index|.
+    // See "Cache Speculation Side-channels" whitepaper, section "Software Mitigation".
+    // "" The combination of both a conditional select/conditional move and the new barrier are
+    // sufficient to address this problem on ALL Arm implementations... ""
+    asm(
+        "cmp %1, %2\n" // %1 holds the unsanitized index
+        "csel %0, %1, xzr, lo\n" // Select index or zero based on carry (%1 within range)
+        "hint #20\n" // csdb
+        : "=r"(safe_index)
+        : "r"(index), "r"(size)
+        : "cc");
+    return safe_index;
 }
 #endif
 #ifdef __arm__
 static inline size_t confine_array_index(size_t index, size_t size)
 {
-	size_t ret_val = index;
+    size_t ret_val = index;
 
-	/*
-	 * For the ARMv7/AArch32 case we're basing the select and barrier
-	 * code on __load_no_speculate1() in <speculation_barrier.h> as we
-	 * lack the csel instruction.
-	 */
+    /*
+     * For the ARMv7/AArch32 case we're basing the select and barrier
+     * code on __load_no_speculate1() in <speculation_barrier.h> as we
+     * lack the csel instruction.
+     */
 
 #ifdef __thumb2__
-      asm volatile (
-	".syntax unified\n"
-	"cmp	%0, %1\n"
-	"it	cs\n"
+    asm volatile(
+        ".syntax unified\n"
+        "cmp	%0, %1\n"
+        "it	cs\n"
 #ifdef __clang__
 #pragma clang diagnostic push
-	/* Avoid 'deprecated instruction in IT block [-Werror,-Winline-asm]' */
+    /* Avoid 'deprecated instruction in IT block [-Werror,-Winline-asm]' */
 #pragma clang diagnostic ignored "-Winline-asm"
 #endif
-	"movcs	%0, #0\n"
+        "movcs	%0, #0\n"
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
-	".inst.n 0xf3af\t@ CSDB\n"
-	".inst.n 0x8014\t@ CSDB"
-	: "+r" (ret_val) : "r" (size) : "cc");
+        ".inst.n 0xf3af\t@ CSDB\n"
+        ".inst.n 0x8014\t@ CSDB"
+        : "+r"(ret_val)
+        : "r"(size)
+        : "cc");
 #else
-      asm volatile (
-	".syntax unified\n"
-	"cmp	%0, %1\n" /* %0 holds the unsanitized index */
-	"movcs	%0, #0\n"
-	".inst	0xe320f014\t@ CSDB"
-	: "+r" (ret_val) : "r" (size) : "cc");
+    asm volatile(
+        ".syntax unified\n"
+        "cmp	%0, %1\n" /* %0 holds the unsanitized index */
+        "movcs	%0, #0\n"
+        ".inst	0xe320f014\t@ CSDB"
+        : "+r"(ret_val)
+        : "r"(size)
+        : "cc");
 #endif
 
-	return ret_val;
+    return ret_val;
 }
 #endif /* __arm__ */
 
 #ifdef __x86_64__
-static inline size_t confine_array_index(size_t index, size_t size) {
-  size_t safe_index = 0;
-  // Use a conditional move to enforce validation of |index|.
-  // The conditional move has a data dependency on the result of a comparison and cannot
-  // execute until the comparison is resolved.
-  // See "Software Techniques for Managing Speculation on AMD Processors", Mitigation V1-2.
-  // See "Analyzing potential bounds check bypass vulnerabilities", Revision 002,
-  //   Section 5.2 Bounds clipping
-  __asm__(
-    "cmp %1, %2\n"
-    "cmova %1, %0\n"  // Select between $0 and |index|
-  : "+r"(safe_index)
-  : "r"(index), "r"(size)
-  : "cc");
-  return safe_index;
+static inline size_t confine_array_index(size_t index, size_t size)
+{
+    size_t safe_index = 0;
+    // Use a conditional move to enforce validation of |index|.
+    // The conditional move has a data dependency on the result of a comparison and cannot
+    // execute until the comparison is resolved.
+    // See "Software Techniques for Managing Speculation on AMD Processors", Mitigation V1-2.
+    // See "Analyzing potential bounds check bypass vulnerabilities", Revision 002,
+    //   Section 5.2 Bounds clipping
+    __asm__(
+        "cmp %1, %2\n"
+        "cmova %1, %0\n" // Select between $0 and |index|
+        : "+r"(safe_index)
+        : "r"(index), "r"(size)
+        : "cc");
+    return safe_index;
 }
 #endif
-#endif  // FBL_CONFINE_ARRAY_INDEX_H_
+#endif // FBL_CONFINE_ARRAY_INDEX_H_

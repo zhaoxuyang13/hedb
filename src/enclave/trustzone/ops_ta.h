@@ -33,7 +33,7 @@
 #include <tee_internal_api.h>
 #include <tee_internal_api_extensions.h>
 // /*
-//  * This UUID is generated with uuidgen command 
+//  * This UUID is generated with uuidgen command
 //  * the ITU-T UUID generator at http://www.itu.int/ITU-T/asn1/uuid.html
 //  */
 // #define TA_OPS_UUID { 0x64974d40, 0x92cd, 0x4714,		{ 0x9e, 0x8f, 0x44, 0x2f, 0x3a, 0x4d, 0xb3, 0xaf} }
@@ -44,8 +44,6 @@
 // #define TA_OPS_CMD_OPS_PROCESS      2
 // #define TA_OPS_CMD_AES_GCM 			3
 // #define TA_OPS_CMD_LOAD_KEY			4
-
-
 
 /* --- below is MACROs for Requests */
 
@@ -83,12 +81,11 @@
 #define CMD_TIMESTAMP_DEC 152
 #define CMD_TIMESTAMP_EXTRACT_YEAR 153
 
-
 typedef unsigned char BYTE; // 1byte
 typedef unsigned short WORD; // 2bytes
-typedef unsigned long DWORD; //4bytes
+typedef unsigned long DWORD; // 4bytes
 
-#define SHARED_BUF_SIZE  0x01000000
+#define SHARED_BUF_SIZE 0x01000000
 
 /* ERRORS */
 #define ENCLAVE_IS_NOT_RUNNING -2
@@ -103,7 +100,7 @@ typedef unsigned long DWORD; //4bytes
 #define NOT_IMPLEMENTED_OPERATOR -11
 #define TOO_MANY_ELEMENTS_IN_BULK -12
 
-int encrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_len);
-int decrypt_bytes(uint8_t *pSrc, size_t src_len, uint8_t *pDst, size_t exp_dst_len);
+int encrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t exp_dst_len);
+int decrypt_bytes(uint8_t* pSrc, size_t src_len, uint8_t* pDst, size_t exp_dst_len);
 
 #endif /*TA_OPS_H*/

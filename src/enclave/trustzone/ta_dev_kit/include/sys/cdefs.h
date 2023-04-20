@@ -15,10 +15,10 @@
 #if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901 || defined(lint)
 #define __restrict
 #else
-#define __restrict      restrict
+#define __restrict restrict
 #endif
 #endif
 
-#define __always_inline	__attribute__((always_inline)) inline
+#define __always_inline __attribute__((always_inline)) inline
 
 #endif /*SYS_CDEFS_H*/

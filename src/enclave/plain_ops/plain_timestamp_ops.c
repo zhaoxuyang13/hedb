@@ -1,16 +1,19 @@
-#include <plain_timestamp_ops.h>
-#include <limits.h>
 #include <defs.h>
+#include <limits.h>
+#include <plain_timestamp_ops.h>
 
-int plain_timestamp_cmp(TIMESTAMP left, TIMESTAMP right){
-    return (left == right) ? 0 : (left < right) ? -1 : 1;
+int plain_timestamp_cmp(TIMESTAMP left, TIMESTAMP right)
+{
+    return (left == right) ? 0 : (left < right) ? -1
+                                                : 1;
 }
 
-#define TMODULO(t,q,u) \
-do { \
-    (q) = ((t) / (u)); \
-    if ((q) != 0) (t) -= ((q) * (u)); \
-} while(0)
+#define TMODULO(t, q, u)        \
+    do {                        \
+        (q) = ((t) / (u));      \
+        if ((q) != 0)           \
+            (t) -= ((q) * (u)); \
+    } while (0)
 
 #define INT64CONST(x) (x##L)
 #define USECS_PER_DAY INT64CONST(86400000000)
@@ -25,8 +28,7 @@ int plain_timestamp_extract_year(int64_t timestamp)
     int year;
 
     TMODULO(timestamp, date, USECS_PER_DAY);
-    if (timestamp < INT64CONST(0))
-    {
+    if (timestamp < INT64CONST(0)) {
         timestamp += USECS_PER_DAY;
         date -= 1;
     }

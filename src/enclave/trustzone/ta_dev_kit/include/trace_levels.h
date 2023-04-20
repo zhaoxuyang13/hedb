@@ -23,12 +23,12 @@
  *
  */
 
-#define TRACE_MIN       0
-#define TRACE_ERROR     1
-#define TRACE_INFO      2
-#define TRACE_DEBUG     3
-#define TRACE_FLOW      4
-#define TRACE_MAX       TRACE_FLOW
+#define TRACE_MIN 0
+#define TRACE_ERROR 1
+#define TRACE_INFO 2
+#define TRACE_DEBUG 3
+#define TRACE_FLOW 4
+#define TRACE_MAX TRACE_FLOW
 
 /* Trace level of the casual printf */
 #define TRACE_PRINTF_LEVEL TRACE_ERROR
