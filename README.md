@@ -15,10 +15,10 @@ Currently, HEDB supports PostgreSQL and TPC-H workloads.
   - [Artifact check-list](#artifact-check-list)
   - [Supported platform](#supported-platform)
   - [Repo structure](#repo-structure)
-  - [Build instructions](#build-instructions)
-    - [Configure](#configure)
-    - [Build](#build)
-    - [Setup](#setup)
+  - [Environment setup on host (Optional)](#environment-setup-on-host-optional)
+    - [Prerequisites](#prerequisites)
+    - [Create the extension](#create-the-extension)
+    - [Build \& install the extension](#build--install-the-extension)
   - [Experiments](#experiments)
     - [Prepare](#prepare)
     - [Kick-off functional](#kick-off-functional)
@@ -26,7 +26,7 @@ Currently, HEDB supports PostgreSQL and TPC-H workloads.
     - [Claims](#claims)
     - [One push-button to run all experiments](#one-push-button-to-run-all-experiments)
     - [Experiment 1: End-to-end performance (XXX mins)](#experiment-1-end-to-end-performance-xxx-mins)
-    - [Experiment 2: Replay overhead (XXX mins)](#experiment-2-replay-overhead-xxx-mins)
+    - [Experiment 2: Record overhead (XXX mins)](#experiment-2-record-overhead-xxx-mins)
     - [Experiment 3: Replay overhead (XXX mins)](#experiment-3-replay-overhead-xxx-mins)
     - [Experiment 4: Anonymized log generation time (XXX mins)](#experiment-4-anonymized-log-generation-time-xxx-mins)
   - [Limitations](#limitations)
@@ -66,38 +66,56 @@ If you have trouble applying an cloudlab account, please contact us for assistan
 ```
 Github Repo Root
 ├── benchmark
-│   ├── bin
-│   ├── config
-│   ├── db_schemas
-│   ├── patches
-│   └── tools
+│   ├── bin
+│   ├── config
+│   ├── db_schemas
+│   ├── patches
+│   └── tools
 ├── klee_scripts
 ├── scripts
-│   ├── config
-│   ├── fig
-│   ├── figures
-│   ├── sqls
-│   ├── tmp
-│   └── util_py3
-├── src
-│   ├── cmake
-│   ├── enclave
-│   ├── extension
-│   ├── include
-│   └── utils
-└── test
-    ├── ops-micro
-    ├── sqls
-    └── tpch
+│   ├── config
+│   ├── fig
+│   ├── figures
+│   ├── sqls
+│   ├── tmp
+│   └── util_py3
+└── src
+    ├── cmake
+    ├── enclave
+    ├── extension
+    ├── include
+    └── utils
 ```
 
-## Build instructions
+## Environment setup on host (Optional)
 
-### Configure
+All experiments can be performed by logging into our cluster, as showed in [Experiments/Prepare](#prepare). While you can also follow the following instructions to simulate them on the host.
 
-### Build
+### Prerequisites
 
-### Setup
+Install Postgresql
+```sh
+sudo apt-get install postgresql postgresql-server-dev-all
+```
+
+### Create the extension
+```sh
+psql -U postgres -p 5432 -h localhost
+```
+
+```sql
+CREATE USER test WITH PASSWORD 'password';
+CREATE database test;
+\c test
+CREATE extension encdb;
+```
+
+### Build & install the extension
+```sh
+make configure_sim
+make
+sudo make install
+```
 
 ## Experiments
 
@@ -207,7 +225,7 @@ bash ./fig4.sh
 
 - The reproduced results may not exactly match the results presented in the paper due to the noise nature of system such as scheduling, disk I/O, etc.
 
-### Experiment 2: Replay overhead (XXX mins)
+### Experiment 2: Record overhead (XXX mins)
 
 This experiment runs HEDB with log recording enabled, for replaying and debugging later on.
 
