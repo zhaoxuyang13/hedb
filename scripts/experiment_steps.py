@@ -30,7 +30,10 @@ def generateOrder(propFile = GEN_ORDER_CONFIG):
     orderSqlName = properties['sql_name']
     
     executeCommand("cd %s && psql -h %s -p %s -U postgres -d test -f %s" % (orderScriptPath, pgIp, pgPort, orderSqlName))
-    pass
+
+    # vaccum 
+    executeCommand("psql -h %s -p %s -U postgres -d test -f scripts/sqls/util_sqls/vacuum.sql" %(pgIp, pgPort))
+
 
 def compileCodes(parallel = False):
     # make before run vm, so that ops-server can be run in OPS VM.
