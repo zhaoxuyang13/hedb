@@ -22,6 +22,7 @@ REPLAY_TPCH_CONFIG="scripts/config/replayTPCH.json"
 NATIVE_TPCH_CONFIG="scripts/config/nativeTPCH.json"
 EXP_TPCH_CONFIG="scripts/config/expTPCH.json"
 OPT_FIG_CONFIG="scripts/config/optimizedFigure.json"
+KICKOFF_CONFIG="scripts/config/kickoff.json"
 
 def avg(lst):
     return sum( [float(i) for i in lst]  ) / len(lst)
@@ -188,9 +189,9 @@ def main():
     args = parser.parse_args()
 
     
-    # if not args.cleanup and not args.figure and not args.config:
-    #     parser.print_help()
-    #     parser.exit()
+    if not args.cleanup and not args.figure and not (args.config and args.setup):
+        parser.print_help()
+        parser.exit()
 
 
 
@@ -199,10 +200,12 @@ def main():
         return
     if args.config:
         config_file = args.config
-  
+        if args.config == 'kickoff':
+            config_file = KICKOFF_CONFIG
+            
     if args.setup:
-        print("Setting up... (starting VMs)")
         prepBenchmark(config_file)
+        
     if args.run:
         print("Running experiment...")
         runBenchmark(config_file)
