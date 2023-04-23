@@ -119,22 +119,36 @@ Unless otherwise specified, all HEDB's experiments run on top of a Kunpeng 96-co
 #### A kick-off functional experiment
 
 **Step 1:**
-Login to the ARM VM.
+Login to the ARM Server.
 
 **Step 2:**
-In the terminal, run the following commands to run a simple SQL query using HEDB.
+In the terminal, run the following commands to setup environment for executing SQL query using HEDB.
 
 ```shell
-psql
+python3 ./scripts/run_experiment.py --setup --config kickoff
 
 ```
 
-**Output in VM:**
+**Output:**
 
+```
+(... a lot of information ...)
+benchmark preparation finish
+```
+
+**Step 3:**
+Execute a simple SQL query using HEDB,
+
+```
+psql -U postgres -d test -c '\timing on' -f scripts/sqls/timestamp-sqls/Q1.sql
+```
+
+**Output:**
 ```shell
-Time elapsed: 42286 ms.
-Time consuming: 42.286 ms for Q1.
-Completed successfully !!!
+(... Query Result, press 'q' to quit ...)
+Timing is on.
+Time: 0.748 ms
+Timing is off.
 ```
 
 ### Claims
