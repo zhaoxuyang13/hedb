@@ -3,9 +3,9 @@
 ![Status](https://img.shields.io/badge/Version-Experimental-green.svg)
 [![License: MIT](https://img.shields.io/badge/License-Mulan-brightgreenn.svg)](http://license.coscl.org.cn/MulanPubL-2.0)
 
-HEDB's design removes the trade-off between security and maintenance. Its dual-mode design accomplishes two goals: 1) achieving interface security by preventig illegal invocations to UDFs in the execution mode, and 2) allowing DBA common maintenance tasks by replaying legal invocations in the maintenance mode.
+HEDB is a dual-mode encrypted database that removes the trade-off between security and maintenance. Its dual-mode design accomplishes two goals: 1) achieving interface security by preventig illegal invocations to UDFs in the execution mode, and 2) allowing DBA common maintenance tasks by replaying legal invocations in the maintenance mode.
 
-Currently, HEDB supports PostgreSQL and TPC-H workloads.
+Currently, HEDB is based on PostgreSQL and supports TPC-H workloads.
 
 - [HEDB](#hedb)
   - [Paper](#paper)
@@ -22,11 +22,11 @@ Currently, HEDB supports PostgreSQL and TPC-H workloads.
     - [Kick-off functional](#kick-off-functional)
       - [A kick-off functional experiment](#a-kick-off-functional-experiment)
     - [Claims](#claims)
-    - [One push-button to run all experiments](#one-push-button-to-run-all-experiments)
+    - [One push-button to run 1-3 experiments (3 hours)](#one-push-button-to-run-1-3-experiments-3-hours)
     - [Experiment 1: End-to-end performance (1.5 hours)](#experiment-1-end-to-end-performance-15-hours)
     - [Experiment 2: Record overhead (40 mins)](#experiment-2-record-overhead-40-mins)
     - [Experiment 3: Replay overhead (50 mins)](#experiment-3-replay-overhead-50-mins)
-    - [Experiment 4: Anonymized log generation time (XXX mins)](#experiment-4-anonymized-log-generation-time-xxx-mins)
+    - [Experiment 4: Anonymized log generation time (4 hours)](#experiment-4-anonymized-log-generation-time-4-hours)
   - [Limitations](#limitations)
   - [Contacts](#contacts)
 
@@ -38,7 +38,7 @@ The 17th USENIX Symposium on Operating Systems Design and Implementation (OSDI �
 
 ## Artifact summary
 
-This artifact contains the implementation of HEDB and scripts for reproducing the main results of this work.
+This artifact contains the implementation of HEDB and scripts for reproducing the main results of this work. The whole evaluation takes about 3 hours on an ARM server and about 4 hours on your local machine.
 
 ## Artifact check-list
 
@@ -51,13 +51,7 @@ This artifact contains the implementation of HEDB and scripts for reproducing th
 
 ## Supported platform
 
-HEDB requires an ARM server that supports S-EL2, a hardware virtualization technology in ARM TrustZone.
-
-To reproduce HEDB functionality, you can run FVP on either an ARM or x86 platform.
-
-To reproduce HEDB performance, we strongly recommend you to run HEDB using two VMs on the ARM server.
-
-If you have trouble applying an cloudlab account, please contact us for assistance.
+HEDB requires an ARM server that supports S-EL2, a hardware virtualization technology in ARM TrustZone. To reproduce HEDB results, you can run HEDB using two VMs on an ARMv8.2 server.
 
 ## Repo structure
 
@@ -74,16 +68,13 @@ Github Repo Root
 ├── klee_scripts # Scripts for running klee.
 ├── scripts      # Scripts for the experiments.
 │   ├── config              # Json files for running different experiments.
-│   ├── desenitize_test.sh  
 │   ├── eval_AE_time.sh     # The script for running the experiments and getting the running time.
-│   ├── experiment_steps.py 
 │   ├── fig                 # The scripts for plotting the figure.
 │   ├── figures             # Output figures of the experiments.
 │   ├── run_experiment.py   # The script for selecting and run an experiment.
 │   ├── run_test.sh         # The script for running a series of Sqls.
 │   ├── sqls                # Sql files for different experiments.
 │   ├── tmp                 # Immediate files of the experiments.
-│   ├── type-ii-edb-breach.py
 │   └── util_py3            # Utils used by the scripts.
 └── src          # HEDB code base
 ```
@@ -126,7 +117,7 @@ Unless otherwise specified, all HEDB's experiments run on top of a Kunpeng 96-co
 
 1. Please send us your SSH Public Key over HotCRP, so we can grant you access to our cluster.
 
-2. Then login to our cluster. We have set up all necessary environments to run experiments 1-3.
+2. Login to our cluster. We have set up all necessary environments to run experiments 1-3.
 
 3. Each experiment will generate a figure in the `./scripts/figures` directory of this
    repository. You can fetch generated figures to your email, or use `scp` to send figures to your computer.
@@ -137,8 +128,8 @@ Unless otherwise specified, all HEDB's experiments run on top of a Kunpeng 96-co
 
 #### A kick-off functional experiment
 
-**Step 1:**
-Login to the ARM Server. ( after sending your ssh-pubkey to us. )
+**Step 1: Login**
+Login to the ARM Server (after sending your ssh-pubkey to us via HotCRP).
 
 ```shell
 # setup SSH configuration
@@ -152,7 +143,7 @@ Host hedb-ae
 ssh hedb-ae
 ```
 
-**Step 2:**
+**Step 2: Setup** 
 In the terminal, run the following commands to setup environment for executing SQL query using HEDB.
 
 ```shell
@@ -167,7 +158,7 @@ python3 ./scripts/run_experiment.py --setup --config kickoff
 benchmark preparation finish
 ```
 
-**Step 3:**
+**Step 3: Execute**
 Execute a simple SQL query using HEDB,
 
 ```
@@ -184,14 +175,14 @@ Timing is off.
 
 **Step 4: Clean up (IMPORTANT)**
 
-Remember to clean up
+Remember to clean up:
 - after each experiment
 - or if the experiment is interrupted
 ```
 python3 ./scripts/run_experiment.py -c 
 ```
 
-**(On your local computer) Step5: setup docker environment**
+**Step5: Setup docker environment (on your local computer)**
 
 Pull docker image for experiment-4.
 ```
@@ -204,11 +195,11 @@ docker pull zhaoxuyang13/klee-desen:1.0
 - **(C3)** Figure 5 (b): HEBD's replay overhead is much faster than UDF-based replay.
 - **(C4)** Figure 5 (c): HEDB's optimizations boost the anonymized log generation time.
 
-### One push-button to run 1-3 experiments
+### One push-button to run 1-3 experiments (3 hours) 
 
 To further ease the evaluation, you can run the following script which automatically runs all experiments.
 
-**Step 1: Run 1-3 experiments (XXX hours)**
+**Step 1: Run 1-3 experiments**
 
 ```shell
 # experiment will last for a long time, you should run it in tmux
@@ -230,8 +221,8 @@ Note that, you can also run each experiment by yourself with the steps described
 ### Experiment 1: End-to-end performance (1.5 hours)
 
 This experiment runs HEDB and three optimization strategies (i.e., O1-Parallel Decryption, O2-
-Order-revealing Encryption, and O3-Expression Evaluation) TPC-H. The output reports each
-system's latency normalized to the SOTA---ARM-version StealthDB as the baseline. 
+Order-revealing Encryption, and O3-Expression Evaluation) over TPC-H. The output reports each
+system's latency normalized to the SOTA: the ARM-version StealthDB as the baseline. 
 
 **Command to run:**
 
@@ -328,9 +319,8 @@ python3 ./scripts/run_experiments.py -f fig5c
 
 **Important notes of Experiment 4:**
 
-- We do not run KLEE/Z3 using the log, as it takes too long. Instead, we measure the cost for one invocation and time it with the invocation frequency. We measure the optimized KLEE/Z3 using real machine.
+- We do not run KLEE/Z3 using the log, as it takes too long. Instead, we measure the cost for one invocation and multiply it by the invocation frequency.
 - KLEE does not support floating-point numbers, hence Q18 is not supported.
-- Owing to the randomness, the results may not exactly match the origial.
 
 ## Limitations
 
@@ -341,6 +331,6 @@ This repo is a research prototype rather than a production-ready system. Its cur
 
 ## Contacts
 
-- Mingyu Li: maxulle [at] sjtu [dot] edu [dot] cn.
+- Mingyu Li: maxulle [at] sjtu [dot] edu [dot] cn
 - Xuyang Zhao: brokenbones [at] sjtu [doc] edu [doc] cn
 - Le Chen: cen-le [at] sjtu [dot] edu [dot] cn
