@@ -286,7 +286,7 @@ python3 ./scripts/run_experiments.py -f fig5b
 - HEDB’s log-based replay is faster than UDF-based replay (by honestly calling UDF), effectively saving the DBA’s time and effort (matching **C3**).
 - HEDB’s replay still incurs 5x slowdown compared with the vanilla without encryption (matching **C3**).
 
-### Experiment 4: Anonymized log generation time (240 mins)
+### Experiment 4: Anonymized log generation time (4 hours)
 
 This experiment translates the log recorded in Experiment 2 into an anonymized form. It firsr uses KLEE to collect the path constraint, and then uses masking rule constraint to generate new inputs.
 
