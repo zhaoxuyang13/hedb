@@ -9,7 +9,6 @@ from util_py3.prop_util import *
 from util_py3.graph_util import *
 from util_py3.data_util import *
 import pandas as pd
-import pickle
 from tqdm import tqdm, trange
 from pathlib import Path, PurePath
 
@@ -157,13 +156,15 @@ def run_default_steps():
     
 # time is str, is either (h:mm:ss or m:ss), convert time to seconds
 def parseTime(line):
-    if line.find(":") == -1:
+    # count the number of ":"
+    cnt = line.count(":")
+    parts = line.split(":")
+    if cnt == 0:
         return float(line)
-    else:
-        if line.find(":") == 1:
-            return float(line[0]) * 60 + float(line[2:])
-        else:
-            return float(line[0:2]) * 3600 + float(line[3:]) * 60
+    elif cnt == 1:
+        return float(parts[0]) * 60 + float(parts[1])
+    else: # cnt == 2
+        return float(parts[0]) * 3600 + float(parts[1]) * 60 + float(parts[2])
 
 def run_desenitize_steps():
     
@@ -211,13 +212,13 @@ def run_desenitize_steps():
     graphData(DES_FIG_CONFIG)
     
 def run_figure_steps(figure):
-    if figure == 'fig2' or figure == 'record': 
+    if figure == 'fig4' or figure == 'record': 
         run_record_steps()
-    elif figure == 'fig3' or figure == 'replay':
+    elif figure == 'fig5a' or figure == 'replay':
         run_replay_steps()
-    elif figure == 'base' or figure == 'fig1':
+    elif figure == 'base' or figure == 'fig5b':
         run_default_steps()
-    elif figure == 'fig4' or figure == 'desenitize':
+    elif figure == 'fig5c' or figure == 'desenitize':
         run_desenitize_steps()
     else :
         print("enter a fig name")
