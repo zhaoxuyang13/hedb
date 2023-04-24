@@ -23,9 +23,9 @@ Currently, HEDB supports PostgreSQL and TPC-H workloads.
       - [A kick-off functional experiment](#a-kick-off-functional-experiment)
     - [Claims](#claims)
     - [One push-button to run all experiments](#one-push-button-to-run-all-experiments)
-    - [Experiment 1: End-to-end performance (XXX mins)](#experiment-1-end-to-end-performance-xxx-mins)
-    - [Experiment 2: Record overhead (XXX mins)](#experiment-2-record-overhead-xxx-mins)
-    - [Experiment 3: Replay overhead (XXX mins)](#experiment-3-replay-overhead-xxx-mins)
+    - [Experiment 1: End-to-end performance (1.5 hours)](#experiment-1-end-to-end-performance-15-hours)
+    - [Experiment 2: Record overhead (40 mins)](#experiment-2-record-overhead-40-mins)
+    - [Experiment 3: Replay overhead (50 mins)](#experiment-3-replay-overhead-50-mins)
     - [Experiment 4: Anonymized log generation time (XXX mins)](#experiment-4-anonymized-log-generation-time-xxx-mins)
   - [Limitations](#limitations)
   - [Contacts](#contacts)
@@ -63,26 +63,29 @@ If you have trouble applying an cloudlab account, please contact us for assistan
 
 ```
 Github Repo Root
-├── benchmark
-│   ├── bin
-│   ├── config
-│   ├── db_schemas
-│   ├── patches
-│   └── tools
-├── klee_scripts
-├── scripts
-│   ├── config
-│   ├── fig
-│   ├── figures
-│   ├── sqls
-│   ├── tmp
-│   └── util_py3
-└── src
-    ├── cmake
-    ├── enclave
-    ├── extension
-    ├── include
-    └── utils
+├── Makefile
+├── benchmark       # Data loader and data generator.
+│   ├── README.md
+│   ├── bin         # Executable jar files for loading data in database.
+│   ├── config      # Configuration files for running the executable jar files.
+│   ├── db_schemas  # Sql files for loading tpch and tpcc schema.
+│   └── tools       # Data generator.
+├── config.mk
+├── klee_scripts # Scripts for running klee.
+├── scripts      # Scripts for the experiments.
+│   ├── config              # Json files for running different experiments.
+│   ├── desenitize_test.sh  
+│   ├── eval_AE_time.sh     # The script for running the experiments and getting the running time.
+│   ├── experiment_steps.py 
+│   ├── fig                 # The scripts for plotting the figure.
+│   ├── figures             # Output figures of the experiments.
+│   ├── run_experiment.py   # The script for selecting and run an experiment.
+│   ├── run_test.sh         # The script for running a series of Sqls.
+│   ├── sqls                # Sql files for different experiments.
+│   ├── tmp                 # Immediate files of the experiments.
+│   ├── type-ii-edb-breach.py
+│   └── util_py3            # Utils used by the scripts.
+└── src          # HEDB code base
 ```
 
 ## Environment setup on host (Optional)
@@ -104,7 +107,7 @@ psql -U postgres -p 5432 -h localhost
 ```sql
 CREATE USER test WITH PASSWORD 'password';
 CREATE database test;
-\c test
+\c test;
 CREATE extension encdb;
 ```
 
