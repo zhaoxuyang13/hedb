@@ -212,8 +212,7 @@ bash scripts/run_all_experiments.sh
 scp -r hedb-ae:/home/gz/hedb/figures .
 ```
 
-After fetching all these figures, you can verify the abovementioned**Major
-Claims** by referring to the **Expected results** and **Important notes** below.
+After fetching all these figures, you can verify the aforementioned **Claims** by referring to the **Expected results** and **Important notes** below.
 
 Note that, you can also run each experiment by yourself with the steps described below.
 
@@ -261,7 +260,7 @@ python3 ./scripts/run_experiments.py -f fig5a
 
 - HEDB's record incurs overhead no more than 10% (matching **C3**).
 
-**Important notes of Experiment 2:**
+**Important notes:**
 
 - Owing to the randomness, the results may not exactly match the origial.
 
@@ -316,7 +315,7 @@ python3 ./scripts/run_experiments.py -f fig5c
 - Baseline of KLEE/Z3 estimation is very long (matching **C4**).
 - HEDB's optimization achieves 10x to 200x (matching **C9**). 
 
-**Important notes of Experiment 4:**
+**Important notes:**
 
 - We do not run KLEE/Z3 using the log, as it takes too long. Instead, we measure the cost for one invocation and multiply it by the invocation frequency.
 - KLEE does not support floating-point numbers, hence Q18 is not supported.
