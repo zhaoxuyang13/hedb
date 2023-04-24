@@ -106,7 +106,7 @@ def plot_exp(data_filename, sheet_name='exp_s=0.1', eps_filename='exp.eps'):
     ax.legend(title='expression type')
 
     fig.tight_layout()
-    # plt.savefig(eps_filename, dpi=1000)
+    plt.savefig(eps_filename, dpi=1000)
 
 
 def plot_optimization(data_filename, sheet_name='s=1_vm', eps_filename='optimization.eps'):
@@ -234,13 +234,14 @@ def plot_record(data_filename, sheet_name = 's=1_vm', eps_filename = 'record.eps
     plt.savefig(eps_filename, dpi=1000, format='eps')
 
 
-def plot_desenitize(data_filename, eps_filename = 'desenitize.eps'):
+def plot_desenitize(data_filename,sheet_name = 'desenitize', eps_filename = 'desenitize.eps'):
     print('show hedb desenitize')
     data = pd.read_excel(
         data_filename,
-        engine='openpyxl'
+        sheet_name,
+        engine='openpyxl',
     )
-
+    print(data)
     query = data['query']
     native = data['native-query-time'].astype('float64')
     before = data['before opt'].astype('float64')
@@ -293,7 +294,6 @@ def plot_desenitize(data_filename, eps_filename = 'desenitize.eps'):
     fig.set_size_inches(10, 4.5, forward=True)
     fig.tight_layout()
     plt.savefig(eps_filename, dpi=1000, format='eps')
-
 
 def main():
     if len(sys.argv) <= 2:

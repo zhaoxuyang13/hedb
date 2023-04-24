@@ -160,7 +160,8 @@ def graphData(propFile = DEFAULT_TPCH_CONFIG):
    
     properties = loadPropertyFile(propFile)
     figure = properties["figure"]
-    homePath = Path(properties["home_path"]) 
+    # homePath = Path(properties["home_path"]) 
+    homePath = Path('.') 
     scriptPath = homePath / 'scripts'
     paperFigDir = scriptPath / 'figures' / 'paper'
     artifactFigDir = scriptPath / 'figures' / 'artifact'
@@ -195,6 +196,13 @@ def graphData(propFile = DEFAULT_TPCH_CONFIG):
         script = scriptPath / 'fig' / 'hedb-plot.py'
         paperDataFile =  scriptPath / 'fig' / 'paper-data.xlsx'
         artifactDataFile = scriptPath / 'tmp' / 'optimization.xlsx'
+    elif figure == 'desenitize':
+        figName = 'desenitize.eps'
+        pdfName = 'desenitize.pdf'
+        title = "Figure desenitize"
+        script = scriptPath / 'fig' / 'hedb-plot.py'
+        paperDataFile =  scriptPath / 'fig' / 'paper-data.xlsx'
+        artifactDataFile = scriptPath / 'tmp' / 'desenitize.xlsx'
     else:
         print("Unsupported figure:", figure)
         return    

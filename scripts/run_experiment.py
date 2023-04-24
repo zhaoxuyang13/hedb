@@ -22,6 +22,7 @@ REPLAY_TPCH_CONFIG="scripts/config/replayTPCH.json"
 NATIVE_TPCH_CONFIG="scripts/config/nativeTPCH.json"
 EXP_TPCH_CONFIG="scripts/config/expTPCH.json"
 OPT_FIG_CONFIG="scripts/config/optimizedFigure.json"
+DES_FIG_CONFIG="scripts/config/desen.json"
 KICKOFF_CONFIG="scripts/config/kickoff.json"
 
 def avg(lst):
@@ -154,14 +155,70 @@ def run_default_steps():
     
     graphData(OPT_FIG_CONFIG)
     
+# time is str, is either (h:mm:ss or m:ss), convert time to seconds
+def parseTime(line):
+    if line.find(":") == -1:
+        return float(line)
+    else:
+        if line.find(":") == 1:
+            return float(line[0]) * 60 + float(line[2:])
+        else:
+            return float(line[0:2]) * 3600 + float(line[3:]) * 60
 
+def run_desenitize_steps():
+    
+    print("run desenitize experiment");
+    
+    tmp_path = Path("scripts/tmp")
+    KLEE_TIME_PER_OPS = 839.703
+    Z3_TIME_PER_OPS = 13.79175
+    # run desenitize experiment, result is in scripts/tmp/time.log
+    # executeCommand("scripts/desenitize_test.sh")
+    
+    
+    # collect data
+    before_opt = []
+    after_opt = []
+    with open("scripts/tmp/time.log", "r") as f:
+        lines = f.readlines()
+        lines = [line.strip() for line in lines if line.strip() != ""] # remove empty lines
+        cnt = len(lines) // 3
+        for i in range(0, cnt * 2, 2):
+            after_opt.append((parseTime(lines[i+1]) + parseTime(lines[i])) * 1000) # to milliseconds
+        for i in range(cnt * 2, cnt * 3):
+            before_opt.append(int(lines[i]) * KLEE_TIME_PER_OPS + int(lines[i]) * Z3_TIME_PER_OPS)
+    # create a array of length 22 with initial value 0, move before_opt to the end 
+   
+    # before_opt = [0] + before_opt + [0] * 16 
+    # print(before_opt)
+    # after_opt = [0] + after_opt + [0] * 16
+    # print(after_opt)
+    native_query_time = [1036.248, 6.662, 38.629, 11.425, 18.998, 35.06, 72.861, 29.289, 96.183, 30.607,
+                              6.206, 41.489, 28.53, 8.349, 14.656, 37.003, 25.908, 0, 14.162, 
+                              13.35, 19.941, 23.902]
+    print(len(native_query_time))
+    data = {
+        'query' : list( range(1, 23) ),
+        'native-query-time': native_query_time,
+        'before opt': before_opt,
+        'after opt': after_opt,
+    }
+    
+    df = pd.DataFrame(data)
+    with pd.ExcelWriter('scripts/tmp/desenitize.xlsx', engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name='desenitize')
+
+    graphData(DES_FIG_CONFIG)
+    
 def run_figure_steps(figure):
     if figure == 'fig2' or figure == 'record': 
         run_record_steps()
     elif figure == 'fig3' or figure == 'replay':
         run_replay_steps()
-    elif figure == 'base':
+    elif figure == 'base' or figure == 'fig1':
         run_default_steps()
+    elif figure == 'fig4' or figure == 'desenitize':
+        run_desenitize_steps()
     else :
         print("enter a fig name")
         pass
