@@ -57,12 +57,10 @@ HEDB requires an ARM server that supports S-EL2, a hardware virtualization techn
 Github Repo Root
 ├── Makefile
 ├── benchmark       # Data loader and data generator.
-│   ├── README.md
 │   ├── bin         # Executable jar files for loading data in database.
 │   ├── config      # Configuration files for running the executable jar files.
 │   ├── db_schemas  # Sql files for loading tpch and tpcc schema.
 │   └── tools       # Data generator.
-├── config.mk
 ├── klee_scripts # Scripts for running klee.
 ├── scripts      # Scripts for the experiments.
 │   ├── config              # Json files for running different experiments.
