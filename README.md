@@ -3,8 +3,6 @@
 ![Status](https://img.shields.io/badge/Version-Experimental-green.svg)
 [![License: MIT](https://img.shields.io/badge/License-Mulan-brightgreenn.svg)](http://license.coscl.org.cn/MulanPubL-2.0)
 
-HEDB is named after He (Helium), the 2nd element, for several reasons. The 2nd element implies its two modes---execution mode and maintenance mode. The neutrality of He implies its isolation from the rest. It can also mean H-EDB which means a hybrid of EBD (combining the advantages of both Type-I and Type-I). And at last, Happy Ending DataBase!
-
 HEDB's design removes the trade-off between security and maintenance. Its dual-mode design accomplishes two goals: 1) achieving interface security by preventig illegal invocations to UDFs in the execution mode, and 2) allowing DBA common maintenance tasks by replaying legal invocations in the maintenance mode.
 
 Currently, HEDB supports PostgreSQL and TPC-H workloads.
@@ -45,10 +43,10 @@ This artifact contains the implementation of HEDB and scripts for reproducing th
 ## Artifact check-list
 
 - Code link: <https://github.com/XXX>
-- OS Version: Ubuntu XXX.
-- Linux kernel version: >= XXX
-- Python version: >= XXX.
-- Metrics: latency and accuracy.
+- OS Version: Ubuntu 20.04
+- Linux kernel version: >= 5.4
+- Python version: >= 3.9
+- Metrics: latency
 - Expected runtime: see the documents or runtime logs for each experiment.
 
 ## Supported platform
@@ -198,7 +196,7 @@ Claims** by referring to the **Expected results** and **Important notes** below.
 
 Note that, you can also run each experiment by yourself with the steps described below.
 
-### Experiment 1: End-to-end performance (XXX mins)
+### Experiment 1: End-to-end performance (1.5 hours)
 
 This experiment runs HEDB and three optimization strategies (i.e., O1-Parallel Decryption, O2-
 Order-revealing Encryption, and O3-Expression Evaluation) TPC-H. The output reports each
@@ -225,7 +223,7 @@ bash ./fig4.sh
 
 - The reproduced results may not exactly match the results presented in the paper due to the noise nature of system such as scheduling, disk I/O, etc.
 
-### Experiment 2: Record overhead (XXX mins)
+### Experiment 2: Record overhead (40 mins)
 
 This experiment runs HEDB with log recording enabled, for replaying and debugging later on.
 
@@ -248,7 +246,7 @@ bash ./fig5a.sh
 
 - Owing to the randomness, the results may not exactly match the origial.
 
-### Experiment 3: Replay overhead (XXX mins)
+### Experiment 3: Replay overhead (50 mins)
 
 This experiment runs HEDB and re-executes TPC-H queries by calling UDF and replaying logs. The less time cost the better, which saves the DBA’s time and effort.
 
