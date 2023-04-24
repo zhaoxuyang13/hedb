@@ -10,9 +10,9 @@ Currently, HEDB is based on PostgreSQL and supports TPC-H workloads.
 - [HEDB](#hedb)
   - [Paper](#paper)
   - [Artifact summary](#artifact-summary)
-  - [Artifact check-list](#artifact-check-list)
-  - [Supported platform](#supported-platform)
-  - [Repo structure](#repo-structure)
+    - [Artifact check-list](#artifact-check-list)
+    - [Supported platform](#supported-platform)
+    - [Repo structure](#repo-structure)
   - [Environment setup on host (Optional)](#environment-setup-on-host-optional)
     - [Prerequisites](#prerequisites)
     - [Create the extension](#create-the-extension)
@@ -40,19 +40,18 @@ The 17th USENIX Symposium on Operating Systems Design and Implementation (OSDI â
 
 This artifact contains the implementation of HEDB and scripts for reproducing the main performance results of this work. The whole evaluation takes about 3 hours on an ARM server and about 4 hours on your local machine.
 
-## Artifact check-list
+### Artifact check-list
 
-- Code link: <https://github.com/zhaoxuyang13/hedb>
 - OS Version: Ubuntu 20.04
 - Linux kernel version: >= 5.4
 - Python version: >= 3.6
 - Expected time: see the documents or runtime logs for each experiment.
 
-## Supported platform
+### Supported platform
 
 HEDB requires an ARM server that supports S-EL2, a hardware virtualization technology in ARM TrustZone. To reproduce the performance evaluation results, you can run HEDB using two VMs on an ARM server.
 
-## Repo structure
+### Repo structure
 
 ```
 Github Repo Root
