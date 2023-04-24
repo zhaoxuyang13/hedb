@@ -191,6 +191,13 @@ Remember to clean up
 python3 ./scripts/run_experiment.py -c 
 ```
 
+**(On your local computer) Step5: setup docker environment**
+
+Pull docker image for experiment-4.
+```
+docker pull zhaoxuyang13/klee-desen:1.0
+```
+
 ### Claims
 - **(C1)** Figure 4: Type-II EDB's runtime overhead varies amongst TPC-H 22 queries. HEDB's optimizations speeds Type-II EDB.
 - **(C2)** Figure 5 (a): HEBD's record overhead is low and acceptable.
