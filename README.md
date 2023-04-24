@@ -38,20 +38,19 @@ The 17th USENIX Symposium on Operating Systems Design and Implementation (OSDI â
 
 ## Artifact summary
 
-This artifact contains the implementation of HEDB and scripts for reproducing the main results of this work. The whole evaluation takes about 3 hours on an ARM server and about 4 hours on your local machine.
+This artifact contains the implementation of HEDB and scripts for reproducing the main performance results of this work. The whole evaluation takes about 3 hours on an ARM server and about 4 hours on your local machine.
 
 ## Artifact check-list
 
 - Code link: <https://github.com/zhaoxuyang13/hedb>
 - OS Version: Ubuntu 20.04
 - Linux kernel version: >= 5.4
-- Python version: >= 3.9
-- Metrics: latency
-- Expected runtime: see the documents or runtime logs for each experiment.
+- Python version: >= 3.6
+- Expected time: see the documents or runtime logs for each experiment.
 
 ## Supported platform
 
-HEDB requires an ARM server that supports S-EL2, a hardware virtualization technology in ARM TrustZone. To reproduce HEDB results, you can run HEDB using two VMs on an ARMv8.2 server.
+HEDB requires an ARM server that supports S-EL2, a hardware virtualization technology in ARM TrustZone. To reproduce the performance evaluation results, you can run HEDB using two VMs on an ARM server.
 
 ## Repo structure
 
@@ -129,7 +128,7 @@ Unless otherwise specified, all HEDB's experiments run on top of a Kunpeng 96-co
 #### A kick-off functional experiment
 
 **Step 1: Login**
-Login to the ARM Server (after sending your ssh-pubkey to us via HotCRP).
+Login to the ARM Server (after uploading your SSH public key via HotCRP).
 
 ```shell
 # setup SSH configuration
