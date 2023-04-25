@@ -293,10 +293,10 @@ git clone (this repo)
 
 # install dependencies for drawing graph
 sudo apt install python3 python3-pip 
-pip3 install tqdm seaborn numpy pandas
+pip3 install tqdm seaborn numpy pandas openpyxl
 
 # if you want this experiment to be faster (e.g. from 4h to 1h), 
-# you could change "scripts/desenitize_test.sh" line-21 
+# you could change file 'scripts/desenitize_test.sh' line-22 
 # change "--entrypoint /home/klee/entrypoint.sh" to "--entrypoint /home/klee/entrypoint-without-one.sh", then run the experiment
 # this should skip Q1, which takes over 3 hours.
 python3 ./scripts/run_experiments.py -f fig5c

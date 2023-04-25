@@ -166,15 +166,16 @@ def parseTime(line):
     else: # cnt == 2
         return float(parts[0]) * 3600 + float(parts[1]) * 60 + float(parts[2])
 
-def run_desenitize_steps():
+def run_desenitize_steps(skip_execution=False):
     
-    print("run desenitize experiment");
+    print("run desenitize experiment")
     
     tmp_path = Path("scripts/tmp")
     KLEE_TIME_PER_OPS = 839.703
     Z3_TIME_PER_OPS = 13.79175
     # run desenitize experiment, result is in scripts/tmp/time.log
-    # executeCommand("scripts/desenitize_test.sh")
+    if not skip_execution:
+        executeCommand("scripts/desenitize_test.sh")
     
     
     # collect data
@@ -211,7 +212,7 @@ def run_desenitize_steps():
 
     graphData(DES_FIG_CONFIG)
     
-def run_figure_steps(figure):
+def run_figure_steps(figure, skip_execution=False):
     if figure == 'fig4' or figure == 'record': 
         run_record_steps()
     elif figure == 'fig5a' or figure == 'replay':
@@ -219,7 +220,7 @@ def run_figure_steps(figure):
     elif figure == 'base' or figure == 'fig5b':
         run_default_steps()
     elif figure == 'fig5c' or figure == 'desenitize':
-        run_desenitize_steps()
+        run_desenitize_steps(skip_execution)
     else :
         print("enter a fig name")
         pass
@@ -243,6 +244,7 @@ def main():
                         help='graph experiment results (default: false)')
     parser.add_argument('-c', '--cleanup', action='store_true',
                         help='cleanup instances(default: false)')
+    parser.add_argument('--skip-execution',action='store_true', help='skip execution of experiment, only graph data')
     parser.add_argument('--config', help='config file for experiment')
     args = parser.parse_args()
 
@@ -254,7 +256,7 @@ def main():
 
 
     if args.figure:
-        run_figure_steps(args.figure)
+        run_figure_steps(args.figure, args.skip_execution)
         return
     if args.config:
         config_file = args.config
