@@ -3,9 +3,12 @@
 outfile=$1 # this is log output 
 fullsqls=$(seq 1 22)
 minsqls=$(seq 2 6)
+onesqls=$(seq 2 22)
 if [ $2 = "min" ]; then
     sqls=$minsqls
-else
+elif [ $2 = "without-one" ]; then
+    sqls=$onesqls
+else 
     sqls=$fullsqls
 fi
 for i in $sqls; do 
