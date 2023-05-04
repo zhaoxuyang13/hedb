@@ -131,9 +131,9 @@ Login to the ARM Server (after uploading your SSH public key via HotCRP).
 # setup SSH configuration
 echo "
 Host hedb-ae 
-  HostName arm-2 
+  HostName 202.120.40.82 
   User gz 
-  ProxyCommand ssh vyatta@202.120.40.82 -W %h:%p 2>/dev/null 
+  Port 11238
 " >> ~/.ssh/config
 
 ssh hedb-ae
