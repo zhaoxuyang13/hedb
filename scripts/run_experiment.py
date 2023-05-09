@@ -264,6 +264,8 @@ def main():
             config_file = KICKOFF_CONFIG
             
     if args.setup:
+        compileCodes(config_file)
+        startVMs(START_VM_CONFIG)
         prepBenchmark(config_file)
         
     if args.run:

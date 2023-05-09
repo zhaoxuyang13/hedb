@@ -206,7 +206,7 @@ bash scripts/run_all_experiments.sh
 
 ```shell
 # run following command on your own computer
-scp -r hedb-ae:/home/gz/hedb/figures .
+scp -r hedb-ae:/home/gz/hedb/scripts/figures .
 ```
 
 After fetching all these figures, you can verify the aforementioned **Claims** by referring to the **Expected results** and **Important notes** below.

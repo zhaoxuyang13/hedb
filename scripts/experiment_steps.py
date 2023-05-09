@@ -206,7 +206,10 @@ def graphData(propFile = DEFAULT_TPCH_CONFIG):
     else:
         print("Unsupported figure:", figure)
         return    
-    
+   
+    executeCommand(f'mkdir -p scripts/figures/paper')
+    executeCommand(f'mkdir -p scripts/figures/artifact')
+ 
     # graph in paper
     cmd = f'python3 {script} -l -t "Paper {title}" {figure} {paperDataFile} {paperFigDir / figName}'
     executeCommand(cmd)
