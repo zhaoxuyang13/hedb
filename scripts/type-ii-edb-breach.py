@@ -5,7 +5,6 @@ import psycopg2
 con = psycopg2.connect(database='test', user='postgres', password='password')
 with con:
     cur = con.cursor()
-
     ### count the number to be breached
     cur.execute('SELECT COUNT(p_size) FROM part;')
     num = cur.fetchone()[0]
@@ -31,7 +30,7 @@ with con:
         print("[%d] original string = %s" % (id, cur.fetchone()[0]))
 
         ### Phase-2: comparison using binary search
-        cur.execute('CREATE TEMP TABLE tmp_t2(id2 SERIAL NOT NULL, pivot2 enc_int4);')
+        cur.execute('DROP TABLE if exists tmp_t2; CREATE TEMP TABLE tmp_t2(id2 SERIAL NOT NULL, pivot2 enc_int4);')
         cur.execute('INSERT INTO tmp_t2(pivot2) (SELECT pivot FROM tmp_t WHERE id = 1); -- 0')
         cur.execute('INSERT INTO tmp_t2(pivot2) (SELECT pivot FROM tmp_t WHERE id = 4); -- 2^30')
         cur.execute('INSERT INTO tmp_t2(pivot2) (SELECT SUM(pivot2) FROM tmp_t2); -- get SUM')
