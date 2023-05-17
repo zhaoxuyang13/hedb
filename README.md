@@ -56,13 +56,13 @@ HEDB requires an ARM server that supports S-EL2, a hardware virtualization techn
 ```
 Github Repo Root
 ├── Makefile
-├── benchmark       # Data loader and data generator.
-│   ├── bin         # Executable jar files for loading data in database.
-│   ├── config      # Configuration files for running the executable jar files.
-│   ├── db_schemas  # Sql files for loading tpch and tpcc schema.
-│   └── tools       # Data generator.
-├── klee_scripts # Scripts for running klee.
-├── scripts      # Scripts for the experiments.
+├── benchmark               # Data loader and data generator.
+│   ├── bin                 # Executable jar files for loading data in database.
+│   ├── config              # Configuration files for running the executable jar files.
+│   ├── db_schemas          # Sql files for loading tpch and tpcc schema.
+│   └── tools               # Data generator.
+├── klee_scripts            # Scripts for running klee.
+├── scripts                 # Scripts for the experiments.
 │   ├── config              # Json files for running different experiments.
 │   ├── eval_AE_time.sh     # The script for running the experiments and getting the running time.
 │   ├── fig                 # The scripts for plotting the figure.
@@ -72,7 +72,12 @@ Github Repo Root
 │   ├── sqls                # Sql files for different experiments.
 │   ├── tmp                 # Immediate files of the experiments.
 │   └── util_py3            # Utils used by the scripts.
-└── src          # HEDB code base
+└── src                     # HEDB code base
+    ├── cmake               # Automated makefiles
+    ├── enclave             # Confidential operators protected by trusted domains.
+    ├── extension           # Postgresql user-define functions for encrypted database.
+    ├── include             # HEBD engine headers such as encrypted datatypes.
+    └── utils               # Utils such as debugging required by HEDB engine.
 ```
 
 ## Environment setup on host (Optional)

@@ -1,4 +1,4 @@
-# HEDB
+# HEDB Build Instructions
 
 HEDB is a novel encrypted database system. Its current form is based on PostgreSQL as the RDBMS.
 
@@ -8,7 +8,7 @@ The implemented prototype can be run on any of the three kinds of trusted execut
 - Intel SGX (SGX SDK based)
 - Confidential VMs such as ARMv9 CCA and Intel TDX (process based)
 
-## How to Install?
+## How to Build?
 
 1. Install Postgresql:
 
@@ -141,3 +141,9 @@ or build from source: https://www.postgresql.org/docs/current/install-short.html
    java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 10 --config config/tpch_config.xml --load true --execute false
    java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 10 --config config/tpch_config.xml --load false --execute true
    ```
+
+## How to Port?
+
+HEDB is a Type-II EDB that depends on the extension or plugin capability offered by RDBMS. This is usually achieved via user-defined functions (UDFs).
+
+Our UDFs for PostgreSQL can be found in the `src/extension` folder. If you want to port HEDB to another database engine, such as MySQL, you can modify `src/extension` to use MySQL's UDF construction, and reuse `src/enclave` that runs the confidential operators in the protected domain.
