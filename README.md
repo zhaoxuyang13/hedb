@@ -61,8 +61,8 @@ Github Repo Root
 │   ├── config              # Configuration files for running the executable jar files.
 │   ├── db_schemas          # Sql files for loading tpch and tpcc schema.
 │   └── tools               # Data generator.
-├── klee_scripts            # Scripts for running klee.
-├── scripts                 # Scripts for the experiments.
+├── klee_scripts            # Scripts for anonymized replay using KLEE.
+├── scripts                 # Scripts for authenticated replay and others.
 │   ├── config              # Json files for running different experiments.
 │   ├── eval_AE_time.sh     # The script for running the experiments and getting the running time.
 │   ├── fig                 # The scripts for plotting the figure.
@@ -72,8 +72,8 @@ Github Repo Root
 │   ├── sqls                # Sql files for different experiments.
 │   ├── tmp                 # Immediate files of the experiments.
 │   └── util_py3            # Utils used by the scripts.
-└── src                     # HEDB code base
-    ├── cmake               # Automated makefiles
+└── src                     # HEDB engine code base.
+    ├── cmake               # Automated makefiles.
     ├── enclave             # Confidential operators protected by trusted domains.
     ├── extension           # Postgresql user-define functions for encrypted database.
     ├── include             # HEBD engine headers such as encrypted datatypes.
