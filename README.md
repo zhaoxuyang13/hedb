@@ -297,7 +297,7 @@ You should have **docker** environment available.
 git clone (this repo)
 
 # install dependencies for drawing graph
-sudo apt install python3 python3-pip 
+sudo apt install python3 python3-pip texlive-font-utils texlive-extra-utils 
 pip3 install tqdm seaborn numpy pandas openpyxl matplotlib
 
 # if you want this experiment to be faster (e.g. from 4h to 1h), 
