@@ -324,10 +324,11 @@ python3 ./scripts/run_experiments.py -f fig5c
 
 ## Limitations
 
-This repo is a research prototype rather than a production-ready system. Its current implementation has two main limitations.
+This repo is a research prototype rather than a production-ready system. Its current implementation has several main limitations.
 
 1. HEDB relies on determistic record-replay to reproduce the DBMS bugs, hence falling short in providing read-write workloads such as TPC-C.
 2. HEDB depends on KLEE to reproduce the UDF bugs. The official version of KLEE cannot support floating-point numbers. HEDB inherits this limitation.
+3. HEDB assumes an ARMv8.4 server with S-EL2 (TrustZone Virtualization) to support its dual-mode design. This design can be ported to other architectures (e.g., Intel SGX, AMD SEV-SNP, Intel TDX and ARMv9 CCA). Please refer to `docs/build-from-scratch.md` to replicate HEDB's performance results on Intel SGX (using SGX SDK) and ARM TrustZone (using OP-TEE). Note that the cross-domain VM fork (i.e., mode switch) on these architectures is not implemented and remains an open question.
 
 ## Contacts
 
