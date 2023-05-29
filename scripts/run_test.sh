@@ -11,17 +11,17 @@ if [ ! -n "$run_tag" ] ; then
     echo "you should input run_tag to describe current run"
 fi
 
-$result_dir=tmp/$run_tag
+result_dir=tmp/$run_tag
 mkdir -p $result_dir
 
-pg_ports=15432
-pg_ip=192.168.12.21
+pg_ports=5432
+pg_ip=127.0.0.1
 
 sqls=`ls $target/*.sql`
 for sql in $sqls
 do
     number=`echo $sql | awk -F "." '{print $1}' | awk -F "/" '{print $3}'`
-    output_file=$run_tag/$number.out
+    output_file=$result_dir/$number.out
 
     psql -U postgres -d test -h $pg_ip -p $pg_ports -f $sql > $output_file
     querytime=`cat $output_file | grep "Time:" | awk '{print $2}'`
