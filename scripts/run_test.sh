@@ -23,6 +23,9 @@ do
     number=`echo $sql | awk -F "." '{print $1}' | awk -F "/" '{print $3}'`
     output_file=$result_dir/$number.out
 
+    for n in 1 2 3; do
+        psql -U postgres -d test -h $pg_ip -p $pg_ports -f $sql 2>&1 >/dev/null
+    done
     psql -U postgres -d test -h $pg_ip -p $pg_ports -f $sql > $output_file
     querytime=`cat $output_file | grep "Time:" | awk '{print $2}'`
     echo $querytime
