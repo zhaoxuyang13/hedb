@@ -13,7 +13,7 @@ extern double pow(double x, int y);
 
 float plain_float_calc(int reqType, float left, float right)
 {
-    int res = 0;
+    double res = 0;
     switch (reqType) /* req->common.op */
     {
     case CMD_FLOAT_PLUS:
