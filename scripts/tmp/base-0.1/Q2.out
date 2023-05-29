@@ -1,0 +1,13 @@
+ enable_debug_mode 
+-------------------
+                 0
+(1 row)
+
+Timing is on.
+  s_acctbal  |       s_name       |  n_name   | p_partkey |     p_mfgr     |        s_address         |     s_phone     |                                s_comment                                
+-------------+--------------------+-----------+-----------+----------------+--------------------------+-----------------+-------------------------------------------------------------------------
+ 6343.149902 | Supplier#000000557 | CANADA    |      8298 | Manufacturer#3 | jj0wUYh9K3fG5Jhdhrkuy ,4 | 13-704-788-7706 | ckages. unusual, regular attainments
+ 4397.479980 | Supplier#000000186 | ARGENTINA |     15655 | Manufacturer#4 | g huGEW5nrQ0Lmd6         | 11-398-253-5445 | g along the pending deposits. slyly final foxes sleep fluffily above th
+(2 rows)
+
+Time: 35.931 ms

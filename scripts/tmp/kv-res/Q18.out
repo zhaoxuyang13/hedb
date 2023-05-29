@@ -1,0 +1,11 @@
+ enable_debug_mode 
+-------------------
+                 0
+(1 row)
+
+Timing is on.
+ c_name | c_custkey | o_orderkey | o_orderdate | o_totalprice | sum 
+--------+-----------+------------+-------------+--------------+-----
+(0 rows)
+
+Time: 51.771 ms

@@ -1,0 +1,12 @@
+ enable_debug_mode 
+-------------------
+                 0
+(1 row)
+
+Timing is on.
+    revenue     
+----------------
+ 1474793.000000
+(1 row)
+
+Time: 22.863 ms

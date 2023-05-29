@@ -1,0 +1,52 @@
+ enable_debug_mode 
+-------------------
+                 0
+(1 row)
+
+Timing is on.
+       s_name       | numwait 
+--------------------+---------
+ Supplier#000000600 |      16
+ Supplier#000000143 |      15
+ Supplier#000000081 |      14
+ Supplier#000000681 |      13
+ Supplier#000000960 |      13
+ Supplier#000000054 |      12
+ Supplier#000000497 |      12
+ Supplier#000000163 |      11
+ Supplier#000000420 |      11
+ Supplier#000000550 |      11
+ Supplier#000000603 |      11
+ Supplier#000000112 |      10
+ Supplier#000000175 |      10
+ Supplier#000000215 |      10
+ Supplier#000000412 |      10
+ Supplier#000000467 |      10
+ Supplier#000000520 |      10
+ Supplier#000000697 |      10
+ Supplier#000000495 |       9
+ Supplier#000000548 |       9
+ Supplier#000000576 |       9
+ Supplier#000000652 |       9
+ Supplier#000000747 |       9
+ Supplier#000000907 |       9
+ Supplier#000000096 |       8
+ Supplier#000000173 |       8
+ Supplier#000000337 |       8
+ Supplier#000000351 |       8
+ Supplier#000000685 |       8
+ Supplier#000000691 |       8
+ Supplier#000000837 |       8
+ Supplier#000000972 |       8
+ Supplier#000000277 |       7
+ Supplier#000000366 |       7
+ Supplier#000000043 |       6
+ Supplier#000000471 |       6
+ Supplier#000000552 |       6
+ Supplier#000000573 |       6
+ Supplier#000000609 |       6
+ Supplier#000000665 |       6
+ Supplier#000000177 |       5
+(41 rows)
+
+Time: 118.259 ms

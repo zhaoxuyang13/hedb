@@ -1,0 +1,24 @@
+ enable_debug_mode 
+-------------------
+                 0
+(1 row)
+
+Timing is on.
+       s_name       |                s_address                 
+--------------------+------------------------------------------
+ Supplier#000000043 | Z5mLuAoTUEeKY5v22VnnA4D87Ao6jF2LvMYnlX8h
+ Supplier#000000054 | J1s,Wxb5pg
+ Supplier#000000163 | 1MhydNirC ,cuLIZezbkUxJhAC53ii,B
+ Supplier#000000175 | Lgv gYbBdu S9
+ Supplier#000000177 | IUZ 7G x212nzZY5aQS
+ Supplier#000000215 | YmZQvVCVanip2E
+ Supplier#000000277 | REebuerbQmMxlbCXnl2ihK,VyItkTNxU36  c
+ Supplier#000000467 | aibBbBkbtmDJ988LnMNkCAi
+ Supplier#000000495 | p086j79twIlC25BD6A
+ Supplier#000000552 | JP3ebtH5epPwpU2lVQqKNZC3NTvnTlrhLy5eeGN
+ Supplier#000000609 | n9 nkdqilT
+ Supplier#000000681 | ArTNWD5g1KfANCMFDfk83TUlX
+ Supplier#000000747 | 0XGddxTld5cBDIN4Z30Je siitSCbFC
+(13 rows)
+
+Time: 80.125 ms

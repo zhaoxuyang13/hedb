@@ -1,0 +1,15 @@
+ enable_debug_mode 
+-------------------
+                 0
+(1 row)
+
+Timing is on.
+ supp_nation | cust_nation | l_year |    revenue    
+-------------+-------------+--------+---------------
+ CHINA       | JAPAN       | 1995   | 110724.000000
+ CHINA       | JAPAN       | 1996   | 193241.000000
+ JAPAN       | CHINA       | 1995   | 578610.000000
+ JAPAN       | CHINA       | 1996   | 434400.000000
+(4 rows)
+
+Time: 111.754 ms

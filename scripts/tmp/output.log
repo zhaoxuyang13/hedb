@@ -1,0 +1,2366 @@
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:0.0
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:0.0
+total 0 ktests, run with BATCH SIZE 10000
+no new ops, exiting
+2036
+total 2036 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 2036
+
+start point: 0
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 0.66
+	System time (seconds): 2.26
+	Percent of CPU this job got: 7%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:38.93
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 84352
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 223
+	Minor (reclaiming a frame) page faults: 87625
+	Voluntary context switches: 495
+	Involuntary context switches: 543
+	Swaps: 0
+	File system inputs: 29112
+	File system outputs: 39832
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 2036
+files num 2036
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q2-desen.log"
+	User time (seconds): 25.98
+	System time (seconds): 0.06
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:26.10
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 67476
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 264
+	Minor (reclaiming a frame) page faults: 12322
+	Voluntary context switches: 474
+	Involuntary context switches: 42
+	Swaps: 0
+	File system inputs: 52008
+	File system outputs: 664
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+23892
+total 23892 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 23892
+
+start point: 0
+start from 10000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-10000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 23892
+
+start point: 10000
+start from 20000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-20000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 23892
+
+start point: 20000
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 2.22
+	System time (seconds): 25.65
+	Percent of CPU this job got: 9%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 4:39.47
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 92108
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 103
+	Minor (reclaiming a frame) page faults: 853684
+	Voluntary context switches: 7193
+	Involuntary context switches: 7334
+	Swaps: 0
+	File system inputs: 68600
+	File system outputs: 212328
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 23892
+files num 23892
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q3-desen.log"
+	User time (seconds): 229.57
+	System time (seconds): 0.60
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:50.20
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 95116
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 40
+	Minor (reclaiming a frame) page faults: 44499
+	Voluntary context switches: 134
+	Involuntary context switches: 486
+	Swaps: 0
+	File system inputs: 8648
+	File system outputs: 6872
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+3992
+total 3992 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 3992
+
+start point: 0
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 0.69
+	System time (seconds): 4.58
+	Percent of CPU this job got: 8%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:59.12
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 84592
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 1
+	Minor (reclaiming a frame) page faults: 154866
+	Voluntary context switches: 27
+	Involuntary context switches: 1131
+	Swaps: 0
+	File system inputs: 8
+	File system outputs: 40488
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 3992
+files num 3992
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q4-desen.log"
+	User time (seconds): 37.65
+	System time (seconds): 0.07
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:37.73
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 64504
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 11710
+	Voluntary context switches: 1
+	Involuntary context switches: 85
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 1032
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+5362
+total 5362 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 5362
+
+start point: 0
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 0.66
+	System time (seconds): 5.33
+	Percent of CPU this job got: 8%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:09.54
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 83460
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 197621
+	Voluntary context switches: 37
+	Involuntary context switches: 1479
+	Swaps: 0
+	File system inputs: 16
+	File system outputs: 49952
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 5362
+files num 5362
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q5-desen.log"
+	User time (seconds): 51.12
+	System time (seconds): 0.11
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:51.23
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 68432
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 12656
+	Voluntary context switches: 1
+	Involuntary context switches: 95
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 1600
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+17917
+total 17917 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 17917
+
+start point: 0
+start from 10000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-10000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 17917
+
+start point: 10000
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 1.44
+	System time (seconds): 18.61
+	Percent of CPU this job got: 9%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:29.09
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 88732
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 13
+	Minor (reclaiming a frame) page faults: 634858
+	Voluntary context switches: 108
+	Involuntary context switches: 5133
+	Swaps: 0
+	File system inputs: 632
+	File system outputs: 157464
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 17917
+files num 17917
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q6-desen.log"
+	User time (seconds): 171.97
+	System time (seconds): 0.47
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:52.47
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 82332
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 11
+	Minor (reclaiming a frame) page faults: 54761
+	Voluntary context switches: 12
+	Involuntary context switches: 874
+	Swaps: 0
+	File system inputs: 712
+	File system outputs: 5464
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+45680
+total 45680 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 45680
+
+start point: 0
+start from 10000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-10000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 45680
+
+start point: 10000
+start from 20000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-20000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 45680
+
+start point: 20000
+start from 30000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-30000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 45680
+
+start point: 30000
+start from 40000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-40000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 45680
+
+start point: 40000
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 3.99
+	System time (seconds): 61.96
+	Percent of CPU this job got: 12%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 8:53.04
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 103976
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 102
+	Minor (reclaiming a frame) page faults: 1642618
+	Voluntary context switches: 27670
+	Involuntary context switches: 17042
+	Swaps: 0
+	File system inputs: 233200
+	File system outputs: 400776
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 45680
+files num 45680
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q7-desen.log"
+	User time (seconds): 451.74
+	System time (seconds): 1.02
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 7:32.82
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 144856
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 14
+	Minor (reclaiming a frame) page faults: 39365
+	Voluntary context switches: 24
+	Involuntary context switches: 3953
+	Swaps: 0
+	File system inputs: 2176
+	File system outputs: 13640
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+8406
+total 8406 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 8406
+
+start point: 0
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 0.83
+	System time (seconds): 9.89
+	Percent of CPU this job got: 9%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:58.63
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 88492
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 13
+	Minor (reclaiming a frame) page faults: 304082
+	Voluntary context switches: 62
+	Involuntary context switches: 2549
+	Swaps: 0
+	File system inputs: 416
+	File system outputs: 78888
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 8406
+files num 8406
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q8-desen.log"
+	User time (seconds): 83.04
+	System time (seconds): 0.21
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:23.26
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 95864
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 35
+	Minor (reclaiming a frame) page faults: 24668
+	Voluntary context switches: 28
+	Involuntary context switches: 379
+	Swaps: 0
+	File system inputs: 2632
+	File system outputs: 2264
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+43435
+total 43435 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 43435
+
+start point: 0
+start from 10000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-10000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 43435
+
+start point: 10000
+start from 20000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-20000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 43435
+
+start point: 20000
+start from 30000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-30000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 43435
+
+start point: 30000
+start from 40000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-40000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 43435
+
+start point: 40000
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 3.89
+	System time (seconds): 73.34
+	Percent of CPU this job got: 13%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 9:29.69
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 124784
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 89
+	Minor (reclaiming a frame) page faults: 1612868
+	Voluntary context switches: 1195
+	Involuntary context switches: 19573
+	Swaps: 0
+	File system inputs: 22456
+	File system outputs: 400920
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 43435
+files num 43435
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q9-desen.log"
+	User time (seconds): 815.55
+	System time (seconds): 1.33
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 13:36.91
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 128912
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 4
+	Minor (reclaiming a frame) page faults: 421510
+	Voluntary context switches: 5
+	Involuntary context switches: 1780
+	Swaps: 0
+	File system inputs: 240
+	File system outputs: 8992
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+12929
+total 12929 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 12929
+
+start point: 0
+start from 10000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-10000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 12929
+
+start point: 10000
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 1.56
+	System time (seconds): 17.09
+	Percent of CPU this job got: 7%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 4:05.25
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 98924
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 402
+	Minor (reclaiming a frame) page faults: 477537
+	Voluntary context switches: 22538
+	Involuntary context switches: 4586
+	Swaps: 0
+	File system inputs: 319904
+	File system outputs: 232152
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 12929
+files num 12929
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q10-desen.log"
+	User time (seconds): 126.16
+	System time (seconds): 0.37
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:06.58
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 97396
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 151
+	Minor (reclaiming a frame) page faults: 22533
+	Voluntary context switches: 388
+	Involuntary context switches: 502
+	Swaps: 0
+	File system inputs: 29480
+	File system outputs: 2688
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+50
+total 50 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 50
+
+start point: 0
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 0.65
+	System time (seconds): 0.48
+	Percent of CPU this job got: 9%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:11.48
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 84216
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 22573
+	Voluntary context switches: 29
+	Involuntary context switches: 55
+	Swaps: 0
+	File system inputs: 56
+	File system outputs: 7464
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 50
+files num 50
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q11-desen.log"
+	User time (seconds): 0.56
+	System time (seconds): 0.00
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.57
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 57972
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 10186
+	Voluntary context switches: 1
+	Involuntary context switches: 6
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 16
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+39993
+total 39993 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 39993
+
+start point: 0
+start from 10000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-10000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 39993
+
+start point: 10000
+start from 20000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-20000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 39993
+
+start point: 20000
+start from 30000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-30000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 39993
+
+start point: 30000
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 3.16
+	System time (seconds): 56.54
+	Percent of CPU this job got: 12%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 8:04.46
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 115412
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 5
+	Minor (reclaiming a frame) page faults: 1429354
+	Voluntary context switches: 5727
+	Involuntary context switches: 16154
+	Swaps: 0
+	File system inputs: 44824
+	File system outputs: 348216
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 39993
+files num 39993
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q12-desen.log"
+	User time (seconds): 377.40
+	System time (seconds): 1.41
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 6:18.85
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 103508
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 10
+	Minor (reclaiming a frame) page faults: 349856
+	Voluntary context switches: 12
+	Involuntary context switches: 1599
+	Swaps: 0
+	File system inputs: 408
+	File system outputs: 10488
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+15000
+total 15000 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 15000
+
+start point: 0
+start from 10000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-10000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 15000
+
+start point: 10000
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 1.48
+	System time (seconds): 20.59
+	Percent of CPU this job got: 8%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 4:06.90
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 101884
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 173
+	Minor (reclaiming a frame) page faults: 547934
+	Voluntary context switches: 20431
+	Involuntary context switches: 5820
+	Swaps: 0
+	File system inputs: 276592
+	File system outputs: 360272
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 15000
+files num 15000
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q13-desen.log"
+	User time (seconds): 262.52
+	System time (seconds): 0.65
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 4:23.23
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 131408
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 155
+	Minor (reclaiming a frame) page faults: 95862
+	Voluntary context switches: 386
+	Involuntary context switches: 358
+	Swaps: 0
+	File system inputs: 30728
+	File system outputs: 6824
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+2262
+total 2262 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 2262
+
+start point: 0
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 0.66
+	System time (seconds): 2.60
+	Percent of CPU this job got: 8%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:36.94
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 82808
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 96317
+	Voluntary context switches: 25
+	Involuntary context switches: 655
+	Swaps: 0
+	File system inputs: 8
+	File system outputs: 25160
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 2262
+files num 2262
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q14-desen.log"
+	User time (seconds): 21.81
+	System time (seconds): 0.06
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:21.95
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 61832
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 11367
+	Voluntary context switches: 1
+	Involuntary context switches: 1506
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 648
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+4601
+total 4601 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 4601
+
+start point: 0
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 0.69
+	System time (seconds): 4.42
+	Percent of CPU this job got: 8%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:00.97
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 83640
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 171885
+	Voluntary context switches: 36
+	Involuntary context switches: 1283
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 43872
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 4601
+files num 4601
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q15-desen.log"
+	User time (seconds): 43.85
+	System time (seconds): 0.11
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:43.97
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 63132
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 11846
+	Voluntary context switches: 2
+	Involuntary context switches: 74
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 1376
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+40001
+total 40001 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 40001
+
+start point: 0
+start from 10000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-10000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 40001
+
+start point: 10000
+start from 20000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-20000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 40001
+
+start point: 20000
+start from 30000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-30000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 40001
+
+start point: 30000
+start from 40000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-40000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 40001
+
+start point: 40000
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 3.94
+	System time (seconds): 61.78
+	Percent of CPU this job got: 12%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 9:01.17
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 122152
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 75
+	Minor (reclaiming a frame) page faults: 1464254
+	Voluntary context switches: 15129
+	Involuntary context switches: 17654
+	Swaps: 0
+	File system inputs: 136848
+	File system outputs: 392328
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 40001
+files num 40001
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q16-desen.log"
+	User time (seconds): 380.91
+	System time (seconds): 1.35
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 6:22.90
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 126408
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 247
+	Minor (reclaiming a frame) page faults: 476217
+	Voluntary context switches: 424
+	Involuntary context switches: 1356
+	Swaps: 0
+	File system inputs: 44480
+	File system outputs: 9008
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+2105
+total 2105 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 2105
+
+start point: 0
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 0.68
+	System time (seconds): 3.19
+	Percent of CPU this job got: 9%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:40.45
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 85844
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 75
+	Minor (reclaiming a frame) page faults: 93364
+	Voluntary context switches: 139
+	Involuntary context switches: 649
+	Swaps: 0
+	File system inputs: 7536
+	File system outputs: 23904
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 2105
+files num 2105
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q17-desen.log"
+	User time (seconds): 20.10
+	System time (seconds): 0.06
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:20.28
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 61912
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 10911
+	Voluntary context switches: 1
+	Involuntary context switches: 2201
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 512
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+0
+total 0 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 0
+
+KLEE: ERROR: seeds directory is empty: /home/klee/hedb/build/../build/ktests
+
+cp: cannot stat 'klee-output-tmp-0/*.smt2': No such file or directory
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 0.60
+	System time (seconds): 0.09
+	Percent of CPU this job got: 6%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:10.69
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 83232
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 12760
+	Voluntary context switches: 21
+	Involuntary context switches: 8
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 7072
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 0
+files num 0
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q18-desen.log"
+	User time (seconds): 0.09
+	System time (seconds): 0.00
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.10
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 26012
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 4578
+	Voluntary context switches: 1
+	Involuntary context switches: 3
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+11097
+total 11097 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 11097
+
+start point: 0
+start from 10000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-10000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 11097
+
+start point: 10000
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 1.42
+	System time (seconds): 11.83
+	Percent of CPU this job got: 8%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:34.46
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 95596
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 5
+	Minor (reclaiming a frame) page faults: 410088
+	Voluntary context switches: 4765
+	Involuntary context switches: 3445
+	Swaps: 0
+	File system inputs: 37568
+	File system outputs: 103008
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 11097
+files num 11097
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q19-desen.log"
+	User time (seconds): 103.21
+	System time (seconds): 0.25
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:43.47
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 75832
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 31
+	Minor (reclaiming a frame) page faults: 15277
+	Voluntary context switches: 27
+	Involuntary context switches: 218
+	Swaps: 0
+	File system inputs: 2400
+	File system outputs: 2592
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+4200
+total 4200 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 4200
+
+start point: 0
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 0.71
+	System time (seconds): 4.21
+	Percent of CPU this job got: 8%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:56.79
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 84452
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 160442
+	Voluntary context switches: 34
+	Involuntary context switches: 1189
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 40808
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 4200
+files num 4200
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q20-desen.log"
+	User time (seconds): 40.23
+	System time (seconds): 0.10
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:40.34
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 63340
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 11826
+	Voluntary context switches: 1
+	Involuntary context switches: 78
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 1248
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+5437
+total 5437 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 5437
+
+start point: 0
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 0.71
+	System time (seconds): 5.56
+	Percent of CPU this job got: 8%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:10.90
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 85076
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 200523
+	Voluntary context switches: 38
+	Involuntary context switches: 1683
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 51400
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 5437
+files num 5437
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q21-desen.log"
+	User time (seconds): 50.36
+	System time (seconds): 0.10
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:50.47
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 63444
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 11950
+	Voluntary context switches: 2
+	Involuntary context switches: 125
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 1416
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+no new ops, exiting
+14412
+total 14412 ktests, run with BATCH SIZE 10000
+start from 0
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-0"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 14412
+
+start point: 0
+start from 10000
+KLEE: NOTE: Using POSIX model: /home/klee/klee_src/build/runtime/lib/libkleeRuntimePOSIX64_Debug+Asserts.bca
+KLEE: NOTE: Using klee-uclibc : /home/klee/klee_src/build/runtime/lib/klee-uclibc.bca
+KLEE: output directory is "/home/klee/hedb/build/klee-output-tmp-10000"
+KLEE: Using STP solver backend
+warning: Linking two modules of different target triples: fd64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_3264_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_init_env64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: /home/klee/hedb/build/..//build/whole.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_init64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: stubs64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_range64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: fd_6464_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: illegal64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_div_zero_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+warning: Linking two modules of different target triples: klee_overshift_check64_Debug+Asserts.bc' is 'x86_64-unknown-linux-gnu' whereas '__uClibc_main.os' is 'x86_64-pc-linux-gnu'
+
+KLEE: totoal size of files 14412
+
+start point: 10000
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/gen_constraint.sh /home/klee/hedb/build/../build/ktests"
+	User time (seconds): 1.45
+	System time (seconds): 18.09
+	Percent of CPU this job got: 10%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:01.28
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 100664
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 524383
+	Voluntary context switches: 75
+	Involuntary context switches: 5075
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 129424
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+files num, 14412
+files num 14412
+	Command being timed: "/home/klee/hedb/build/../klee_scripts/run_z3.py /home/klee/hedb/build/../build/smt2-files desen/Q22-desen.log"
+	User time (seconds): 131.80
+	System time (seconds): 0.29
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:12.37
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 72076
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 2
+	Minor (reclaiming a frame) page faults: 13817
+	Voluntary context switches: 5
+	Involuntary context switches: 6387
+	Swaps: 0
+	File system inputs: 432
+	File system outputs: 3248
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

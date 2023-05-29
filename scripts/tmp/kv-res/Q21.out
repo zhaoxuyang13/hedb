@@ -1,0 +1,15 @@
+ enable_debug_mode 
+-------------------
+                 0
+(1 row)
+
+Timing is on.
+       s_name       | numwait 
+--------------------+---------
+ Supplier#000000081 |      19
+ Supplier#000000043 |      16
+ Supplier#000000096 |      11
+ Supplier#000000054 |       8
+(4 rows)
+
+Time: 11.578 ms
