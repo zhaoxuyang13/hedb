@@ -126,6 +126,7 @@ void enter_replay_mode()
     replayMode = true;
 }
 
+
 TEEInvoker::TEEInvoker()
 {
     // print_info("get shared buffer");
