@@ -38,34 +38,44 @@ PG_FUNCTION_INFO_V1(int4_to_enc_float4);
 #ifdef __cplusplus
 }
 #endif
-// #define ENABLE_COUNTER
-#ifdef ENABLE_COUNTER
+#define ENABLE_DEBUG
+
+#ifdef ENABLE_DEBUG
+#include <chrono>
 int counter = 0;
-static inline void before_invoke_function(const char* str)
-{
+static inline void add_counter(const char *str){
     counter++;
     if (counter % 10000 == 0) {
-        char ch[1000];
-        sprintf(ch, "#ope invocation: %d", counter);
-        print_info_str(ch);
-        // print_info("#ope invocation: %d",counter );
+        printf( "#ope invocation: %d", counter);
     }
     static int add_counter = 0, cmp_counter = 0;
     if (!strcmp(str, "pg_enc_float4_add")) {
         add_counter++;
         if (add_counter % 10000 == 0) {
-            char ch[1000];
-            sprintf(ch, "#ope invocation: %d", counter);
-            print_info_str(ch);
+            printf( "#ope invocation: %d", counter);
+
         }
     } else if (!strcmp(str, "pg_enc_float4_cmp")) {
         cmp_counter++;
         if (cmp_counter % 10000 == 0) {
-            char ch[1000];
-            sprintf(ch, "#ope invocation: %d", counter);
-            print_info_str(ch);
+            printf("#ope invocation: %d", counter);
+
         }
     }
+}
+using namespace std::chrono;
+high_resolution_clock::time_point t1,t2;
+double total_time = 0;
+static inline void before_invoke_function(const char* str)
+{
+    // add_counter(str);
+    t1 = high_resolution_clock::now();
+}
+static inline void after_invoke_function(const char* str){
+    t2 = high_resolution_clock::now();
+    auto time_span = duration_cast<duration<double>>(t2 - t1);
+    total_time += time_span.count();
+//   cout << "total execution time: " << time_span.count() << endl;
 }
 #endif
 
@@ -114,7 +124,7 @@ get_float4_nan(void)
  */
 Datum pg_enc_float4_in(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     char* s = PG_GETARG_CSTRING(0);
@@ -122,6 +132,9 @@ Datum pg_enc_float4_in(PG_FUNCTION_ARGS)
     EncFloat* f = (EncFloat*)palloc0(sizeof(EncFloat));
     enc_float_encrypt(val, f);
 
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_POINTER(f);
 }
 
@@ -132,7 +145,7 @@ Datum pg_enc_float4_in(PG_FUNCTION_ARGS)
  */
 Datum pg_enc_float4_out(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* s = PG_GETARG_ENCFlOAT(0);
@@ -140,6 +153,9 @@ Datum pg_enc_float4_out(PG_FUNCTION_ARGS)
     float ans;
     enc_float_decrypt(s, &ans);
     sprintf(str, "%f", ans);
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_POINTER(str);
 }
 
@@ -237,12 +253,16 @@ Datum int4_to_enc_float4(PG_FUNCTION_ARGS)
 //  WILL BE DELETED IN THE PRODUCT
 Datum pg_enc_float4_encrypt(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     float src = PG_GETARG_FLOAT4(0);
     EncFloat* f = (EncFloat*)palloc0(sizeof(EncFloat));
     enc_float_encrypt(src, f);
+
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_CSTRING(f);
 }
 
@@ -251,17 +271,24 @@ Datum pg_enc_float4_encrypt(PG_FUNCTION_ARGS)
 //  WILL BE DELETED IN THE PRODUCT
 Datum pg_enc_float4_decrypt(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* s = PG_GETARG_ENCFlOAT(0);
     float ans;
     enc_float_decrypt(s, &ans);
+
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_FLOAT4(ans);
 }
 
 Datum pg_enc_float4_sum_bulk(PG_FUNCTION_ARGS)
 {
+#ifdef ENABLE_DEBUG
+    before_invoke_function(__func__);
+#endif
     ArrayType* v = PG_GETARG_ARRAYTYPE_P(0);
     bool isnull;
     Datum value;
@@ -288,12 +315,16 @@ Datum pg_enc_float4_sum_bulk(PG_FUNCTION_ARGS)
         enc_float_sum_bulk(counter, array, sum);
     }
 
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
+
     PG_RETURN_POINTER(sum);
 }
 
 Datum pg_enc_float4_avg_bulk(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     // print_info("avg bulk");
@@ -331,6 +362,10 @@ Datum pg_enc_float4_avg_bulk(PG_FUNCTION_ARGS)
     }
     enc_float_encrypt(nitems * 1.0, &num);
     enc_float_div(&sum, &num, res);
+
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_POINTER(res);
 }
 
@@ -444,7 +479,7 @@ void convert_expr(char* expr, char* out_expr)
 
 Datum pg_enc_float4_eval_expr(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     // print_info("eval expr");
@@ -478,13 +513,17 @@ Datum pg_enc_float4_eval_expr(PG_FUNCTION_ARGS)
     memcpy(str->data, s_postfix, str->len);
 
     enc_float_eval_expr(nargs - 1, *str, arr, res);
+
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     pfree(str);
     PG_RETURN_POINTER(res);
 }
 
 Datum pg_enc_float4_avg_simple(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     // print_info("avg simple");
@@ -512,6 +551,10 @@ Datum pg_enc_float4_avg_simple(PG_FUNCTION_ARGS)
     enc_float_encrypt(nitems * 1.0, &num);
     enc_float_div(sum, &num, res);
     pfree(sum);
+
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_POINTER(res);
 }
 /*
@@ -519,7 +562,7 @@ Datum pg_enc_float4_avg_simple(PG_FUNCTION_ARGS)
  */
 Datum pg_enc_float4_max(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -527,6 +570,10 @@ Datum pg_enc_float4_max(PG_FUNCTION_ARGS)
     int cmp;
 
     enc_float_cmp(f1, f2, &cmp);
+
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     if (cmp == 1)
         PG_RETURN_POINTER(f1);
     else
@@ -537,7 +584,7 @@ Datum pg_enc_float4_max(PG_FUNCTION_ARGS)
  */
 Datum pg_enc_float4_min(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -545,6 +592,10 @@ Datum pg_enc_float4_min(PG_FUNCTION_ARGS)
     int cmp;
 
     enc_float_cmp(f1, f2, &cmp);
+
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     if (cmp == 0)
         PG_RETURN_POINTER(f1);
     else
@@ -553,7 +604,7 @@ Datum pg_enc_float4_min(PG_FUNCTION_ARGS)
 
 Datum pg_enc_float4_add(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -562,6 +613,9 @@ Datum pg_enc_float4_add(PG_FUNCTION_ARGS)
 
     enc_float_add(f1, f2, f);
 
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_POINTER(f);
 }
 
@@ -572,7 +626,7 @@ Datum pg_enc_float4_add(PG_FUNCTION_ARGS)
  */
 Datum pg_enc_float4_subs(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -581,6 +635,9 @@ Datum pg_enc_float4_subs(PG_FUNCTION_ARGS)
 
     enc_float_sub(f1, f2, f);
 
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_POINTER(f);
 }
 
@@ -591,7 +648,7 @@ Datum pg_enc_float4_subs(PG_FUNCTION_ARGS)
  */
 Datum pg_enc_float4_mult(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -600,6 +657,9 @@ Datum pg_enc_float4_mult(PG_FUNCTION_ARGS)
 
     enc_float_mult(f1, f2, f);
 
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_POINTER(f);
 }
 
@@ -611,7 +671,7 @@ Datum pg_enc_float4_mult(PG_FUNCTION_ARGS)
 
 Datum pg_enc_float4_div(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -620,6 +680,9 @@ Datum pg_enc_float4_div(PG_FUNCTION_ARGS)
 
     enc_float_div(f1, f2, f);
 
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_POINTER(f);
 }
 
@@ -631,7 +694,7 @@ Datum pg_enc_float4_div(PG_FUNCTION_ARGS)
  */
 Datum pg_enc_float4_exp(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -640,6 +703,9 @@ Datum pg_enc_float4_exp(PG_FUNCTION_ARGS)
 
     enc_float_pow(f1, f2, f);
 
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_POINTER(f);
 }
 
@@ -651,7 +717,7 @@ Datum pg_enc_float4_exp(PG_FUNCTION_ARGS)
  */
 Datum pg_enc_float4_mod(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -660,6 +726,9 @@ Datum pg_enc_float4_mod(PG_FUNCTION_ARGS)
 
     enc_float_mod(f1, f2, f);
 
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_POINTER(f);
 }
 /*
@@ -671,7 +740,7 @@ Datum pg_enc_float4_mod(PG_FUNCTION_ARGS)
  */
 Datum pg_enc_float4_eq(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -682,6 +751,9 @@ Datum pg_enc_float4_eq(PG_FUNCTION_ARGS)
 
     ret = cmp == 0;
 
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_BOOL(ret);
 }
 
@@ -694,7 +766,7 @@ Datum pg_enc_float4_eq(PG_FUNCTION_ARGS)
  */
 Datum pg_enc_float4_ne(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -705,6 +777,9 @@ Datum pg_enc_float4_ne(PG_FUNCTION_ARGS)
 
     ret = cmp != 0;
 
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_BOOL(ret);
 }
 
@@ -717,7 +792,7 @@ Datum pg_enc_float4_ne(PG_FUNCTION_ARGS)
  */
 Datum pg_enc_float4_lt(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -728,6 +803,9 @@ Datum pg_enc_float4_lt(PG_FUNCTION_ARGS)
 
     ret = cmp == -1;
 
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_BOOL(ret);
 }
 
@@ -740,7 +818,7 @@ Datum pg_enc_float4_lt(PG_FUNCTION_ARGS)
  */
 Datum pg_enc_float4_le(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -751,6 +829,9 @@ Datum pg_enc_float4_le(PG_FUNCTION_ARGS)
 
     ret = cmp <= 0;
 
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_BOOL(ret);
 }
 
@@ -763,7 +844,7 @@ Datum pg_enc_float4_le(PG_FUNCTION_ARGS)
  */
 Datum pg_enc_float4_gt(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -774,6 +855,9 @@ Datum pg_enc_float4_gt(PG_FUNCTION_ARGS)
 
     ret = cmp == 1;
 
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_BOOL(ret);
 }
 
@@ -786,7 +870,7 @@ Datum pg_enc_float4_gt(PG_FUNCTION_ARGS)
  */
 Datum pg_enc_float4_ge(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -797,6 +881,9 @@ Datum pg_enc_float4_ge(PG_FUNCTION_ARGS)
 
     ret = cmp >= 0;
 
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_BOOL(ret);
 }
 
@@ -807,7 +894,7 @@ Datum pg_enc_float4_ge(PG_FUNCTION_ARGS)
  */
 Datum pg_enc_float4_cmp(PG_FUNCTION_ARGS)
 {
-#ifdef ENABLE_COUNTER
+#ifdef ENABLE_DEBUG
     before_invoke_function(__func__);
 #endif
     EncFloat* f1 = PG_GETARG_ENCFlOAT(0);
@@ -816,6 +903,10 @@ Datum pg_enc_float4_cmp(PG_FUNCTION_ARGS)
 
     enc_float_cmp(f1, f2, &cmp);
 
+
+#ifdef ENABLE_DEBUG
+    after_invoke_function(__func__);
+#endif
     PG_RETURN_INT32(cmp);
 }
 
