@@ -38,7 +38,7 @@ PG_FUNCTION_INFO_V1(int4_to_enc_float4);
 #ifdef __cplusplus
 }
 #endif
-#define ENABLE_DEBUG
+// #define ENABLE_DEBUG
 
 #ifdef ENABLE_DEBUG
 #include <chrono>
