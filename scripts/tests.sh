@@ -49,9 +49,11 @@ execute_all_sqls(){
 }
 
 for branch in plaintext-udf plaintext-udf-enc-size plaintext-udf-float32; do
+    set -x
     git checkout ${branch} -f
     make clean && make && make install
     git checkout main -f
+    set +x
     ./test_helper.sh -l
     # redirect all output to ${outputfile}
     echo "======================" >> ${outputfile}
