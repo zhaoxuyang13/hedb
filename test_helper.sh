@@ -89,7 +89,8 @@ fi
 # print the command executed
 set -x
 
-psql -U postgres -d test -c "set max_parallel_workers=0;" \
+psql -U postgres -d test -c "\o /dev/null" \
+                        -c "set max_parallel_workers=0;" \
                         -c "\timing" \
                         -f $file
                         
