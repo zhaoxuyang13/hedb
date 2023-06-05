@@ -1,5 +1,3 @@
-select enable_debug_mode(1);
-\timing
 select
     '100.00' * sum(case
         when p_type like 'PROMO%' 

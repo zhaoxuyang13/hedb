@@ -1,5 +1,3 @@
-select enable_debug_mode(1);
-\timing
 select
     s_acctbal, s_name, n_name, p_partkey, p_mfgr, s_address, s_phone, s_comment
 from

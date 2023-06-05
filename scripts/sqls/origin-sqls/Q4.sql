@@ -1,5 +1,3 @@
-select enable_debug_mode(1);
-\timing
 select
     o_orderpriority,  count(*) as order_count
 from

@@ -1,5 +1,3 @@
-select enable_debug_mode(1);
-\timing
 select
 o_year, 
 sum(case when nation = 'JAPAN' then volume else '0' end)
