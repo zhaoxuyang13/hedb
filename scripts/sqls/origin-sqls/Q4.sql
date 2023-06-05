@@ -4,7 +4,7 @@ from
     orders
 where
     o_orderdate >= date '1995-06-01'
-and o_orderdate < date '1995-06-01' + interval '3' month
+and o_orderdate < date '1995-09-01'
 and exists (
     select * from lineitem where
     l_orderkey = o_orderkey and l_commitdate < l_receiptdate
