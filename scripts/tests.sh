@@ -48,43 +48,51 @@ execute_all_sqls(){
     done
 }
 
-for branch in plaintext-udf plaintext-udf-enc-size plaintext-udf-float32; do
-    set -x
-    git checkout ${branch} -f
-    make clean && make && make install
-    git checkout main -f
-    set +x
-    ./test_helper.sh -l
-    # redirect all output to ${outputfile}
+run_plaintext_udf(){
+    for branch in plaintext-udf plaintext-udf-enc-size ; do
+        set -x
+        git checkout ${branch}
+        make clean && make && make install
+        git checkout main
+        set +x
+        ./test_helper.sh -l
+        # redirect all output to ${outputfile}
+        echo "======================" >> ${outputfile}
+        echo ${branch} >> ${outputfile}
+        
+        execute_all_sqls base-sqls
+        # ./test_helper.sh -f scripts/sqls/base-sqls/Q18.sql 2>&1 | tee -a ${outputfile}
+    done
+}
+run_native(){
     echo "======================" >> ${outputfile}
-    echo ${branch} >> ${outputfile}
-    
-    execute_all_sqls base-sqls
-    # ./test_helper.sh -f scripts/sqls/base-sqls/Q18.sql 2>&1 | tee -a ${outputfile}
-done
+    echo "base" >> ${outputfile}
+    # checkout to main branch
+    git checkout main
 
-echo "======================" >> ${outputfile}
-echo "base" >> ${outputfile}
-# checkout to main branch
-git checkout main -f
+    ./test_helper.sh -l -p
 
-./test_helper.sh -l -p
+    execute_all_sqls origin-sqls
+}
 
-execute_all_sqls origin-sqls
+run_enc(){
+    echo "======================" >> ${outputfile}
+    echo "enc" >> ${outputfile}
+    # build sim_ops
+    make clean && make configure_sim && make && make install
+    # run ./build/sim_ops in background
 
+    ./build/sim_ops 666 &
 
-echo "======================" >> ${outputfile}
-echo "enc" >> ${outputfile}
-# build sim_ops
-make clean && make configure_sim && make && make install
-# run ./build/sim_ops in background
+    ./test_helper.sh -l 
 
-./build/sim_ops 666 &
+    execute_all_sqls origin-sqls
+    # ./test_helper.sh -f scripts/sqls/base-sqls/Q18.sql  2>&1 | tee -a ${outputfile}
 
-./test_helper.sh -l 
+    # send kill all process called ./build/sim_ops
+    killall -9 sim_ops
+}
 
-execute_all_sqls origin-sqls
-# ./test_helper.sh -f scripts/sqls/base-sqls/Q18.sql  2>&1 | tee -a ${outputfile}
-
-# send kill all process called ./build/sim_ops
-killall -9 sim_ops
+# run_plaintext_udf
+run_native
+# run_enc
