@@ -9,3 +9,10 @@ benchmark
 */ramdisk
 __pycache__
 *.eps
+tmp/
+*.log
+*.csv 
+*.ods
+results/
+*.data
+*.tar.gz
