@@ -83,7 +83,7 @@ make clean && make configure_sim && make && make install
 
 ./test_helper.sh -l 
 
-execute_all_sqls base-sqls
+execute_all_sqls origin-sqls
 # ./test_helper.sh -f scripts/sqls/base-sqls/Q18.sql  2>&1 | tee -a ${outputfile}
 
 # send kill all process called ./build/sim_ops
