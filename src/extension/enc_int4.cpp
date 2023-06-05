@@ -33,7 +33,8 @@ PG_FUNCTION_INFO_V1(pg_enc_int4_decrypt);
 PG_FUNCTION_INFO_V1(pg_enc_int4_max);
 PG_FUNCTION_INFO_V1(pg_enc_int4_min);
 PG_FUNCTION_INFO_V1(pg_enc_int4_sum_bulk);
-// PG_FUNCTION_INFO_V1(pg_enc_int4_avgfinal);
+PG_FUNCTION_INFO_V1(pg_enc_int4_addfinal);
+PG_FUNCTION_INFO_V1(pg_enc_int4_avgfinal);
 PG_FUNCTION_INFO_V1(pg_enc_int4_avg_bulk);
 PG_FUNCTION_INFO_V1(pg_enc_int4_min_bulk);
 PG_FUNCTION_INFO_V1(pg_enc_int4_max_bulk);
@@ -546,6 +547,18 @@ Datum pg_enc_int4_min_bulk(PG_FUNCTION_ARGS)
 
     PG_RETURN_CSTRING(pMin);
 }
+
+Datum pg_enc_int4_addfinal(PG_FUNCTION_ARGS)
+{
+    /* stub*/
+    PG_RETURN_CSTRING(0);
+}
+
+Datum pg_enc_int4_avgfinal(PG_FUNCTION_ARGS)
+{
+    PG_RETURN_CSTRING(0);
+}
+
 
 Datum pg_enc_int4_max_bulk(PG_FUNCTION_ARGS)
 {
