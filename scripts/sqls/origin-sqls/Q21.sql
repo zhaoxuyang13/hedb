@@ -1,5 +1,3 @@
-select enable_debug_mode(1);
-\timing
 select
     s_name, count(*) as numwait
 from
