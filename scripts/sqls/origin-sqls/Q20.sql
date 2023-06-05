@@ -13,8 +13,8 @@ where
                 where
                     l_partkey = ps_partkey
                     and l_suppkey = ps_suppkey
-                    and l_shipdate >= date('1995-1-1')
-                    and l_shipdate < date('1996-1-1')
+                    and l_shipdate >= '1995-1-1'
+                    and l_shipdate < '1996-1-1'
                 ))
    and s_nationkey = n_nationkey
    and n_name = 'JAPAN' 
