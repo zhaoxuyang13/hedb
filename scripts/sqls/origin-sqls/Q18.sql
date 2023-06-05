@@ -1,5 +1,3 @@
-select enable_debug_mode(1);
-\timing
 select
     c_name, c_custkey, o_orderkey, o_orderdate, o_totalprice,
     sum(l_quantity) 

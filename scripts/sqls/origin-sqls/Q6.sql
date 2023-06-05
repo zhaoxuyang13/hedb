@@ -1,5 +1,3 @@
-select enable_debug_mode(1);
-\timing
 select
     sum(l_extendedprice*l_discount) as revenue 
 from
