@@ -8,5 +8,5 @@ from
     lineitem, part
 where
     l_partkey = p_partkey
-    and l_shipdate >= date '1995-06-01' 
-    and l_shipdate < date '1995-07-01'
+    and l_shipdate >= '1995-06-01' 
+    and l_shipdate < '1995-07-01'
