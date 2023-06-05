@@ -4,8 +4,8 @@ WITH revenue (supplier_no, total_revenue) as (
     FROM
         lineitem
     WHERE
-        l_shipdate >= date '1995-05-01' 
-        AND l_shipdate < date '1995-08-01'
+        l_shipdate >= '1995-05-01' 
+        AND l_shipdate < '1995-08-01'
     GROUP BY l_suppkey
     )
 SELECT

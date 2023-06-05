@@ -16,7 +16,7 @@ and c_custkey = o_custkey
 and s_nationkey = n1.n_nationkey
 and c_nationkey = n2.n_nationkey
 and ((n1.n_name = 'JAPAN' and n2.n_name = 'CHINA')or (n1.n_name = 'CHINA' and n2.n_name = 'JAPAN'))
-and l_shipdate between date '1995-01-01' and date '1996-12-31'
+and l_shipdate between '1995-01-01' and '1996-12-31'
 ) as shipping
 group by
     supp_nation,
