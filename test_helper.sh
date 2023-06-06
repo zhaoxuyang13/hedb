@@ -90,9 +90,8 @@ fi
 set -x
 
 psql -U postgres -d test -c "\o /dev/null" \
-                        -c "set max_parallel_workers=0;" \
                         -c "\timing" \
                         -f $file
-                        
+                        # -c "set max_parallel_workers=0;" \
 
                          

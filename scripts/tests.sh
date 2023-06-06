@@ -93,6 +93,6 @@ run_enc(){
     killall -9 sim_ops
 }
 
-# run_plaintext_udf
+run_plaintext_udf
 run_native
-# run_enc
+run_enc
