@@ -38,13 +38,20 @@ execute_all_sqls(){
     # for qid in ${qids[@]}; do
     for qid in $all_sqls; do
         echo "qid: ${qid}"
+    
         # dry run one time
         ./test_helper.sh -f scripts/sqls/${sql_dir}/Q${qid}.sql 2>&1 >/dev/null
-        sleep 2
+        ./test_helper.sh -f scripts/sqls/${sql_dir}/Q${qid}.sql 2>&1 >/dev/null
+        ./test_helper.sh -f scripts/sqls/${sql_dir}/Q${qid}.sql 2>&1 >/dev/null
+        sleep 5
+
+        sqls="explain analyze `cat scripts/sqls/${sql_dir}/Q${qid}.sql`" 
+        psql -U postgres -d test -c $sqls 2>&1 | tee -a ${outputfile}
+        sleep 5
         
         ./test_helper.sh -f scripts/sqls/${sql_dir}/Q${qid}.sql 2>&1 | tee -a ${outputfile}
-        # wait 2s for previous query to finish
-        sleep 2
+        # wait 1s for previous query to finish
+        sleep 1
     done
 }
 
