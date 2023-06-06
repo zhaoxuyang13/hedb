@@ -67,7 +67,7 @@ run_plaintext_udf(){
         echo "======================" >> ${outputfile}
         echo ${branch} >> ${outputfile}
         
-        execute_all_sqls base-sqls
+        execute_all_sqls origin-sqls
         # ./test_helper.sh -f scripts/sqls/base-sqls/Q18.sql 2>&1 | tee -a ${outputfile}
     done
 }
