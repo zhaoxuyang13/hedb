@@ -46,9 +46,9 @@ execute_all_sqls(){
         sleep 5
 
         sqls="explain analyze `cat scripts/sqls/${sql_dir}/Q${qid}.sql`" 
-        psql -U postgres -d test -c $sqls 2>&1 | tee -a ${outputfile}
+        psql -U postgres -d test -c "$sqls" 2>&1 | tee -a ${outputfile}
         sleep 5
-        
+
         ./test_helper.sh -f scripts/sqls/${sql_dir}/Q${qid}.sql 2>&1 | tee -a ${outputfile}
         # wait 1s for previous query to finish
         sleep 1
