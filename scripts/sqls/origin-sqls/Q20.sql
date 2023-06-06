@@ -1,5 +1,3 @@
-select enable_debug_mode(1);
-\timing
 select
     s_name, s_address
 from
@@ -15,8 +13,8 @@ where
                 where
                     l_partkey = ps_partkey
                     and l_suppkey = ps_suppkey
-                    and l_shipdate >= date('1995-1-1')
-                    and l_shipdate < date('1995-1-1') + interval '1' year
+                    and l_shipdate >= '1995-1-1'
+                    and l_shipdate < '1996-1-1'
                 ))
    and s_nationkey = n_nationkey
    and n_name = 'JAPAN' 

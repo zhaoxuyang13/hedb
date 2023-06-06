@@ -1,13 +1,11 @@
-select enable_debug_mode(1);
-\timing
 WITH revenue (supplier_no, total_revenue) as (
     SELECT
         l_suppkey,SUM(l_extendedprice * ('1'-l_discount))
     FROM
         lineitem
     WHERE
-        l_shipdate >= date '1995-05-01' 
-        AND l_shipdate < date '1995-05-01' + interval '3' month
+        l_shipdate >= '1995-05-01' 
+        AND l_shipdate < '1995-08-01'
     GROUP BY l_suppkey
     )
 SELECT

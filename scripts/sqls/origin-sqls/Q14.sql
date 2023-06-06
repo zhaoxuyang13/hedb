@@ -1,5 +1,3 @@
-select enable_debug_mode(1);
-\timing
 select
     '100.00' * sum(case
         when p_type like 'PROMO%' 
@@ -10,5 +8,5 @@ from
     lineitem, part
 where
     l_partkey = p_partkey
-    and l_shipdate >= date '1995-06-01' 
-    and l_shipdate < date '1995-06-01' + interval '1' month;
+    and l_shipdate >= '1995-06-01' 
+    and l_shipdate < '1995-07-01'

@@ -56,13 +56,13 @@ HEDB requires an ARM server that supports S-EL2, a hardware virtualization techn
 ```
 Github Repo Root
 ├── Makefile
-├── benchmark       # Data loader and data generator.
-│   ├── bin         # Executable jar files for loading data in database.
-│   ├── config      # Configuration files for running the executable jar files.
-│   ├── db_schemas  # Sql files for loading tpch and tpcc schema.
-│   └── tools       # Data generator.
-├── klee_scripts # Scripts for running klee.
-├── scripts      # Scripts for the experiments.
+├── benchmark               # Data loader and data generator.
+│   ├── bin                 # Executable jar files for loading data in database.
+│   ├── config              # Configuration files for running the executable jar files.
+│   ├── db_schemas          # Sql files for loading tpch and tpcc schema.
+│   └── tools               # Data generator.
+├── klee_scripts            # Scripts for anonymized replay using KLEE.
+├── scripts                 # Scripts for authenticated replay and others.
 │   ├── config              # Json files for running different experiments.
 │   ├── eval_AE_time.sh     # The script for running the experiments and getting the running time.
 │   ├── fig                 # The scripts for plotting the figure.
@@ -72,7 +72,12 @@ Github Repo Root
 │   ├── sqls                # Sql files for different experiments.
 │   ├── tmp                 # Immediate files of the experiments.
 │   └── util_py3            # Utils used by the scripts.
-└── src          # HEDB code base
+└── src                     # HEDB engine code base.
+    ├── cmake               # Automated makefiles.
+    ├── enclave             # Confidential operators protected by trusted domains.
+    ├── extension           # Postgresql user-define functions for encrypted database.
+    ├── include             # HEBD engine headers such as encrypted datatypes.
+    └── utils               # Utils such as debugging required by HEDB engine.
 ```
 
 ## Environment setup on host (Optional)
@@ -131,9 +136,9 @@ Login to the ARM Server (after uploading your SSH public key via HotCRP).
 # setup SSH configuration
 echo "
 Host hedb-ae 
-  HostName arm-2 
+  HostName 202.120.40.82 
   User gz 
-  ProxyCommand ssh vyatta@202.120.40.82 -W %h:%p 2>/dev/null 
+  Port 11238
 " >> ~/.ssh/config
 
 ssh hedb-ae
@@ -206,7 +211,7 @@ bash scripts/run_all_experiments.sh
 
 ```shell
 # run following command on your own computer
-scp -r hedb-ae:/home/gz/hedb/figures .
+scp -r hedb-ae:/home/gz/hedb/scripts/figures .
 ```
 
 After fetching all these figures, you can verify the aforementioned **Claims** by referring to the **Expected results** and **Important notes** below.
@@ -292,7 +297,7 @@ You should have **docker** environment available.
 git clone (this repo)
 
 # install dependencies for drawing graph
-sudo apt install python3 python3-pip 
+sudo apt install python3 python3-pip texlive-font-utils texlive-extra-utils 
 pip3 install tqdm seaborn numpy pandas openpyxl matplotlib
 
 # if you want this experiment to be faster (e.g. from 4h to 1h), 
@@ -319,10 +324,11 @@ python3 ./scripts/run_experiments.py -f fig5c
 
 ## Limitations
 
-This repo is a research prototype rather than a production-ready system. Its current implementation has two main limitations.
+This repo is a research prototype rather than a production-ready system. Its current implementation has several main limitations.
 
 1. HEDB relies on determistic record-replay to reproduce the DBMS bugs, hence falling short in providing read-write workloads such as TPC-C.
 2. HEDB depends on KLEE to reproduce the UDF bugs. The official version of KLEE cannot support floating-point numbers. HEDB inherits this limitation.
+3. HEDB assumes an ARMv8.4 server with S-EL2 (TrustZone Virtualization) to support its dual-mode design. This design can be ported to other architectures (e.g., Intel SGX, AMD SEV-SNP, Intel TDX and ARMv9 CCA). Please refer to `docs/build-from-scratch.md` to replicate HEDB's performance results on Intel SGX (using SGX SDK) and ARM TrustZone (using OP-TEE). Note that the cross-domain VM fork (i.e., mode switch) on these architectures is not implemented and remains an open question.
 
 ## Contacts
 

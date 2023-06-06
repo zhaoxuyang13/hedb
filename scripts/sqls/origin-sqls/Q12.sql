@@ -1,5 +1,3 @@
-select enable_debug_mode(1);
-\timing
 select
     l_shipmode,
     sum(case 
@@ -16,7 +14,7 @@ where
     and l_shipmode in ('TRUCK', 'REG AIR')
     and l_commitdate < l_receiptdate
     and l_shipdate < l_commitdate
-    and l_receiptdate >= date '1995-01-01'
-    and l_receiptdate < date '1995-01-01' + interval '1' year
+    and l_receiptdate >= '1995-01-01'
+    and l_receiptdate < '1996-01-01'
 group by l_shipmode
 order by l_shipmode;

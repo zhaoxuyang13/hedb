@@ -205,5 +205,5 @@ ENDIF(ENABLE_PARALLEL)
 ## KV and PARA is not compatible for now
 # add_compile_definitions(ENABLE_KV)
 # add_compile_definitions(ENABLE_PARA)
-# add_compile_definitions(ENABLE_LOCAL_SIM)
+add_compile_definitions(ENABLE_LOCAL_SIM)
 

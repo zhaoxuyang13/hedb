@@ -1,5 +1,3 @@
-select enable_debug_mode(1);
-\timing
 select
     l_returnflag,
     l_linestatus,
@@ -14,7 +12,7 @@ select
 from
     lineitem
 where
-    l_shipdate <= date'1998-12-01' - interval '90' day
+    l_shipdate <= '1998-09-01'
 group by
     l_returnflag,
     l_linestatus

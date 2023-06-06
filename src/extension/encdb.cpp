@@ -6,6 +6,7 @@
 
 extern "C" {
 PG_MODULE_MAGIC;
+PG_FUNCTION_INFO_V1(reset_timer);
 PG_FUNCTION_INFO_V1(launch);
 PG_FUNCTION_INFO_V1(enable_debug_mode);
 PG_FUNCTION_INFO_V1(enable_record_mode);
@@ -34,6 +35,15 @@ extern int records_cnt;
 //     ereport(ERROR, (errmsg(fmt)));
 // }
 
+Datum reset_timer(PG_FUNCTION_ARGS) {
+#ifdef ENABLE_DEBUG
+extern double total_time ;
+    ereport(INFO, (errmsg("total execution time of UDF: %fs, timer is reset\n", total_time)));
+    total_time = 0;
+#endif
+
+    PG_RETURN_INT32(0);
+}
 Datum enable_debug_mode(PG_FUNCTION_ARGS)
 {
     debugMode = true;
