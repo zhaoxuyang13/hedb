@@ -234,3 +234,4 @@ def cleanLogs():
 def cleanupExperiment():
     shutdownVMs()
     cleanLogs()
+    executeCommand("rm -rf build/")
