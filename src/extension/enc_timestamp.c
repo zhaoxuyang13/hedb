@@ -3,7 +3,6 @@
  */
 #include "extension.h"
 
-
 static TimeOffset time2t(const int hour, const int min, const int sec, const fsec_t fsec)
 {
     return (((hour * MINS_PER_HOUR) + min) * SECS_PER_MINUTE) + sec + fsec;
@@ -327,4 +326,66 @@ Datum
     int ans = (timestp1 == timestp2) ? 0 : ((timestp1 < timestp2) ? -1 : 1);
 
     PG_RETURN_INT32(ans);
+}
+
+#define TMODULO(t, q, u)        \
+    do {                        \
+        (q) = ((t) / (u));      \
+        if ((q) != 0)           \
+            (t) -= ((q) * (u)); \
+    } while (0)
+
+#define INT64CONST(x) (x##L)
+#define USECS_PER_DAY INT64CONST(86400000000)
+#define POSTGRES_EPOCH_JDATE 2451545
+
+static int timestamp_extract_year(int64_t timestamp)
+{
+
+    int64_t date;
+    unsigned int quad;
+    unsigned int extra;
+    int year;
+
+    TMODULO(timestamp, date, USECS_PER_DAY);
+    if (timestamp < INT64CONST(0)) {
+        timestamp += USECS_PER_DAY;
+        date -= 1;
+    }
+
+    /* add offset to go from J2000 back to standard Julian date */
+    date += POSTGRES_EPOCH_JDATE;
+
+    /* Julian day routine does not work for negative Julian days */
+    if (date < 0 || date > (int64_t)INT_MAX)
+        return -1;
+
+    date += 32044;
+    quad = date / 146097;
+    extra = (date - quad * 146097) * 4 + 3;
+
+    date += 60 + quad * 3 + extra / 146097;
+    quad = date / 1461;
+    date -= quad * 1461;
+
+    year = date * 4 / 1461;
+    year += quad * 4;
+    return year - 4800;
+}
+
+PG_FUNCTION_INFO_V1(date_part);
+Datum
+    date_part(PG_FUNCTION_ARGS)
+{
+#if 0 // FIXME
+    char* get = text_to_cstring(PG_GETARG_TEXT_P(0));
+    if (strcmp(get, "year") != 0) {
+        ereport(ERROR, (errmsg("Only date_part('year', enc_timestamp) is currently implemented.")));
+    }
+    EncTimestamp* timestamp = PG_GETARG_ENCTimestamp(1);
+    EncInt* result = (EncInt*)palloc(sizeof(EncInt));
+
+    result = timestamp_extract_year(timestamp);
+    PG_RETURN_POINTER(result);
+#endif
 }

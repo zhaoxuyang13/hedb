@@ -81,8 +81,8 @@ Datum
         printed2 = true;
     }
 #endif
-    int* c1 = PG_GETARG_CSTRING(0);
-    int* c2 = PG_GETARG_CSTRING(1);
+    int* c1 = PG_GETARG_ENCINT(0);
+    int* c2 = PG_GETARG_ENCINT(1);
     int* pDst = (int*)palloc(sizeof(int));
 
     *pDst = *c1 + *c2; 
@@ -258,16 +258,12 @@ Datum
         printed4 = true;
     }
 #endif
-    int* c1 = PG_GETARG_CSTRING(0);
-    int* c2 = PG_GETARG_CSTRING(1);
+    int* c1 = PG_GETARG_ENCINT(0);
+    int* c2 = PG_GETARG_ENCINT(1);
 
-    int ans = 0;
     int a = *c1, b= *c2;
 
-    ans = (a == b) ? 0 
-        : (a < b) ? -1 : 1;
-
-    PG_RETURN_INT32(ans);
+    PG_RETURN_INT32(a - b);
 }
 
 /*
@@ -290,20 +286,11 @@ Datum
 #endif
     char* c1 = PG_GETARG_CSTRING(0);
     char* c2 = PG_GETARG_CSTRING(1);
-    int ans = 0;
-    bool cmp = false;
 
     int32_t a, b;
     bytearray2int(c1, &a, INT32_LENGTH);
     bytearray2int(c2, &b, INT32_LENGTH);
-    ans = a - b;
-
-    if (ans == 0)
-        cmp = true;
-    else
-        cmp = false;
-
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_BOOL(a == b);
 }
 
 /*
@@ -326,20 +313,11 @@ Datum
 #endif
     char* c1 = PG_GETARG_CSTRING(0);
     char* c2 = PG_GETARG_CSTRING(1);
-    int ans = 0;
-    bool cmp = false;
 
     int32_t a, b;
     bytearray2int(c1, &a, INT32_LENGTH);
     bytearray2int(c2, &b, INT32_LENGTH);
-    ans = a - b;
-
-    if (ans == 0)
-        cmp = false;
-    else
-        cmp = true;
-
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_BOOL(a != b);
 }
 
 /*
@@ -355,20 +333,11 @@ Datum
 {
     char* c1 = PG_GETARG_CSTRING(0);
     char* c2 = PG_GETARG_CSTRING(1);
-    int ans = 0;
-    bool cmp = false;
 
     int32_t a, b;
     bytearray2int(c1, &a, INT32_LENGTH);
     bytearray2int(c2, &b, INT32_LENGTH);
-    ans = (a < b) ? 1 : 0;
-
-    if (ans == 1)
-        cmp = true;
-    else
-        cmp = false;
-
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_BOOL(a < b);
 }
 
 /*
@@ -384,20 +353,12 @@ Datum
 {
     char* c1 = PG_GETARG_CSTRING(0);
     char* c2 = PG_GETARG_CSTRING(1);
-    int ans = 0;
-    bool cmp = false;
 
     int32_t a, b;
     bytearray2int(c1, &a, INT32_LENGTH);
     bytearray2int(c2, &b, INT32_LENGTH);
-    ans = (a <= b) ? 1 : 0; 
 
-    if (ans == 1)
-        cmp = true;
-    else
-        cmp = false;
-
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_BOOL(a <= b);
 }
 
 /*
@@ -420,20 +381,12 @@ Datum
 #endif
     char* c1 = PG_GETARG_CSTRING(0);
     char* c2 = PG_GETARG_CSTRING(1);
-    int ans = 0;
-    bool cmp = false;
 
     int32_t a, b;
     bytearray2int(c1, &a, INT32_LENGTH);
     bytearray2int(c2, &b, INT32_LENGTH);
-    ans = (a > b) ? 1 : 0;
 
-    if (ans == 1)
-        cmp = true;
-    else
-        cmp = false;
-
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_BOOL(a > b);
 }
 
 /*
@@ -456,21 +409,12 @@ Datum
 #endif
     char* c1 = PG_GETARG_CSTRING(0);
     char* c2 = PG_GETARG_CSTRING(1);
-    int ans = 0;
-    bool cmp = true;
 
     int32_t a, b;
     bytearray2int(c1, &a, INT32_LENGTH);
     bytearray2int(c2, &b, INT32_LENGTH);
 
-    ans = (a >= b) ? 1 : 0; 
-
-    if (ans == 1)
-        cmp = true;
-    else
-        cmp = false;
-
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_BOOL(a >= b);
 }
 
 //TODO
@@ -730,7 +674,6 @@ Datum
     bytearray2int(c1, &a, INT32_LENGTH);
     bytearray2int(c2, &b, INT32_LENGTH);
     cmp = a > b;
-
 
     PG_RETURN_POINTER(c2);
 }

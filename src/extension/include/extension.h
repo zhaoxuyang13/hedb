@@ -1,16 +1,14 @@
 #pragma once
 #include <defs.h>
 #include <stdafx.h>
-#include <enc_types.h>
 #include <c.h>
-// #include <extension_helper.h>
-// #define DECLARE_PG_FUNC(func) extern "C" { PG_FUNCTION_INFO_V1(func); }
 
-#define DatumGetEncInt(X)  ((EncInt *) DatumGetPointer(X))
+#define DatumGetEncInt(X)  ((int *) DatumGetPointer(X))
 #define PG_GETARG_ENCINT(n) DatumGetEncInt(PG_GETARG_DATUM(n))
 
-
-
+#define DatumGetEncFloat(X)  ((float *) DatumGetPointer(X))
+#define PG_GETARG_ENCFLOAT(n) DatumGetEncFloat(PG_GETARG_DATUM(n))
 
 //variable length text. 
 typedef struct varlena EncText;
+#define PG_GETARG_ENCTEXT_P(n) ((EncText *)PG_DETOAST_DATUM(PG_GETARG_DATUM(n)))

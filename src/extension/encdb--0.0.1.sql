@@ -3,25 +3,6 @@
 -- complain if script is sourced in psql, rather than via CREATE EXTENSION
 \echo Use "CREATE EXTENSION encdb" to load this file. \quit
 
-CREATE FUNCTION launch() RETURNS integer
-AS 'MODULE_PATHNAME'
-LANGUAGE C IMMUTABLE STRICT;
-
--- CREATE OR REPLACE FUNCTION generate_key()
--- RETURNS int
--- AS 'MODULE_PATHNAME'
--- LANGUAGE C IMMUTABLE STRICT;
-
--- CREATE OR REPLACE FUNCTION load_key(int)
--- RETURNS int
--- AS 'MODULE_PATHNAME'
--- LANGUAGE C IMMUTABLE STRICT;
-
--- CREATE OR REPLACE FUNCTION enable_debug_mode(int)
--- RETURNS int
--- AS 'MODULE_PATHNAME'
--- LANGUAGE C IMMUTABLE STRICT;
-
 -------------------------------------------------------------------------------
 --ENCRYPTED INTEGER TYPE (randomized)
 -------------------------------------------------------------------------------
@@ -141,15 +122,15 @@ RETURNS enc_int4
 AS 'MODULE_PATHNAME'
 LANGUAGE C IMMUTABLE STRICT;
 
--- CREATE FUNCTION pg_enc_int4_avgfinal(enc_int4[])
--- RETURNS enc_float4
--- AS 'MODULE_PATHNAME'
--- LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pg_enc_int4_avgfinal(enc_int4[])
+RETURNS enc_int4
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT;
 
--- CREATE FUNCTION pg_enc_int4_avg_bulk(enc_int4[])
--- RETURNS enc_float4
--- AS 'MODULE_PATHNAME'
--- LANGUAGE C IMMUTABLE STRICT;
+CREATE FUNCTION pg_enc_int4_avg_bulk(enc_int4[])
+RETURNS enc_int4
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT;
 
 CREATE FUNCTION pg_enc_int4_minfinal(enc_int4[])
 RETURNS enc_int4
@@ -257,22 +238,12 @@ CREATE AGGREGATE sum_simple (enc_int4)
    combinefunc = pg_enc_int4_add
 );
 
--- CREATE AGGREGATE avg (enc_int4)
--- (
---    sfunc = array_append,
---    stype = enc_int4[],
---    finalfunc = pg_enc_int4_avg_bulk
-
--- );
-
--- CREATE AGGREGATE avg_simple (enc_int4)
--- (
---    sfunc = pg_enc_int4_accum,
---    stype = enc_int4[],
---    initcond = '{0,0}',
---    finalfunc = pg_enc_int4_avgfinal
-
--- );
+CREATE AGGREGATE avg (enc_int4)
+(
+    sfunc = array_append,
+    stype = enc_int4[],
+    finalfunc = pg_enc_int4_avg_bulk
+);
 
 CREATE AGGREGATE min (enc_int4)
 (
@@ -938,10 +909,10 @@ RETURNS boolean
 AS '$libdir/encdb'
 LANGUAGE C IMMUTABLE STRICT ;
 
--- CREATE OR REPLACE FUNCTION pg_catalog.date_part(text, enc_timestamp)
--- RETURNS enc_int4
--- AS '$libdir/encdb'
--- LANGUAGE C IMMUTABLE STRICT ;
+CREATE OR REPLACE FUNCTION pg_catalog.date_part(text, enc_timestamp)
+RETURNS enc_int4
+AS '$libdir/encdb'
+LANGUAGE C IMMUTABLE STRICT ;
 
 CREATE FUNCTION pg_enc_timestamp_gt(enc_timestamp, enc_timestamp)
 RETURNS boolean

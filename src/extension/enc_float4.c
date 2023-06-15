@@ -3,59 +3,7 @@
  */
 #include "extension.h"
 #include <string.h>
-void print_info(char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    ereport(INFO, (errmsg(fmt, args)));
-    va_end(args);
-}
-void print_info_str(char *str)
-{
-    ereport(INFO, (errmsg(str)));
-}
-void print_error(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    ereport(ERROR, (errmsg(fmt, args)));
-    va_end(args);
-}
 
-// #define ENABLE_COUNTER
-int counter = 0;
-static inline void before_invoke_function(const char *str)
-{
-    counter++;
-    if (counter % 10000 == 0)
-    {
-        char ch[1000];
-        sprintf(ch, "#ope invocation: %d", counter);
-        print_info_str(ch);
-        // print_info("#ope invocation: %d",counter );
-    }
-    static int add_counter = 0, cmp_counter = 0;
-    if (!strcmp(str, "pg_enc_float4_add"))
-    {
-        add_counter++;
-        if (add_counter % 10000 == 0)
-        {
-            char ch[1000];
-            sprintf(ch, "#ope invocation: %d", counter);
-            print_info_str(ch);
-        }
-    }
-    else if (!strcmp(str, "pg_enc_float4_cmp"))
-    {
-        cmp_counter++;
-        if (cmp_counter % 10000 == 0)
-        {
-            char ch[1000];
-            sprintf(ch, "#ope invocation: %d", counter);
-            print_info_str(ch);
-        }
-    }
-}
 static int float2bytearray(float src, uint8_t *pDst, size_t dstLen)
 {
     memcpy(pDst, &src, FLOAT4_LENGTH);
@@ -541,8 +489,8 @@ Datum pg_enc_float4_add(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = PG_GETARG_ENCFLOAT(0);
+    float *c2 = PG_GETARG_ENCFLOAT(1);
     float *pDst = (float *)palloc((FLOAT4_LENGTH) * sizeof(char));
 
     *pDst = *c1 + *c2;
@@ -661,8 +609,8 @@ Datum pg_enc_float4_eq(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = PG_GETARG_ENCFLOAT(0);
+    float *c2 = PG_GETARG_ENCFLOAT(1);
     int ans = 0;
     float a, b;
     a = *c1, b = *c2;
@@ -685,8 +633,8 @@ Datum pg_enc_float4_ne(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = PG_GETARG_ENCFLOAT(0);
+    float *c2 = PG_GETARG_ENCFLOAT(1);
     int ans = 0;
     float a, b;
     a = *c1, b = *c2;
@@ -709,8 +657,8 @@ Datum pg_enc_float4_lt(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = PG_GETARG_ENCFLOAT(0);
+    float *c2 = PG_GETARG_ENCFLOAT(1);
     int ans = 0;
     float a, b;
     a = *c1, b = *c2;
@@ -732,8 +680,8 @@ Datum pg_enc_float4_le(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = PG_GETARG_ENCFLOAT(0);
+    float *c2 = PG_GETARG_ENCFLOAT(1);
     int ans = 0;
     float a, b;
     a = *c1, b = *c2;
@@ -755,8 +703,8 @@ Datum pg_enc_float4_gt(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = PG_GETARG_ENCFLOAT(0);
+    float *c2 = PG_GETARG_ENCFLOAT(1);
     int ans = 0;
     float a, b;
     a = *c1, b = *c2;
@@ -778,8 +726,8 @@ Datum pg_enc_float4_ge(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = PG_GETARG_ENCFLOAT(0);
+    float *c2 = PG_GETARG_ENCFLOAT(1);
     int ans = 0;
     float a, b;
     a = *c1, b = *c2;
@@ -800,8 +748,8 @@ Datum pg_enc_float4_cmp(PG_FUNCTION_ARGS)
 #ifdef ENABLE_COUNTER
     before_invoke_function(__func__);
 #endif
-    float *c1 = PG_GETARG_CSTRING(0);
-    float *c2 = PG_GETARG_CSTRING(1);
+    float *c1 = PG_GETARG_ENCFLOAT(0);
+    float *c2 = PG_GETARG_ENCFLOAT(1);
     int ans = 0;
     float a, b;
     a = *c1, b = *c2;

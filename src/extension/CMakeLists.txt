@@ -20,5 +20,4 @@ add_postgresql_extension(
     VERSION 0.0.1
     SOURCES ${SRC}
     SCRIPTS encdb--0.0.1.sql
-    REGRESS basic
   )

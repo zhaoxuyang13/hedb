@@ -1,45 +1,6 @@
-/*
- * a simple UDF for text
- */
 #include "extension.h"
 
-
-static bool MatchText(char *t, int tlen, char *p, int plen)
-{
-
-	char* subt = t;
-	char* subp = p;
-	int i = 0;
-	int j = 0;
-	while (i <= tlen - 1 && j <= plen - 1)
-	{
-		if (subt[i] == subp[j])
-		{
-			i++;
-			j++;
-		}
-		else
-		{
-			i = i - j + 1;
-			j = 0;
-		}
-	}
-	if (j == strlen(subp))
-	{
-		return true;
-	}
-	return false;
-}
-
-static char* SubText(char *str, int from, int to)
-{
-    char* result = palloc((to-from+1)*sizeof(char));
-    for (int i = 0; i < to-from+1; i++)
-    {
-        result[i] = str[from + i - 1];
-    }
-    return result;
-}
+int MatchText(char* t, int tlen, char* p, int plen);
 
 /*
  * cstring_to_text_with_len
@@ -47,15 +8,14 @@ static char* SubText(char *str, int from, int to)
  * Same as cstring_to_text except the caller specifies the string length;
  * the string need not be null_terminated.
  */
-text *
-cstring_to_text_with_len(const char *s, int len)
+text* cstring_to_text_with_len(const char* s, int len)
 {
-	text	   *result = (text *) palloc(len + VARHDRSZ);
+    text* result = (text*)palloc0(len + VARHDRSZ);
 
-	SET_VARSIZE(result, len + VARHDRSZ);
-	memcpy(VARDATA(result), s, len);
+    SET_VARSIZE(result, len + VARHDRSZ);
+    memcpy(VARDATA(result), s, len);
 
-	return result;
+    return result;
 }
 
 // The input function converts a string to an enc_text element.
@@ -67,7 +27,7 @@ Datum
 {
     char* s = PG_GETARG_CSTRING(0);
     EncText *result;
-    result = (EncText *) cstring_to_text_with_len(s, strlen(s));
+    result = (EncText *) cstring_to_text_with_len(s, strlen(s)+1);
     PG_RETURN_POINTER(result);
 }
 
@@ -79,7 +39,7 @@ Datum
     pg_enc_text_out(PG_FUNCTION_ARGS)
 {
     // ereport(INFO, (errmsg("pg_enc_text_out here!")));
-    EncText* s = PG_GETARG_DATUM(0);
+    EncText* s = PG_GETARG_ENCTEXT_P(0);
 
     PG_RETURN_CSTRING(TextDatumGetCString(s));
 }
@@ -93,16 +53,10 @@ Datum
 {
     EncText* s1 = PG_GETARG_TEXT_PP(0);   
     EncText* s2 = PG_GETARG_TEXT_PP(1);
-    char* str1 = VARDATA_ANY(s1);
-    char* str2 = VARDATA_ANY(s2);
-    bool cmp = false;
-    int ans = 0;
-    ans = strcmp(str1, str2);
+    char* str1 = VARDATA(s1);
+    char* str2 = VARDATA(s2);
 
-    if (ans == 0)
-        cmp = true;
-
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_BOOL(0 == strcmp(str1, str2));
 }
 
 // @input: two strings
@@ -114,16 +68,10 @@ Datum
 {
     EncText* s1 = PG_GETARG_TEXT_PP(0);   
     EncText* s2 = PG_GETARG_TEXT_PP(1);
-    char* str1 = VARDATA_ANY(s1);
-    char* str2 = VARDATA_ANY(s2);
-    bool cmp = false;
-    int ans = 0;
-    ans = strcmp(str1, str2);
+    char* str1 = VARDATA(s1);
+    char* str2 = VARDATA(s2);
 
-    if (ans != 0)
-        cmp = true;
-
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_BOOL(0 != strcmp(str1, str2));
 }
 
 // @input: two strings
@@ -135,8 +83,8 @@ Datum
 {
     EncText* s1 = PG_GETARG_TEXT_PP(0);   
     EncText* s2 = PG_GETARG_TEXT_PP(1);
-    char* str1 = VARDATA_ANY(s1);
-    char* str2 = VARDATA_ANY(s2);
+    char* str1 = VARDATA(s1);
+    char* str2 = VARDATA(s2);
     bool cmp = false;
     int ans = 0;
     ans = strcmp(str1, str2);
@@ -156,8 +104,8 @@ Datum
 {
     EncText* s1 = PG_GETARG_TEXT_PP(0);   
     EncText* s2 = PG_GETARG_TEXT_PP(1);
-    char* str1 = VARDATA_ANY(s1);
-    char* str2 = VARDATA_ANY(s2);
+    char* str1 = VARDATA(s1);
+    char* str2 = VARDATA(s2);
     bool cmp = false;
     int ans = 0;
     ans = strcmp(str1, str2);
@@ -177,8 +125,8 @@ Datum
 {
     EncText* s1 = PG_GETARG_TEXT_PP(0);   
     EncText* s2 = PG_GETARG_TEXT_PP(1);
-    char* str1 = VARDATA_ANY(s1);
-    char* str2 = VARDATA_ANY(s2);
+    char* str1 = VARDATA(s1);
+    char* str2 = VARDATA(s2);
     bool cmp = false;
     int ans = 0;
     ans = strcmp(str1, str2);
@@ -198,8 +146,8 @@ Datum
 {
     EncText* s1 = PG_GETARG_TEXT_PP(0);   
     EncText* s2 = PG_GETARG_TEXT_PP(1);
-    char* str1 = VARDATA_ANY(s1);
-    char* str2 = VARDATA_ANY(s2);
+    char* str1 = VARDATA(s1);
+    char* str2 = VARDATA(s2);
     bool cmp = false;
     int ans = 0;
     ans = strcmp(str1, str2);
@@ -220,8 +168,8 @@ Datum
 {
     EncText* s1 = PG_GETARG_TEXT_PP(0);   
     EncText* s2 = PG_GETARG_TEXT_PP(1);
-    char* str1 = VARDATA_ANY(s1);
-    char* str2 = VARDATA_ANY(s2);
+    char* str1 = VARDATA(s1);
+    char* str2 = VARDATA(s2);
     int ans = 0;
     ans = strcmp(str1, str2);
     PG_RETURN_INT32(ans);
@@ -250,7 +198,7 @@ Datum
 {
     EncText* s1 = PG_GETARG_TEXT_PP(0);   
     // ereport(INFO, (errmsg("pg_enc_text_decrypt here!")));
-    char* src = VARDATA_ANY(s1);
+    char* src = VARDATA(s1);
     size_t src_len = strlen(src);
     char* pDst = (char*)palloc((src_len + 1) * sizeof(char));
     memcpy(pDst, src, src_len);
@@ -266,20 +214,24 @@ Datum
 {
     EncText* s1 = PG_GETARG_TEXT_PP(0);   
     EncText* s2 = PG_GETARG_TEXT_PP(1);
-    char* str1 = VARDATA_ANY(s1);
-    char* str2 = VARDATA_ANY(s2);
+    char* str1 = VARDATA(s1);
+    char* str2 = VARDATA(s2);
     strcat(str1, str2);
-    PG_RETURN_CSTRING(str1);
+
+    EncText *result;
+    result = (EncText *) cstring_to_text_with_len(str1, strlen(str1)+1);
+    PG_RETURN_POINTER(result);
 }
 
 PG_FUNCTION_INFO_V1(pg_enc_text_like);
 Datum
     pg_enc_text_like(PG_FUNCTION_ARGS)
 {
-    EncText* s1 = PG_GETARG_TEXT_PP(0);   
-    EncText* s2 = PG_GETARG_TEXT_PP(1);
-    char* str = VARDATA_ANY(s1);
-    char* pattern = VARDATA_ANY(s2);
+    EncText* s1 = PG_GETARG_ENCTEXT_P(0);   
+    EncText* s2 = PG_GETARG_ENCTEXT_P(1);
+
+    char* str = VARDATA(s1);
+    char* pattern = VARDATA(s2);
     bool result = false;
     result = MatchText(str, strlen(str), pattern, strlen(pattern));
     PG_RETURN_BOOL(result);
@@ -291,8 +243,8 @@ Datum
 {
     EncText* s1 = PG_GETARG_TEXT_PP(0);   
     EncText* s2 = PG_GETARG_TEXT_PP(1);
-    char* str = VARDATA_ANY(s1);
-    char* pattern = VARDATA_ANY(s2);
+    char* str = VARDATA(s1);
+    char* pattern = VARDATA(s2);
     bool result = 0;
     result = MatchText(str, strlen(str), pattern, strlen(pattern));
     PG_RETURN_BOOL(1 ^ result);
@@ -300,20 +252,32 @@ Datum
 
 // @input: string and two integers
 // @return: the substring specified by from and to.
+static inline int bytearray2int(uint8_t* pSrc, int *dst, size_t srcLen)
+{
+    if (srcLen < INT32_LENGTH)
+        return 1;
+
+    memcpy(dst, pSrc, INT32_LENGTH);
+
+    return 0;
+}
+
 PG_FUNCTION_INFO_V1(substring);
 Datum
     substring(PG_FUNCTION_ARGS)
 {
-    // NOT BE INVOKED
-    // char* str = PG_GETARG_CSTRING(0);
-    // char* from = PG_GETARG_CSTRING(1);
-    // char* to = PG_GETARG_CSTRING(2);
-    // int f, t;
-    // bytearray2int(from, &f, INT32_LENGTH);
-    // bytearray2int(to, &t, INT32_LENGTH);
-    // char* result = palloc((t-f+1) * sizeof(char));
-    // result = SubText(str, f, t);
-    // PG_RETURN_CSTRING(result);
+    char* str = PG_GETARG_CSTRING(0);
+    char* from = PG_GETARG_CSTRING(1);
+    char* leng = PG_GETARG_CSTRING(2);
+    int f, l;
+    bytearray2int(from, &f, INT32_LENGTH);
+    bytearray2int(leng, &l, INT32_LENGTH);
+    str = VARDATA(str);
+    char* res = palloc((l+1) * sizeof(char));
+    strncpy(res, str+f-1, l);
+    EncText *result;
+    result = (EncText *) cstring_to_text_with_len(res, l);
+    PG_RETURN_POINTER(result);
 }
 
 // The input function converts a string to an enc_text element.
