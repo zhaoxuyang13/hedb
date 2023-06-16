@@ -1,5 +1,6 @@
 \unset ECHO
 
+create extension if not EXISTS pgtap;
 select plan(50);
 
 select ok(pg_enc_int4_decrypt(pg_enc_int4_encrypt(1)) = 1::int4, 'enc_int4: encryption/decryption test');

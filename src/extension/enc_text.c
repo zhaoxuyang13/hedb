@@ -276,7 +276,7 @@ Datum
     char* res = palloc((l+1) * sizeof(char));
     strncpy(res, str+f-1, l);
     EncText *result;
-    result = (EncText *) cstring_to_text_with_len(res, l);
+    result = (EncText *) cstring_to_text_with_len(res, l + 1);
     PG_RETURN_POINTER(result);
 }
 
@@ -290,6 +290,6 @@ Datum
     Datum txt = PG_GETARG_DATUM(0);
     char* s = TextDatumGetCString(txt);
     EncText *result;
-    result = (EncText *) cstring_to_text_with_len(s, strlen(s));
+    result = (EncText *) cstring_to_text_with_len(s, strlen(s) + 1);
     PG_RETURN_POINTER(result);
 }
