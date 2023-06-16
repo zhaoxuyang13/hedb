@@ -50,9 +50,9 @@ execute_all_sqls(){
         ./test_helper.sh -f scripts/sqls/${sql_dir}/Q${qid}.sql 2>&1 >/dev/null
         sleep 5
 
-        sqls="explain analyze `cat scripts/sqls/${sql_dir}/Q${qid}.sql`" 
-        psql -U postgres -d test -c "$sqls" 2>&1 | tee -a ${outputfile}
-        sleep 5
+        # sqls="explain analyze `cat scripts/sqls/${sql_dir}/Q${qid}.sql`" 
+        # psql -U postgres -d test -c "$sqls" 2>&1 | tee -a ${outputfile}
+        # sleep 5
 
         ./test_helper.sh -o $out_dir/${qid}.out -f scripts/sqls/${sql_dir}/Q${qid}.sql 2>&1 | tee -a ${outputfile}
         # wait 1s for previous query to finish
@@ -65,13 +65,13 @@ switch_to_branch(){
     git checkout $1
 }
 
-swtich_back(){
+switch_back(){
     git checkout main
     git stash pop
 }
 
 run_plaintext_udf(){
-    for branch in plaintext-udf plaintext-udf-enc-size ; do
+    for branch in plain-udf plain-udf-enc-size ; do
         set -x
         switch_to_branch ${branch}
         make clean && make && make install
@@ -82,7 +82,7 @@ run_plaintext_udf(){
         echo "======================" >> ${outputfile}
         echo ${branch} >> ${outputfile}
         
-        out_dir=tmp/plaintext
+        out_dir=tmp/${branch}
         execute_all_sqls origin-sqls
         # ./test_helper.sh -f scripts/sqls/base-sqls/Q18.sql 2>&1 | tee -a ${outputfile}
     done
@@ -119,13 +119,13 @@ run_enc(){
 
 run_benchmark(){
     # ./test_helper.sh -l -p
-    out_dir=tmp/native
-    # execute_all_sqls origin-sqls
-    ./test_helper.sh -o $out_dir/q1.out -f scripts/sqls/origin-sqls/Q1.sql 2>&1 | tee -a ${outputfile}
+    out_dir=tmp/plain-udf-enc-size
+    execute_all_sqls origin-sqls
+
 }
 
-# run_plaintext_udf
 # run_native
+# run_plaintext_udf
 # run_enc
 
 run_benchmark
