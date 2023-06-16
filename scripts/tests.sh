@@ -31,8 +31,13 @@ load_data() {
 all_sqls=$(seq 1 22)
 echo all_sqls = $all_sqls
 
+
+
+
+out_dir=tmp
 # execute sqls with ./test_helper.sh, sqls qids is passed as parameter
 execute_all_sqls(){
+    mkdir -p $out_dir
     # local qids=$@
     sql_dir=$1
     # for qid in ${qids[@]}; do
@@ -49,24 +54,35 @@ execute_all_sqls(){
         psql -U postgres -d test -c "$sqls" 2>&1 | tee -a ${outputfile}
         sleep 5
 
-        ./test_helper.sh -f scripts/sqls/${sql_dir}/Q${qid}.sql 2>&1 | tee -a ${outputfile}
+        ./test_helper.sh -o $out_dir/${qid}.out -f scripts/sqls/${sql_dir}/Q${qid}.sql 2>&1 | tee -a ${outputfile}
         # wait 1s for previous query to finish
         sleep 1
     done
 }
 
+switch_to_branch(){
+    git stash
+    git checkout $1
+}
+
+swtich_back(){
+    git checkout main
+    git stash pop
+}
+
 run_plaintext_udf(){
     for branch in plaintext-udf plaintext-udf-enc-size ; do
         set -x
-        git checkout ${branch}
+        switch_to_branch ${branch}
         make clean && make && make install
-        git checkout main
+        switch_back
         set +x
         ./test_helper.sh -l
         # redirect all output to ${outputfile}
         echo "======================" >> ${outputfile}
         echo ${branch} >> ${outputfile}
         
+        out_dir=tmp/plaintext
         execute_all_sqls origin-sqls
         # ./test_helper.sh -f scripts/sqls/base-sqls/Q18.sql 2>&1 | tee -a ${outputfile}
     done
@@ -79,6 +95,7 @@ run_native(){
 
     ./test_helper.sh -l -p
 
+    out_dir=tmp/native
     execute_all_sqls origin-sqls
 }
 
@@ -100,6 +117,15 @@ run_enc(){
     killall -9 sim_ops
 }
 
-run_plaintext_udf
-run_native
-run_enc
+run_benchmark(){
+    # ./test_helper.sh -l -p
+    out_dir=tmp/native
+    # execute_all_sqls origin-sqls
+    ./test_helper.sh -o $out_dir/q1.out -f scripts/sqls/origin-sqls/Q1.sql 2>&1 | tee -a ${outputfile}
+}
+
+# run_plaintext_udf
+# run_native
+# run_enc
+
+run_benchmark

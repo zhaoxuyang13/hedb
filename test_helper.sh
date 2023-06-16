@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: $0 [-l] [-w warehouse] [-s schema] [-v] [-h host] [-p port] [-d database] [-U user] [-f file] [-c command]"
+    echo "Usage: $0 [-l] [-w warehouse] [-s schema] [-v] [-U user] [-f file] [-c command] [-o out_file]"
     echo "  -l  load benchmark data"
     echo "  -v  vacuum full of all tables"
     echo "  -h  print this message"
@@ -16,9 +16,9 @@ host=localhost
 port=5432
 database=test
 user=postgres
+out_file=/dev/null
 
-
-while getopts "hlvpw:s:f:c:" opt; do
+while getopts "hlvpw:s:f:c:o:" opt; do
     case $opt in
         p) 
             plaintext=true
@@ -41,7 +41,9 @@ while getopts "hlvpw:s:f:c:" opt; do
         c)
             command=$OPTARG
             ;;
-        
+        o)
+            out_file=$OPTARG
+            ;;
         h)
             usage
             ;;
@@ -89,7 +91,7 @@ fi
 # print the command executed
 set -x
 
-psql -U postgres -d test -c "\o /dev/null" \
+psql -U postgres -d test -c "\o ${out_file}" \
                         -c "SET max_parallel_workers_per_gather = 0;" \
                         -c "\timing" \
                         -f $file
