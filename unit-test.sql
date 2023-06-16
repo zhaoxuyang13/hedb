@@ -1,6 +1,9 @@
 \unset ECHO
 
+drop extension if EXISTS encdb cascade;
+create extension encdb;
 create extension if not EXISTS pgtap;
+
 select plan(50);
 
 select ok(pg_enc_int4_decrypt(pg_enc_int4_encrypt(1)) = 1::int4, 'enc_int4: encryption/decryption test');
@@ -96,10 +99,11 @@ SELECT results_eq(
 );
 
 SELECT results_eq(
-   'select str from test_table where str like ''%db%''',
+   'select str from test_table where str like ''%ed%''',
     $$VALUES ('hedb'::enc_text)$$,
     'enc_text: LIKE function'
 );
+
 
 DROP TABLE IF EXISTS test_table;
 

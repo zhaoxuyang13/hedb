@@ -5,4 +5,4 @@ cd pgTAP-1.2.0
 make && sudo make install
 sudo apt install libtap-parser-sourcehandler-pgtap-perl
 
-sudo -u postgres pg_prove unit-test.sql
+pg_prove -U postgres unit-test.sql

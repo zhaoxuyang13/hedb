@@ -10,10 +10,10 @@ int MatchText(char* t, int tlen, char* p, int plen);
  */
 text* cstring_to_text_with_len(const char* s, int len)
 {
-    text* result = (text*)palloc0(len + VARHDRSZ);
+    text* result = (text*)palloc0(len + VARHDRSZ + 1);
 
-    SET_VARSIZE(result, len + VARHDRSZ);
-    memcpy(VARDATA(result), s, len);
+    SET_VARSIZE(result, len + VARHDRSZ + 1);
+    strcpy(VARDATA(result), s);
 
     return result;
 }
@@ -27,7 +27,7 @@ Datum
 {
     char* s = PG_GETARG_CSTRING(0);
     EncText *result;
-    result = (EncText *) cstring_to_text_with_len(s, strlen(s)+1);
+    result = (EncText *) cstring_to_text_with_len(s, strlen(s));
     PG_RETURN_POINTER(result);
 }
 
@@ -216,10 +216,12 @@ Datum
     EncText* s2 = PG_GETARG_TEXT_PP(1);
     char* str1 = VARDATA(s1);
     char* str2 = VARDATA(s2);
-    strcat(str1, str2);
-
+    char *res = (char *) palloc(strlen(str1) + strlen(str2) + 1);
+    strcpy(res, str1);
+    strcat(res, str2);
     EncText *result;
-    result = (EncText *) cstring_to_text_with_len(str1, strlen(str1)+1);
+    result = (EncText *) cstring_to_text_with_len(res, strlen(res));
+    pfree(res);
     PG_RETURN_POINTER(result);
 }
 
@@ -232,8 +234,9 @@ Datum
 
     char* str = VARDATA(s1);
     char* pattern = VARDATA(s2);
-    bool result = false;
-    result = MatchText(str, strlen(str), pattern, strlen(pattern));
+    // ereport to print str and pattern and sizes 
+    // ereport(INFO, (errmsg("str = %s, pattern = %s, str_len = %d, pattern_len = %d", str, pattern, strlen(str), strlen(pattern))));
+    bool result = MatchText(str, strlen(str), pattern, strlen(pattern));
     PG_RETURN_BOOL(result);
 }
 
@@ -245,8 +248,7 @@ Datum
     EncText* s2 = PG_GETARG_TEXT_PP(1);
     char* str = VARDATA(s1);
     char* pattern = VARDATA(s2);
-    bool result = 0;
-    result = MatchText(str, strlen(str), pattern, strlen(pattern));
+    bool result = MatchText(str, strlen(str), pattern, strlen(pattern));
     PG_RETURN_BOOL(1 ^ result);
 }
 
@@ -276,7 +278,8 @@ Datum
     char* res = palloc((l+1) * sizeof(char));
     strncpy(res, str+f-1, l);
     EncText *result;
-    result = (EncText *) cstring_to_text_with_len(res, l + 1);
+    result = (EncText *) cstring_to_text_with_len(res, l);
+
     PG_RETURN_POINTER(result);
 }
 
@@ -290,6 +293,6 @@ Datum
     Datum txt = PG_GETARG_DATUM(0);
     char* s = TextDatumGetCString(txt);
     EncText *result;
-    result = (EncText *) cstring_to_text_with_len(s, strlen(s) + 1);
+    result = (EncText *) cstring_to_text_with_len(s, strlen(s));
     PG_RETURN_POINTER(result);
 }

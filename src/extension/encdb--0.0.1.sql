@@ -423,7 +423,7 @@ CREATE TYPE enc_text (
 --    CATEGORY = 'S',
 --    PREFERRED = false
     ALIGNMENT      = int4,
-    STORAGE        = EXTENDED
+    STORAGE        = PLAIN
 );
 COMMENT ON TYPE enc_text IS 'ENCRYPTED STRING';
 
