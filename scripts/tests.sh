@@ -110,6 +110,7 @@ run_enc(){
 
     make load-tpch
 
+    out_dir=tmp/enctext
     execute_all_sqls origin-sqls
     # ./test_helper.sh -f scripts/sqls/base-sqls/Q18.sql  2>&1 | tee -a ${outputfile}
 

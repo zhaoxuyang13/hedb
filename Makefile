@@ -60,7 +60,7 @@ gen-tpch:
 load-tpch: 
 	cd benchmark && bash load_db.sh 
 load-tpch-native: 
-	cd benchmark && bash_load_db.sh -p
+	cd benchmark && bash load_db.sh -p
 run:
 	echo "run not impl"
 
