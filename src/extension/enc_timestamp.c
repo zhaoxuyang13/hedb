@@ -328,17 +328,6 @@ Datum
     PG_RETURN_INT32(ans);
 }
 
-#define TMODULO(t, q, u)        \
-    do {                        \
-        (q) = ((t) / (u));      \
-        if ((q) != 0)           \
-            (t) -= ((q) * (u)); \
-    } while (0)
-
-#define INT64CONST(x) (x##L)
-#define USECS_PER_DAY INT64CONST(86400000000)
-#define POSTGRES_EPOCH_JDATE 2451545
-
 static int timestamp_extract_year(int64_t timestamp)
 {
 
@@ -377,15 +366,15 @@ PG_FUNCTION_INFO_V1(date_part);
 Datum
     date_part(PG_FUNCTION_ARGS)
 {
-#if 0 // FIXME
     char* get = text_to_cstring(PG_GETARG_TEXT_P(0));
+    TIMESTAMP* timestp = (TIMESTAMP* ) PG_GETARG_CSTRING(1);
     if (strcmp(get, "year") != 0) {
         ereport(ERROR, (errmsg("Only date_part('year', enc_timestamp) is currently implemented.")));
     }
-    EncTimestamp* timestamp = PG_GETARG_ENCTimestamp(1);
-    EncInt* result = (EncInt*)palloc(sizeof(EncInt));
 
-    result = timestamp_extract_year(timestamp);
-    PG_RETURN_POINTER(result);
-#endif
+    int* pDst = (int*)palloc(INT32_LENGTH * sizeof(char));
+    *pDst = timestamp_extract_year(*timestp);
+
+    PG_RETURN_POINTER(pDst);
+
 }
