@@ -77,7 +77,7 @@ run_plaintext_udf(){
         make clean && make && make install
         switch_back
         set +x
-        ./test_helper.sh -l
+        make load-tpch
         # redirect all output to ${outputfile}
         echo "======================" >> ${outputfile}
         echo ${branch} >> ${outputfile}
@@ -93,7 +93,7 @@ run_native(){
     # checkout to main branch
     git checkout main
 
-    ./test_helper.sh -l -p
+    make load-tpch-native
 
     out_dir=tmp/native
     execute_all_sqls origin-sqls
@@ -108,7 +108,7 @@ run_enc(){
 
     ./build/sim_ops 666 &
 
-    ./test_helper.sh -l 
+    make load-tpch
 
     execute_all_sqls origin-sqls
     # ./test_helper.sh -f scripts/sqls/base-sqls/Q18.sql  2>&1 | tee -a ${outputfile}
@@ -124,8 +124,8 @@ run_benchmark(){
 
 }
 
-# run_native
-# run_plaintext_udf
-# run_enc
+run_native
+run_plaintext_udf
+run_enc
 
-run_benchmark
+# run_benchmark
