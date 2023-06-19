@@ -106,23 +106,14 @@ CREATE TYPE enc_int4 (
     OUTPUT         = pg_enc_int4_out,
 --    RECEIVE        = pg_enc_int4_recv,
 --    SEND           = pg_enc_int4_send,
-    INTERNALLENGTH = 4,
-    ALIGNMENT      = int4,
+    INTERNALLENGTH = 8,
+    ALIGNMENT      = int8,
+    PASSEDBYVALUE,
     STORAGE        = PLAIN
 );
 COMMENT ON TYPE enc_int4 IS 'ENCRYPTED INTEGER';
 
-CREATE FUNCTION pg_enc_int4_addfinal(enc_int4[])
-RETURNS enc_int4
-AS 'MODULE_PATHNAME'
-LANGUAGE C IMMUTABLE STRICT;
-
 CREATE FUNCTION pg_enc_int4_sum_bulk(enc_int4[])
-RETURNS enc_int4
-AS 'MODULE_PATHNAME'
-LANGUAGE C IMMUTABLE STRICT;
-
-CREATE FUNCTION pg_enc_int4_avgfinal(enc_int4[])
 RETURNS enc_int4
 AS 'MODULE_PATHNAME'
 LANGUAGE C IMMUTABLE STRICT;
@@ -132,20 +123,12 @@ RETURNS enc_int4
 AS 'MODULE_PATHNAME'
 LANGUAGE C IMMUTABLE STRICT;
 
-CREATE FUNCTION pg_enc_int4_minfinal(enc_int4[])
-RETURNS enc_int4
-AS 'MODULE_PATHNAME'
-LANGUAGE C IMMUTABLE STRICT;
 
 CREATE FUNCTION pg_enc_int4_min_bulk(enc_int4[])
 RETURNS enc_int4
 AS 'MODULE_PATHNAME'
 LANGUAGE C IMMUTABLE STRICT;
 
-CREATE FUNCTION pg_enc_int4_maxfinal(enc_int4[])
-RETURNS enc_int4
-AS 'MODULE_PATHNAME'
-LANGUAGE C IMMUTABLE STRICT;
 
 CREATE FUNCTION pg_enc_int4_max_bulk(enc_int4[])
 RETURNS enc_int4
@@ -245,14 +228,14 @@ CREATE AGGREGATE avg (enc_int4)
     finalfunc = pg_enc_int4_avg_bulk
 );
 
-CREATE AGGREGATE min (enc_int4)
+CREATE AGGREGATE min_bulk (enc_int4)
 (
    sfunc = array_append,
    stype = enc_int4[],
    finalfunc = pg_enc_int4_min_bulk
 );
 
-CREATE AGGREGATE min_simple (enc_int4)
+CREATE AGGREGATE min (enc_int4)
 (
    sfunc = pg_enc_int4_min,
    stype = enc_int4,
@@ -260,14 +243,14 @@ CREATE AGGREGATE min_simple (enc_int4)
    combinefunc = pg_enc_int4_min
 );
 
-CREATE AGGREGATE max (enc_int4)
+CREATE AGGREGATE max_bulk (enc_int4)
 (
    sfunc = array_append,
    stype = enc_int4[],
    finalfunc = pg_enc_int4_max_bulk
 );
 
-CREATE AGGREGATE max_simple (enc_int4)
+CREATE AGGREGATE max (enc_int4)
 (
    sfunc = pg_enc_int4_max,
    stype = enc_int4,
@@ -616,37 +599,18 @@ RETURNS enc_float4
 AS '$libdir/encdb'
 LANGUAGE C IMMUTABLE STRICT ;
 
-CREATE FUNCTION pg_enc_float4_addfinal(enc_float4[])
-RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
 
 CREATE FUNCTION pg_enc_float4_sum_bulk(enc_float4[])
 RETURNS enc_float4
 AS '$libdir/encdb'
 LANGUAGE C IMMUTABLE STRICT ;
 
-CREATE FUNCTION pg_enc_float4_maxfinal(enc_float4[])
-RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
 
 CREATE FUNCTION pg_enc_float4_max_bulk(enc_float4[])
 RETURNS enc_float4
 AS '$libdir/encdb'
 LANGUAGE C IMMUTABLE STRICT ;
-
-CREATE FUNCTION pg_enc_float4_minfinal(enc_float4[])
-RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
-
 CREATE FUNCTION pg_enc_float4_min_bulk(enc_float4[])
-RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
-
-CREATE FUNCTION pg_enc_float4_avgfinal(enc_float4[])
 RETURNS enc_float4
 AS '$libdir/encdb'
 LANGUAGE C IMMUTABLE STRICT ;
@@ -792,39 +756,41 @@ CREATE AGGREGATE avg (enc_float4)
    finalfunc = pg_enc_float4_avg_bulk
 );
 
-CREATE AGGREGATE avg_simple (enc_float4)
-(
-   sfunc = array_append,
-   stype = enc_float4[],
-   finalfunc = pg_enc_float4_avgfinal
-);
+-- CREATE AGGREGATE avg_simple (enc_float4)
+-- (
+--    sfunc = array_append,
+--    stype = enc_float4[],
+--    finalfunc = pg_enc_float4_avgfinal
+-- );
 
-CREATE AGGREGATE max (enc_float4)
+CREATE AGGREGATE max_bulk (enc_float4)
 (
    sfunc = array_append,
    stype = enc_float4[],
    finalfunc = pg_enc_float4_max_bulk
 );
 
-CREATE AGGREGATE max_simple (enc_float4)
+CREATE AGGREGATE max (enc_float4)
 (
-   sfunc = array_append,
-   stype = enc_float4[],
-   finalfunc = pg_enc_float4_maxfinal
+   sfunc = pg_enc_float4_max,
+   stype = enc_float4,
+   PARALLEL = safe, 
+   combinefunc = pg_enc_float4_max
 );
 
-CREATE AGGREGATE min (enc_float4)
+CREATE AGGREGATE min_bulk (enc_float4)
 (
    sfunc = array_append,
    stype = enc_float4[],
    finalfunc = pg_enc_float4_min_bulk
 );
 
-CREATE AGGREGATE min_simple (enc_float4)
+CREATE AGGREGATE min (enc_float4)
 (
-   sfunc = array_append,
-   stype = enc_float4[],
-   finalfunc = pg_enc_float4_minfinal
+   sfunc = pg_enc_float4_min,
+   stype = enc_float4,
+   PARALLEL = safe, 
+   combinefunc = pg_enc_float4_min
 );
 
 CREATE OR REPLACE FUNCTION enc_float4(float4)

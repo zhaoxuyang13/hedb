@@ -1,4 +1,4 @@
-#include "extension.h"
+#include "enc_text_ops.hpp"
 
 #define GETCHAR(t) (t)
 #define LIKE_TRUE 1

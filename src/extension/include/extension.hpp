@@ -1,7 +1,15 @@
 #pragma once
+
+extern "C" {
 #include <defs.h>
 #include <stdafx.h>
 #include <c.h>
+}
+
+
+#include "enc_ops.hpp"
+
+
 
 #define DatumGetEncInt(X)  ((int *) DatumGetPointer(X))
 #define PG_GETARG_ENCINT(n) DatumGetEncInt(PG_GETARG_DATUM(n))

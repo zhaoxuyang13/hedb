@@ -25,7 +25,8 @@ public:
     KVStore(uint32_t int_size, uint32_t float_size, uint32_t str_size, uint32_t ts_size) : 
         int_kv(int_size + 1), float_kv(float_size + 1), ts_kv(ts_size + 1), str_kv(str_size + 1) {
             std::cout << "KVStore init with size: " << int_size << ", " << float_size << ", " << ts_size << ", " << str_size << std::endl;
-        }
+    }
+    KVStore(){}
     uint32_t push_back(uint32_t map_id, int value){
         return int_kv[map_id].push_back(value);
     }
