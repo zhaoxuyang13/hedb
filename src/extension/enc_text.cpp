@@ -41,7 +41,10 @@ Datum
     if(s[0] == FLAG_CHAR){
         index = strtoull(s + 1, NULL, 10);
     }else {
-        index = makeIndex(0, insertStr(s + 1));
+        ereport(INFO, 
+            (errmsg("insert temp key: %s", s)));
+        index = makeIndex(0, insertStr(s));
+
     }
     PG_RETURN_DATUM(index);
 }

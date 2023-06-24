@@ -11,9 +11,8 @@ include_directories(${PostgreSQL_INCLUDE_DIRS}
 # include(CTest)
 
 file(GLOB SRC
-  "*.c"
-  "*.cpp"
-  "../utils/*.c")
+  "./kv_ops/*.cpp"
+  "*.cpp")
 
 add_postgresql_extension(
     encdb

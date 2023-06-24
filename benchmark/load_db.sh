@@ -14,7 +14,7 @@ while getopts "p" opt; do
     esac
 done
 
-data_dir=tools
+data_dir=tools/tmp
 schema_dir=db_schemas
 db_name=test
 db_user=postgres
@@ -31,6 +31,7 @@ chmod a+rw tools/*.tbl
 
 # tpch tables list 
 tables="customer lineitem nation orders part partsupp region supplier"
+
 
 # load data to postgresql database, remove last character which is '|' in every row
 cat $data_dir/nation.tbl | sed 's/.$//' | psql -U $db_user -h $db_host -p $db_port -d $db_name -c "copy nation (n_nationkey, n_name, n_regionkey, n_comment) from stdin with delimiter '|';"

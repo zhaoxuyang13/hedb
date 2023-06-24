@@ -25,7 +25,7 @@ int enc_text_cmp(uint64_t left, uint64_t right);
 int enc_text_like(uint64_t str, uint64_t pattern);
 uint64_t enc_text_concat(uint64_t left, uint64_t right);
 uint64_t enc_text_substr(uint64_t str, uint64_t begin, uint64_t length);
-int MatchText(char* t, int tlen, char* p, int plen);
+int MatchText(const char* t, int tlen, const char* p, int plen);
 
 int enc_timestamp_cmp(uint64_t left, uint64_t right);
 uint64_t enc_timestamp_extract_year(uint64_t in);

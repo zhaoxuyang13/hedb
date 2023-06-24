@@ -50,7 +50,7 @@ Datum
     if(pSrc[0] == FLAG_CHAR){ // if the number begin with 0, its a kv.
         index = strtoull(pSrc + 1, NULL, 10);
     }else {
-        int src = pg_atoi(pSrc, KV_LENGTH, '\0');
+        int src = pg_atoi(pSrc, sizeof(int), '\0');
         index = makeIndex(0, insertInt(src));
     }
     PG_RETURN_DATUM(index);
@@ -404,8 +404,7 @@ Datum
 }
 
 
-Datum
-    pg_enc_int4_min(PG_FUNCTION_ARGS){
+Datum pg_enc_int4_min(PG_FUNCTION_ARGS){
     uint64_t index1 = PG_GETARG_DATUM(0);
     uint64_t index2 = PG_GETARG_DATUM(1);
     
@@ -417,8 +416,7 @@ Datum
     }
 }
 
-Datum
-    pg_enc_int4_max(PG_FUNCTION_ARGS){
+Datum pg_enc_int4_max(PG_FUNCTION_ARGS){
     uint64_t index1 = PG_GETARG_DATUM(0);
     uint64_t index2 = PG_GETARG_DATUM(1);
 

@@ -1,4 +1,4 @@
-#include "enc_int_ops.hpp"
+#include "enc_ops.hpp"
 
 uint64_t enc_int_add(uint64_t left, uint64_t right){
     int l = getInt(left);

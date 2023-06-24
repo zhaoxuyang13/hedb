@@ -1,4 +1,4 @@
-#include "enc_text_ops.hpp"
+#include "enc_ops.hpp"
 
 #define GETCHAR(t) (t)
 #define LIKE_TRUE 1
@@ -10,7 +10,7 @@
 #define NextChar(p, plen) NextByte((p), (plen))
 #define CopyAdvChar(dst, src, srclen) (*(dst)++ = *(src)++, (srclen)--)
 
-int MatchText(char* t, int tlen, char* p, int plen)
+int MatchText(const char* t, int tlen, const char* p, int plen)
 {
     /* Fast path for match-everything pattern */
     if (plen == 1 && *p == '%')

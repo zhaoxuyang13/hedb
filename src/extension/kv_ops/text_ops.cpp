@@ -1,8 +1,10 @@
-#include "enc_text_ops.hpp"
+#include "enc_ops.hpp"
 
 int enc_text_cmp(uint64_t left, uint64_t right){
     const char *l = getText(left);
     const char *r = getText(right);
+    std::cout << l << " " << r << std::endl;
+    
     return strcmp(l, r);
 }
 
@@ -18,7 +20,7 @@ uint64_t enc_text_concat(uint64_t left, uint64_t right){
     char *res = (char *)malloc(strlen(l) + strlen(r) + 1);
     strcpy(res, l);
     strcat(res, r);
-    int key = insertText(res);
+    int key = insertStr(res);
     free(res);
     return makeIndex(0, key);
 }
@@ -28,7 +30,7 @@ uint64_t enc_text_substr(uint64_t text, uint64_t start, uint64_t length){
     char *res = (char *)malloc(length + 1);
     strncpy(res, t + start, length);
     res[length] = '\0';
-    int key = insertText(res);
+    int key = insertStr(res);
     free(res);
     return makeIndex(0, key);
 }

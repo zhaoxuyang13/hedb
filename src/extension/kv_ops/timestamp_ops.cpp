@@ -1,4 +1,6 @@
-#include "enc_timestamp_ops.hpp"
+#include "enc_ops.hpp"
+#include "extension.hpp"
+
 
 int enc_timestamp_cmp(uint64_t left, uint64_t right){
     int l = getTs(left);

@@ -10,7 +10,6 @@ extern "C" {
 #include "enc_ops.hpp"
 
 
-
 #define DatumGetEncInt(X)  ((int *) DatumGetPointer(X))
 #define PG_GETARG_ENCINT(n) DatumGetEncInt(PG_GETARG_DATUM(n))
 

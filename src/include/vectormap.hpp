@@ -1,18 +1,28 @@
 #pragma once 
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/vector.hpp>
 
+#include <boost/interprocess/containers/vector.hpp>
+#include <boost/interprocess/containers/string.hpp>
+#include <boost/interprocess/allocators/allocator.hpp>
+#include <boost/interprocess/managed_shared_memory.hpp>
+
+#include "serialization.hpp"
+
+using boost::interprocess::string;
+using boost::interprocess::vector;
+
+
 template<typename Vt>
 class VectorMap{
-    std::vector<Vt> _vec;
+    vector<Vt> _vec;
 
 public:
-    VectorMap(){ 
-        
-    }
+    VectorMap(){ }
     
     void insert(uint32_t key, Vt& value){
         // assert(key == _vec.size());
@@ -65,9 +75,8 @@ public:
 
 // template specialization for std::string
 template<>
-class VectorMap<std::string>{
-    
-    std::vector<std::string> _vec;
+class VectorMap<string>{
+    vector<string> _vec;
 public: 
     VectorMap(){ 
     }
@@ -75,17 +84,17 @@ public:
         if(_vec.size() < key + 1){
             _vec.resize(key + 1);
         }
-        _vec[key] = std::string(value);
+        _vec[key] = string(value);
     }
 
     uint32_t push_back(const char* value){
-        _vec.emplace_back(std::string(value));
+        _vec.emplace_back(string(value));
         return _vec.size() - 1;
     }
-    std::string& find(uint32_t key){
+    string& find(uint32_t key){
         return _vec[key];
     }
-    std::string find_tmp(uint32_t key){
+    string find_tmp(uint32_t key){
         return _vec[key];
     }
 

@@ -11,7 +11,7 @@ PG_FUNCTION_INFO_V1(pg_enc_float4_out);
 PG_FUNCTION_INFO_V1(pg_enc_float4_sum_bulk);
 PG_FUNCTION_INFO_V1(pg_enc_float4_avg_bulk);
 PG_FUNCTION_INFO_V1(pg_enc_float4_add);
-PG_FUNCTION_INFO_V1(pg_enc_float4_subs);
+PG_FUNCTION_INFO_V1(pg_enc_float4_sub);
 PG_FUNCTION_INFO_V1(pg_enc_float4_mult);
 PG_FUNCTION_INFO_V1(pg_enc_float4_div);
 PG_FUNCTION_INFO_V1(pg_enc_float4_exp);
@@ -23,6 +23,9 @@ PG_FUNCTION_INFO_V1(pg_enc_float4_le);
 PG_FUNCTION_INFO_V1(pg_enc_float4_gt);
 PG_FUNCTION_INFO_V1(pg_enc_float4_ge);
 PG_FUNCTION_INFO_V1(pg_enc_float4_cmp);
+
+PG_FUNCTION_INFO_V1(pg_enc_float4_max);
+PG_FUNCTION_INFO_V1(pg_enc_float4_min);
 
 PG_FUNCTION_INFO_V1(float4_to_enc_float4);
 PG_FUNCTION_INFO_V1(numeric_to_enc_float4);
@@ -82,6 +85,8 @@ Datum pg_enc_float4_in(PG_FUNCTION_ARGS)
     if(pSrc[0] == FLAG_CHAR){
         index = strtoull(pSrc + 1, NULL, 10);
     }else {
+        ereport(INFO, 
+            (errmsg("insert temp key: %s", pSrc)));
         float src = pg_float4_in(pSrc);
         index = makeIndex(0, insertFloat(src));
     }
@@ -360,6 +365,33 @@ Datum pg_enc_float4_cmp(PG_FUNCTION_ARGS)
     int32_t cmp = enc_float_cmp(index1, index2);
     PG_RETURN_BOOL(cmp);
 }
+
+Datum pg_enc_float4_min(PG_FUNCTION_ARGS){
+    uint64_t index1 = PG_GETARG_DATUM(0);
+    uint64_t index2 = PG_GETARG_DATUM(1);
+
+    int32_t result = enc_float_cmp(index1, index2);
+    if (result < 0) {
+        PG_RETURN_DATUM(index1);
+    } else {
+        PG_RETURN_DATUM(index2);
+    }
+}
+
+Datum pg_enc_float4_max(PG_FUNCTION_ARGS){
+    uint64_t index1 = PG_GETARG_DATUM(0);
+    uint64_t index2 = PG_GETARG_DATUM(1);
+
+    int32_t result = enc_int_cmp(index1, index2);
+    if (result > 0) {
+        PG_RETURN_DATUM(index1);
+    } else {
+        PG_RETURN_DATUM(index2);
+    }
+}
+
+
+
 
 Datum pg_enc_float4_mod(PG_FUNCTION_ARGS)
 {

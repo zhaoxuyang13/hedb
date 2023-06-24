@@ -1,13 +1,14 @@
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <filesystem>
-#include "vectormap.hpp"
-#include "kv-store.hpp"
+#include "kv.hpp"
+#include <boost/interprocess/managed_shared_memory.hpp>
+#include <boost/interprocess/managed_mapped_file.hpp>
 
+#include <vector>
+#include <string> // for parsing files and strings
 
-using std::string, std::vector;
-string data_path = "./benchmark/tools";
+std::string data_path = "./benchmark/tools";
 // string out_path = ".benchmark/data";
 
 
@@ -19,7 +20,7 @@ enum enc_type {
     EncTimestamp,
 };
 
-const vector<string> tpch_tbls = {
+const std::vector<std::string> tpch_tbls = {
     "nation.tbl",
     "region.tbl",
     "part.tbl",
@@ -31,7 +32,7 @@ const vector<string> tpch_tbls = {
 };
 
 // all the keys in schema are None
-const vector<vector<enc_type>> tpch_schema = {
+const std::vector<std::vector<enc_type>> tpch_schema = {
     { None, EncString, None, EncString },
     { None, EncString, EncString },
     { None, EncString, EncString, EncString, EncString, EncInt, EncString, EncFloat, EncString },
@@ -42,76 +43,126 @@ const vector<vector<enc_type>> tpch_schema = {
     { None, None, None, None, EncFloat, EncFloat, EncFloat, EncFloat, EncString, EncString, EncTimestamp, EncTimestamp, EncTimestamp, EncString, EncString, EncString}
 };
 
-// vector<vector<string>> read_tbl(string tbl_path){
-//     vector<vector<string>> tbl;
-//     std::ifstream infile(tbl_path);
-//     string line;
-//     while (std::getline(infile, line)){
-//         vector<string> row;
-//         std::istringstream iss(line);
-//         string field;
-//         while (iss >> field){
-//             row.push_back(field);
-//         }
-//         tbl.push_back(row);
-//     }
-//     return tbl;
-// }
-
 uint32_t cnts[5] = {0, 0, 0, 0, 0};
 uint64_t combine(uint32_t a, uint32_t b){
     uint64_t c = a;
     return c << 32 | b;
 }
 
-int transform_tbl(const string tbl_path, const string out_path, const vector<enc_type>& table_schema, KVStore& kv){
+
+
+
+static TimeOffset time2t(const int hour, const int min, const int sec, const fsec_t fsec)
+{
+    return (((hour * MINS_PER_HOUR) + min) * SECS_PER_MINUTE) + sec + fsec;
+}
+
+Timestamp pg_timestamp_in(char* str)
+{
+
+    Timestamp result;
+    char workbuf[MAXDATELEN + MAXDATEFIELDS];
+    char* field[MAXDATEFIELDS];
+    int ftype[MAXDATEFIELDS];
+    int dterr;
+    int nf;
+    int tz;
+    int dtype;
+    fsec_t fsec;
+    struct pg_tm tt, *tm = &tt;
+    char buf[MAXDATELEN + 1];
+    char src_byte[TIMESTAMP_LENGTH];
+    int resp;
+
+    dterr = ParseDateTime(str, workbuf, sizeof(workbuf), field, ftype, MAXDATEFIELDS, &nf);
+
+    if (dterr == 0)
+        dterr = DecodeDateTime(field, ftype, nf, &dtype, tm, &fsec, &tz);
+    if (dterr != 0)
+        DateTimeParseError(dterr, str, "timestamp");
+
+    switch (dtype)
+    {
+    case DTK_DATE:
+        if (tm2timestamp(tm, fsec, NULL, &result) != 0)
+            ereport(ERROR,
+                    (errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
+                     errmsg("timestamp out of range: \"%s\"", str)));
+        break;
+
+    case DTK_EPOCH:
+        result = SetEpochTimestamp();
+        break;
+
+    case DTK_LATE:
+        TIMESTAMP_NOEND(result);
+        break;
+
+    case DTK_EARLY:
+        TIMESTAMP_NOBEGIN(result);
+        break;
+
+    default:
+        elog(ERROR, "unexpected dtype %d while parsing timestamp \"%s\"",
+             dtype, str);
+        TIMESTAMP_NOEND(result);
+    }
+
+    return result;
+}
+
+
+
+
+
+int transform_tbl(const std::string tbl_path, const std::string out_path, const std::vector<enc_type>& table_schema, KVStore *kv){
     std::ifstream infile(tbl_path);
     std::ofstream outfile(out_path);
-    string line;
+    std::string line;
 
     std::cout << "transforming " << tbl_path << std::endl;
     // std::cout << "mapids begins at " << int_cnt << " " << float_cnt << " " << string_cnt << " " << timestamp_cnt << std::endl;
-    vector<uint32_t> map_ids(table_schema.size());
+    std::vector<uint32_t> map_ids(table_schema.size());
     
     for(uint32_t i = 0; i < table_schema.size(); i++){
         cnts[table_schema[i]] ++;
         map_ids[i] = cnts[table_schema[i]];
     }
     while(std::getline(infile, line)){
-        vector<string> row;
+        std::vector<std::string> row;
         // create a input stream on line, with delimiter '|'
         std::istringstream iss(line);
-        string field;
-        string out_line;
+        std::string field;
+        std::string out_line;
         while(std::getline(iss, field, '|')){
             row.push_back(field);
         }
         for(uint32_t i = 0; i < row.size(); i++){
-            string field = row[i];
+            std::string field = row[i];
             uint32_t mapid = map_ids[i];
             switch (table_schema[i])
             {
             case EncInt:{
                 int value = std::stoi(field);
-                uint32_t key = kv.push_back(mapid, value);
-                out_line += std::to_string(combine(mapid, key)) + "|";
+                uint32_t key = kv->push_back(mapid, value);
+                out_line += FLAG_CHAR + std::to_string(combine(mapid, key)) + "|";
                 break;
             }
             case EncFloat:{
                 float value = std::stof(field);
-                uint32_t key = kv.push_back(mapid, value);
-                out_line += std::to_string(combine(mapid, key)) + "|";
+                uint32_t key = kv->push_back(mapid, value);
+                out_line += FLAG_CHAR + std::to_string(combine(mapid, key)) + "|";
                 break;
             }
             case EncString:{
-                uint32_t key = kv.push_back(mapid, field.c_str());
-                out_line += std::to_string(combine(mapid, key)) + "|";
+                uint32_t key = kv->push_back(mapid, field.c_str());
+                out_line += FLAG_CHAR + std::to_string(combine(mapid, key)) + "|";
                 break;
             }
             case EncTimestamp:{
-                TIMESTAMP value = std::stol(field);
-                uint32_t key = kv.push_back(mapid,  value);
-                out_line += std::to_string(combine(mapid, key)) + "|";
+                TIMESTAMP value = std::stoull(field);
+                uint32_t key = kv->push_back(mapid,  value);
+                out_line += FLAG_CHAR + std::to_string(combine(mapid, key)) + "|";
                 break;
             }
             case None:{
@@ -129,7 +180,14 @@ int transform_tbl(const string tbl_path, const string out_path, const vector<enc
     return 0;
 }
 
+using namespace boost::interprocess;
+using void_allocator = allocator<void, managed_shared_memory::segment_manager>;
 
+
+const uint64_t MB = 1024 * 1024;
+const uint64_t GB = 1024 * MB;
+
+const char * MMAP_FILENAME = "./kv.mmap";
 int main(){
     // read tpch_tbls in data_path, use filesystem lib to read files.
 
@@ -140,13 +198,19 @@ int main(){
             num[tpch_schema[i][j]] ++;
         }
     }
-    KVStore kv(num[EncInt], num[EncFloat], num[EncString], num[EncTimestamp]);
+    
+    managed_mapped_file segment(open_or_create, MMAP_FILENAME, 4 * GB);
+    void_allocator void_alloc_inst(segment.get_segment_manager());
+    segment.destroy<KVStore>("kv");
+    KVStore *kv = segment.construct<KVStore>("kv")(num[EncInt], num[EncFloat], num[EncTimestamp], num[EncString], void_alloc_inst);
+    // KVStore kv(num[EncInt], num[EncFloat], num[EncTimestamp], num[EncString], void_alloc_inst);
     for(uint32_t i = 0; i < tpch_tbls.size(); i++){
         std::cout << tpch_tbls[i] << std::endl;
-        string tbl_path = data_path + "/" + tpch_tbls[i];
-        string out_path = data_path + "/tmp/" + tpch_tbls[i];
+        std::string tbl_path = data_path + "/" + tpch_tbls[i];
+        std::string out_path = data_path + "/tmp/" + tpch_tbls[i];
         int resp = transform_tbl(tbl_path, out_path, tpch_schema[i], kv);
     }
-    kv.save("kv");
+    segment.flush();
+    // kv.save("kv");
     return 0;
 }

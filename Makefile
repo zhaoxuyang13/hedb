@@ -15,15 +15,9 @@ install:
 BENCHMARK_DIR=benchmark
 
 load-tpch: 
-	cd $(BENCHMARK_DIR) && psql -U postgres -d test -f db_schemas/tpch-schema-encrypted.sql 
-	cd $(BENCHMARK_DIR) && psql -U postgres -d test -f db_schemas/tpch-index.sql 
-	cd $(BENCHMARK_DIR) && java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 100 --config config/tpch_config.xml --load true --execute false
-
+	cd $(BENCHMARK_DIR) && bash load_db.sh
 load-tpch-native:
-	cd $(BENCHMARK_DIR) && psql -U postgres -d test -f db_schemas/tpch-schema.sql 
-	cd $(BENCHMARK_DIR) && psql -U postgres -d test -f db_schemas/tpch-index.sql 
-	cd $(BENCHMARK_DIR) && java -Dlog4j.configuration=log4j.properties -jar bin/tpch.jar -b tpch -o output -s 100 --config config/tpch_config.xml --load true --execute false
-
+	cd $(BENCHMARK_DIR) && bash load_db.sh -p
 load-tpcc-native: 
 	echo "not impl"
 

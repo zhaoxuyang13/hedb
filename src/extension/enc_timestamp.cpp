@@ -86,7 +86,9 @@ Datum
     uint64_t index = 0;
     if(pSrc[0] == FLAG_CHAR){
         index = strtoull(pSrc + 1, NULL, 10);
-    }else {
+    }else { 
+        ereport(INFO, 
+            (errmsg("insert temp key: %s", pSrc)));
         TIMESTAMP dst= pg_timestamp_in(pSrc);
         index = makeIndex(0, insertTs(dst));
     }

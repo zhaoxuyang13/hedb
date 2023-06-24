@@ -1,5 +1,5 @@
 #pragma once 
-#include <stdafx.h>
+
 
 inline int plain_int_add(int left, int right){
     return left + right;
@@ -75,7 +75,7 @@ double plain_float_bulk_avg(int size, float *array){
 inline int plain_text_cmp(char *lhs, uint32_t l_size, char *rhs, uint32_t r_size){
     return strcmp(lhs, rhs);
 }
-int MatchText(char* t, int tlen, char* p, int plen);
+int MatchText(const char* t, int tlen, const char* p, int plen);
 inline int plain_text_like(char *lhs, uint32_t l_size, char *rhs, uint32_t r_size){
     return MatchText(lhs, l_size, rhs, r_size);
 }

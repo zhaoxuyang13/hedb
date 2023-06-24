@@ -3,6 +3,12 @@
 -- complain if script is sourced in psql, rather than via CREATE EXTENSION
 \echo Use "CREATE EXTENSION encdb" to load this file. \quit
 
+
+CREATE OR REPLACE FUNCTION launch()
+RETURNS void
+AS 'MODULE_PATHNAME'
+LANGUAGE C IMMUTABLE STRICT;
+
 -------------------------------------------------------------------------------
 --ENCRYPTED INTEGER TYPE (randomized)
 -------------------------------------------------------------------------------
@@ -107,7 +113,7 @@ CREATE TYPE enc_int4 (
 --    RECEIVE        = pg_enc_int4_recv,
 --    SEND           = pg_enc_int4_send,
     INTERNALLENGTH = 8,
-    ALIGNMENT      = int8,
+    ALIGNMENT      = double,
     PASSEDBYVALUE,
     STORAGE        = PLAIN
 );
@@ -124,16 +130,16 @@ AS 'MODULE_PATHNAME'
 LANGUAGE C IMMUTABLE STRICT;
 
 
-CREATE FUNCTION pg_enc_int4_min_bulk(enc_int4[])
-RETURNS enc_int4
-AS 'MODULE_PATHNAME'
-LANGUAGE C IMMUTABLE STRICT;
+-- CREATE FUNCTION pg_enc_int4_min_bulk(enc_int4[])
+-- RETURNS enc_int4
+-- AS 'MODULE_PATHNAME'
+-- LANGUAGE C IMMUTABLE STRICT;
 
 
-CREATE FUNCTION pg_enc_int4_max_bulk(enc_int4[])
-RETURNS enc_int4
-AS 'MODULE_PATHNAME'
-LANGUAGE C IMMUTABLE STRICT;
+-- CREATE FUNCTION pg_enc_int4_max_bulk(enc_int4[])
+-- RETURNS enc_int4
+-- AS 'MODULE_PATHNAME'
+-- LANGUAGE C IMMUTABLE STRICT;
 
 CREATE FUNCTION pg_enc_int4_min(enc_int4,enc_int4)
 RETURNS enc_int4
@@ -228,12 +234,12 @@ CREATE AGGREGATE avg (enc_int4)
     finalfunc = pg_enc_int4_avg_bulk
 );
 
-CREATE AGGREGATE min_bulk (enc_int4)
-(
-   sfunc = array_append,
-   stype = enc_int4[],
-   finalfunc = pg_enc_int4_min_bulk
-);
+-- CREATE AGGREGATE min_bulk (enc_int4)
+-- (
+--    sfunc = array_append,
+--    stype = enc_int4[],
+--    finalfunc = pg_enc_int4_min_bulk
+-- );
 
 CREATE AGGREGATE min (enc_int4)
 (
@@ -243,12 +249,12 @@ CREATE AGGREGATE min (enc_int4)
    combinefunc = pg_enc_int4_min
 );
 
-CREATE AGGREGATE max_bulk (enc_int4)
-(
-   sfunc = array_append,
-   stype = enc_int4[],
-   finalfunc = pg_enc_int4_max_bulk
-);
+-- CREATE AGGREGATE max_bulk (enc_int4)
+-- (
+--    sfunc = array_append,
+--    stype = enc_int4[],
+--    finalfunc = pg_enc_int4_max_bulk
+-- );
 
 CREATE AGGREGATE max (enc_int4)
 (
@@ -402,10 +408,11 @@ CREATE TYPE enc_text (
     INPUT          = pg_enc_text_in,
     OUTPUT         = pg_enc_text_out,
 --      LIKE       = text,
-    INTERNALLENGTH = VARIABLE,
+    INTERNALLENGTH = 8,
 --    CATEGORY = 'S',
 --    PREFERRED = false
-    ALIGNMENT      = int4,
+    ALIGNMENT      = double,
+    PASSEDBYVALUE,
     STORAGE        = PLAIN
 );
 COMMENT ON TYPE enc_text IS 'ENCRYPTED STRING';
@@ -524,8 +531,9 @@ CREATE TYPE enc_float4 (
     INPUT          = pg_enc_float4_in,
     OUTPUT         = pg_enc_float4_out,
     -- INTERNALLENGTH = 45,
-    INTERNALLENGTH = 4,
-    ALIGNMENT      = int4,
+    INTERNALLENGTH = 8,
+    ALIGNMENT      = double,
+    PASSEDBYVALUE,
     STORAGE        = PLAIN
 );
 
@@ -579,7 +587,7 @@ RETURNS enc_float4
 AS '$libdir/encdb'
 LANGUAGE C IMMUTABLE STRICT ;
 
-CREATE FUNCTION pg_enc_float4_subs(enc_float4, enc_float4)
+CREATE FUNCTION pg_enc_float4_sub(enc_float4, enc_float4)
 RETURNS enc_float4
 AS '$libdir/encdb'
 LANGUAGE C IMMUTABLE STRICT ;
@@ -599,6 +607,16 @@ RETURNS enc_float4
 AS '$libdir/encdb'
 LANGUAGE C IMMUTABLE STRICT ;
 
+CREATE FUNCTION pg_enc_float4_max(enc_float4, enc_float4)
+RETURNS enc_float4
+AS '$libdir/encdb'
+LANGUAGE C IMMUTABLE STRICT ;
+
+CREATE FUNCTION pg_enc_float4_min(enc_float4, enc_float4)
+RETURNS enc_float4
+AS '$libdir/encdb'
+LANGUAGE C IMMUTABLE STRICT ;
+
 
 CREATE FUNCTION pg_enc_float4_sum_bulk(enc_float4[])
 RETURNS enc_float4
@@ -606,14 +624,14 @@ AS '$libdir/encdb'
 LANGUAGE C IMMUTABLE STRICT ;
 
 
-CREATE FUNCTION pg_enc_float4_max_bulk(enc_float4[])
-RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
-CREATE FUNCTION pg_enc_float4_min_bulk(enc_float4[])
-RETURNS enc_float4
-AS '$libdir/encdb'
-LANGUAGE C IMMUTABLE STRICT ;
+-- CREATE FUNCTION pg_enc_float4_max_bulk(enc_float4[])
+-- RETURNS enc_float4
+-- AS '$libdir/encdb'
+-- LANGUAGE C IMMUTABLE STRICT ;
+-- CREATE FUNCTION pg_enc_float4_min_bulk(enc_float4[])
+-- RETURNS enc_float4
+-- AS '$libdir/encdb'
+-- LANGUAGE C IMMUTABLE STRICT ;
 
 CREATE FUNCTION pg_enc_float4_avg_bulk(enc_float4[])
 RETURNS enc_float4
@@ -694,7 +712,7 @@ CREATE OPERATOR + (
 CREATE OPERATOR - (
   LEFTARG = enc_float4,
   RIGHTARG = enc_float4,
-  PROCEDURE = pg_enc_float4_subs
+  PROCEDURE = pg_enc_float4_sub
 );
 
 CREATE OPERATOR * (
@@ -763,12 +781,12 @@ CREATE AGGREGATE avg (enc_float4)
 --    finalfunc = pg_enc_float4_avgfinal
 -- );
 
-CREATE AGGREGATE max_bulk (enc_float4)
-(
-   sfunc = array_append,
-   stype = enc_float4[],
-   finalfunc = pg_enc_float4_max_bulk
-);
+-- CREATE AGGREGATE max_bulk (enc_float4)
+-- (
+--    sfunc = array_append,
+--    stype = enc_float4[],
+--    finalfunc = pg_enc_float4_max_bulk
+-- );
 
 CREATE AGGREGATE max (enc_float4)
 (
@@ -778,12 +796,12 @@ CREATE AGGREGATE max (enc_float4)
    combinefunc = pg_enc_float4_max
 );
 
-CREATE AGGREGATE min_bulk (enc_float4)
-(
-   sfunc = array_append,
-   stype = enc_float4[],
-   finalfunc = pg_enc_float4_min_bulk
-);
+-- CREATE AGGREGATE min_bulk (enc_float4)
+-- (
+--    sfunc = array_append,
+--    stype = enc_float4[],
+--    finalfunc = pg_enc_float4_min_bulk
+-- );
 
 CREATE AGGREGATE min (enc_float4)
 (
@@ -841,7 +859,8 @@ CREATE TYPE enc_timestamp (
     OUTPUT         = pg_enc_timestamp_out,
     -- INTERNALLENGTH = 49,
     INTERNALLENGTH = 8,
-    ALIGNMENT      = int4,
+    ALIGNMENT      = double,
+    PASSEDBYVALUE,
     STORAGE        = PLAIN
 );
 
