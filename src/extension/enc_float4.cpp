@@ -85,8 +85,8 @@ Datum pg_enc_float4_in(PG_FUNCTION_ARGS)
     if(pSrc[0] == FLAG_CHAR){
         index = strtoull(pSrc + 1, NULL, 10);
     }else {
-        ereport(INFO, 
-            (errmsg("insert temp key: %s", pSrc)));
+        // ereport(INFO, 
+        //     (errmsg("insert temp key: %s", pSrc)));
         float src = pg_float4_in(pSrc);
         index = makeIndex(0, insertFloat(src));
     }

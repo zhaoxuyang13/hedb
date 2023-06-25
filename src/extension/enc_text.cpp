@@ -40,10 +40,10 @@ Datum
         index = strtoull(s + 1, NULL, 10);
     }else {
         index = makeIndex(0, insertStr(s));
-        char tmp[1000];
-        const char *tmps = getText(index, tmp);
-        ereport(INFO, 
-            (errmsg("insert temp key: %s, %ld, %s", s, index, tmps)));
+        // char tmp[1000];
+        // const char *tmps = getText(index, tmp);
+        // ereport(INFO, 
+        //     (errmsg("insert temp key: %s, %ld, %s", s, index, tmps)));
 
     }
     PG_RETURN_DATUM(index);
