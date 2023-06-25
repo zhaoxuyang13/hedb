@@ -382,16 +382,13 @@ Datum pg_enc_float4_max(PG_FUNCTION_ARGS){
     uint64_t index1 = PG_GETARG_DATUM(0);
     uint64_t index2 = PG_GETARG_DATUM(1);
 
-    int32_t result = enc_int_cmp(index1, index2);
+    int32_t result = enc_float_cmp(index1, index2);
     if (result > 0) {
         PG_RETURN_DATUM(index1);
     } else {
         PG_RETURN_DATUM(index2);
     }
 }
-
-
-
 
 Datum pg_enc_float4_mod(PG_FUNCTION_ARGS)
 {
