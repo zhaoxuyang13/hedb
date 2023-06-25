@@ -363,7 +363,7 @@ Datum pg_enc_float4_cmp(PG_FUNCTION_ARGS)
     uint64_t index1 = PG_GETARG_DATUM(0);
     uint64_t index2 = PG_GETARG_DATUM(1);
     int32_t cmp = enc_float_cmp(index1, index2);
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_INT32(cmp);
 }
 
 Datum pg_enc_float4_min(PG_FUNCTION_ARGS){

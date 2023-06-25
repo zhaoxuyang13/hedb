@@ -41,8 +41,8 @@ Datum
     if(s[0] == FLAG_CHAR){
         index = strtoull(s + 1, NULL, 10);
     }else {
-        ereport(INFO, 
-            (errmsg("insert temp key: %s", s)));
+        // ereport(INFO, 
+        //     (errmsg("insert temp key: %s", s)));
         index = makeIndex(0, insertStr(s));
 
     }
@@ -129,7 +129,7 @@ Datum
     uint64_t right = PG_GETARG_DATUM(1);
     int cmp = enc_text_cmp(left, right);
 
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_INT32(cmp);
 }
 
 

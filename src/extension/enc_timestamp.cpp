@@ -95,8 +95,8 @@ Datum
     if(pSrc[0] == FLAG_CHAR){
         index = strtoull(pSrc + 1, NULL, 10);
     }else { 
-        ereport(INFO, 
-            (errmsg("insert temp key: %s", pSrc)));
+        // ereport(INFO, 
+        //     (errmsg("insert temp key: %s", pSrc)));
         TIMESTAMP dst= pg_timestamp_in(pSrc);
         index = makeIndex(0, insertTs(dst));
     }
@@ -195,7 +195,7 @@ Datum
     uint64_t index1 = PG_GETARG_DATUM(0);
     uint64_t index2 = PG_GETARG_DATUM(1);
     int cmp = enc_timestamp_cmp(index1, index2);
-    PG_RETURN_BOOL(cmp);
+    PG_RETURN_INT32(cmp);
 }
 
 

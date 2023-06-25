@@ -166,7 +166,7 @@ int transform_tbl(const std::string tbl_path, const std::string out_path, const 
             }
             case EncTimestamp:{
                 TIMESTAMP value = parseTimestamp(field.c_str());
-                // printf("timestamp: %llu\n", value);
+                // std::cout << "timestamp: " << value << std::endl;
                 uint32_t key = kv->push_back(mapid,  value);
                 out_line += FLAG_CHAR + std::to_string(combine(mapid, key)) + "|";
                 break;

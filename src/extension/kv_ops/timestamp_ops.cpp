@@ -5,7 +5,7 @@
 int enc_timestamp_cmp(uint64_t left, uint64_t right){
     TIMESTAMP l = getTs(left);
     TIMESTAMP r = getTs(right);
-    ereport(INFO, (errmsg("cmp %ld %ld", l, r)));
+    // ereport(INFO, (errmsg("cmp %ld %ld", l, r)));
     return l > r ? 1 : (l < r ? -1 : 0);
 }
 
