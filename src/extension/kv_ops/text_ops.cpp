@@ -3,6 +3,7 @@
 
 static char buf_left[1000];
 static char buf_right[1000];
+
 int enc_text_cmp(uint64_t left, uint64_t right){
     const char *l = getText(left, buf_left);
     const char *r = getText(right, buf_right);
@@ -12,7 +13,7 @@ int enc_text_cmp(uint64_t left, uint64_t right){
 int enc_text_like(uint64_t text, uint64_t pattern){
     const char *t = getText(text, buf_left);
     const char *p = getText(pattern, buf_right);
-    std::cout << t << " " << p << std::endl;
+    // std::cout << text << ": " << t << ",  " << pattern << ": " << p << std::endl;
 
     return MatchText(t, strlen(t), p, strlen(p));
 }

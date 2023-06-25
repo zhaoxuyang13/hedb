@@ -26,10 +26,8 @@ int MatchText(char* t, int tlen, char* p, int plen);
 text* cstring_to_text_with_len(const char* s, int len)
 {
     text* result = (text*)palloc0(len + VARHDRSZ + 1);
-
     SET_VARSIZE(result, len + VARHDRSZ + 1);
     strcpy(VARDATA(result), s);
-
     return result;
 }
 
@@ -41,9 +39,11 @@ Datum
     if(s[0] == FLAG_CHAR){
         index = strtoull(s + 1, NULL, 10);
     }else {
-        // ereport(INFO, 
-        //     (errmsg("insert temp key: %s", s)));
         index = makeIndex(0, insertStr(s));
+        char tmp[1000];
+        const char *tmps = getText(index, tmp);
+        ereport(INFO, 
+            (errmsg("insert temp key: %s, %ld, %s", s, index, tmps)));
 
     }
     PG_RETURN_DATUM(index);
@@ -172,7 +172,7 @@ Datum
     uint64_t right = PG_GETARG_DATUM(1);
     int res = enc_text_like(left, right);
 
-    PG_RETURN_BOOL(!res);
+    PG_RETURN_BOOL(res == false);
 }
 
 

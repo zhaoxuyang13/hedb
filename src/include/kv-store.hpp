@@ -112,11 +112,12 @@ public:
     TIMESTAMP find_ts(uint32_t map_id, uint32_t key){
         return ts_kv[map_id][key];
     }
-    ShmString& find_str(uint32_t map_id, uint32_t key){
-        return str_kv[map_id][key];
+    const char* find_str(uint32_t map_id, uint32_t key){
+        return str_kv[map_id][key].c_str();
     }
-    ShmString find_str_tmp(uint32_t key){
-        return str_kv[0][key]; 
+    const char* find_str_tmp(uint32_t key, char *buffer){
+        strcpy(buffer, find_str(0,key));
+        return buffer;
     }
 
     uint32_t insert_tmp(int value){

@@ -23,10 +23,8 @@ static int timestamp_extract_year(int64_t timestamp)
         date -= 1;
     }
 
-    /* add offset to go from J2000 back to standard Julian date */
     date += POSTGRES_EPOCH_JDATE;
 
-    /* Julian day routine does not work for negative Julian days */
     if (date < 0 || date > (int64_t)INT_MAX)
         return -1;
 
