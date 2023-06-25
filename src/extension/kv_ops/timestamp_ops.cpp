@@ -3,8 +3,9 @@
 
 
 int enc_timestamp_cmp(uint64_t left, uint64_t right){
-    int l = getTs(left);
-    int r = getTs(right);
+    TIMESTAMP l = getTs(left);
+    TIMESTAMP r = getTs(right);
+    ereport(INFO, (errmsg("cmp %ld %ld", l, r)));
     return l > r ? 1 : (l < r ? -1 : 0);
 }
 
@@ -44,7 +45,7 @@ static int timestamp_extract_year(int64_t timestamp)
 
 
 uint64_t enc_timestamp_extract_year(uint64_t timestamp){
-    int t = getTs(timestamp);
+    TIMESTAMP t = getTs(timestamp);
     int year = timestamp_extract_year(t);
     uint32_t key = insertInt(year);
     return makeIndex(0, key);

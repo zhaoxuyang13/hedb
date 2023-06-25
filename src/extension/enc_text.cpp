@@ -53,9 +53,11 @@ Datum
     pg_enc_text_out(PG_FUNCTION_ARGS)
 {
     uint64_t index = PG_GETARG_DATUM(0);
-    const char *s = getText(index);
-    char *res = (char *)malloc(strlen(s) + 1);
-    strcpy(res, s);
+    char *res = (char *)malloc(1000);
+    const char *s = getText(index, res);
+    if(getMapid(index) != 0){
+        strcpy(res, s);
+    }
     PG_RETURN_CSTRING(res);
 }
 

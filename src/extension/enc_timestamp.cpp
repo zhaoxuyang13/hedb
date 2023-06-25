@@ -42,11 +42,19 @@ Timestamp pg_timestamp_in(char* str)
 
     dterr = ParseDateTime(str, workbuf, sizeof(workbuf), field, ftype, MAXDATEFIELDS, &nf);
 
+    // for(int i = 0; i < nf; i++){
+    //     ereport(INFO, (errmsg("field[%d]: %s, %d", i, field[i], ftype[i])));
+
+    // }
+
+
     if (dterr == 0)
         dterr = DecodeDateTime(field, ftype, nf, &dtype, tm, &fsec, &tz);
     if (dterr != 0)
         DateTimeParseError(dterr, str, "timestamp");
 
+    // show dtype
+    // ereport(INFO, (errmsg("dtype: %d", dtype)));
     switch (dtype)
     {
     case DTK_DATE:

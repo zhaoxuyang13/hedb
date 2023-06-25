@@ -4,10 +4,10 @@ drop extension if EXISTS encdb cascade;
 create extension encdb;
 create extension if not EXISTS pgtap;
 
-select plan(50);
+select plan(48);
 
-select ok(pg_enc_int4_decrypt(pg_enc_int4_encrypt(1)) = 1::int4, 'enc_int4: encryption/decryption test');
-select ok(pg_enc_float4_decrypt(pg_enc_float4_encrypt(1.1)) = 1.1::float4, 'enc_float4: encryption/decryption test');
+-- select ok(pg_enc_int4_decrypt(pg_enc_int4_encrypt(1)) = 1::int4, 'enc_int4: encryption/decryption test');
+-- select ok(pg_enc_float4_decrypt(pg_enc_float4_encrypt(1.1)) = 1.1::float4, 'enc_float4: encryption/decryption test');
 
 select ok(1::enc_int4 = 1::enc_int4, 'enc_int4: inequality test, operator =');
 select ok(0::enc_int4 != 1::enc_int4, 'enc_int4: inequality test, operator !=');

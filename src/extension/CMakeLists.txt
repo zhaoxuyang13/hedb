@@ -3,10 +3,11 @@ find_package(PostgreSQL REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
 
-include_directories(${PostgreSQL_INCLUDE_DIRS}
-                    ${PostgreSQL_SERVER_INCLUDE_DIRS}
+include_directories(
                     include
                     ../include
+                    ${PostgreSQL_INCLUDE_DIRS}
+                    ${PostgreSQL_SERVER_INCLUDE_DIRS}
                     )
 # include(CTest)
 

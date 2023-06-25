@@ -29,12 +29,12 @@ inline TIMESTAMP getTs(uint64_t a){
     return kvStore->find_ts(getMapid(a), getKey(a));
 }
 
-inline const char *getText(uint64_t a){
+inline const char *getText(uint64_t a, char *buffer){
     uint32_t mapid = getMapid(a);
     if(mapid == 0){
-        static std::string tmp = "";
-        tmp = kvStore->find_str_tmp(getKey(a)).c_str();
-        return tmp.c_str();
+        auto tmp = kvStore->find_str_tmp(getKey(a)).c_str();
+        strcpy(buffer, tmp);
+        return buffer;
     }else {
         return kvStore->find_str(mapid, getKey(a)).c_str();
     }

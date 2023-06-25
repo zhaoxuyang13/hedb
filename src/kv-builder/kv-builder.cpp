@@ -4,13 +4,23 @@
 #include "kv.hpp"
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/managed_mapped_file.hpp>
-
 #include <vector>
 #include <string> // for parsing files and strings
+#include "timestamp_parse.hpp"
+
+// extern "C" {
+// #include <postgres.h>
+// #include <fmgr.h>
+// #include <utils/array.h>
+// #include <utils/arrayaccess.h>
+// #include <utils/builtins.h>
+// #include <utils/numeric.h>
+// #include <datatype/timestamp.h>
+// #include <utils/datetime.h>
+// #include <utils/timestamp.h>
+// }
 
 std::string data_path = "./benchmark/tools";
-// string out_path = ".benchmark/data";
-
 
 enum enc_type {
     None,
@@ -50,14 +60,7 @@ uint64_t combine(uint32_t a, uint32_t b){
 }
 
 
-
-
-static TimeOffset time2t(const int hour, const int min, const int sec, const fsec_t fsec)
-{
-    return (((hour * MINS_PER_HOUR) + min) * SECS_PER_MINUTE) + sec + fsec;
-}
-
-Timestamp pg_timestamp_in(char* str)
+Timestamp parseTimestamp(const char* str)
 {
 
     Timestamp result;
@@ -69,47 +72,49 @@ Timestamp pg_timestamp_in(char* str)
     int tz;
     int dtype;
     fsec_t fsec;
-    struct pg_tm tt, *tm = &tt;
+    struct pg_tm tt, *tm_ptr = &tt;
     char buf[MAXDATELEN + 1];
     char src_byte[TIMESTAMP_LENGTH];
     int resp;
 
     dterr = ParseDateTime(str, workbuf, sizeof(workbuf), field, ftype, MAXDATEFIELDS, &nf);
 
+    assert(nf == 1);
+
     if (dterr == 0)
-        dterr = DecodeDateTime(field, ftype, nf, &dtype, tm, &fsec, &tz);
-    if (dterr != 0)
-        DateTimeParseError(dterr, str, "timestamp");
+        dterr = DecodeDateTime(field, ftype, nf, &dtype, tm_ptr, &fsec, &tz);
 
-    switch (dtype)
-    {
-    case DTK_DATE:
-        if (tm2timestamp(tm, fsec, NULL, &result) != 0)
-            ereport(ERROR,
-                    (errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
-                     errmsg("timestamp out of range: \"%s\"", str)));
-        break;
+    assert(dtype == 2);
+    tm2timestamp(tm_ptr, fsec, NULL, &result);
 
-    case DTK_EPOCH:
-        result = SetEpochTimestamp();
-        break;
-
-    case DTK_LATE:
-        TIMESTAMP_NOEND(result);
-        break;
-
-    case DTK_EARLY:
-        TIMESTAMP_NOBEGIN(result);
-        break;
-
-    default:
-        elog(ERROR, "unexpected dtype %d while parsing timestamp \"%s\"",
-             dtype, str);
-        TIMESTAMP_NOEND(result);
-    }
 
     return result;
 }
+
+#include <chrono>
+
+// TIMESTAMP parseTimestamp(const char* str)
+// {
+//     // parse the string to postgresql TIMESTAMP, 
+//     // string format: YYYY-MM-DD, TIMESTAMP is microsecond from 1970-01-01
+//     // return the TIMESTAMP
+
+//     std::tm timeinfo = {};
+//     std::istringstream ss(str);
+
+//     // Extract year, month, and day from the string
+//     if (!(ss >> std::get_time(&timeinfo, "%Y-%m-%d"))) {
+//         std::cerr << "Error parsing the timestamp string" << std::endl;
+//         return 0;
+//     }
+
+//     // Convert tm to time_point
+//     std::chrono::system_clock::time_point tp = std::chrono::system_clock::from_time_t(std::mktime(&timeinfo));
+
+//     // Calculate the number of microseconds since 2000-01-01
+//     auto us = std::chrono::duration_cast<std::chrono::microseconds>(tp.time_since_epoch()) - std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::seconds(946684800));
+//     return us.count();
+// }
 
 
 
@@ -160,7 +165,8 @@ int transform_tbl(const std::string tbl_path, const std::string out_path, const 
                 break;
             }
             case EncTimestamp:{
-                TIMESTAMP value = std::stoull(field);
+                TIMESTAMP value = parseTimestamp(field.c_str());
+                // printf("timestamp: %llu\n", value);
                 uint32_t key = kv->push_back(mapid,  value);
                 out_line += FLAG_CHAR + std::to_string(combine(mapid, key)) + "|";
                 break;

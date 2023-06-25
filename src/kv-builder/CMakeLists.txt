@@ -1,13 +1,11 @@
 set(CMAKE_CXX_STANDARD 17)
-
 add_compile_options(-Wall -Wextra)
 
+
 add_executable(kv-builder kv-builder.cpp)
-target_link_libraries(kv-builder ${Boost_LIBRARIES})
 
-# target_include_directories(kv-builder PRIVAT)
-
-
+target_link_libraries(kv-builder 
+                    ${Boost_LIBRARIES})
 
 add_executable(kv-loader 
         kv-loader.cpp 
