@@ -23,8 +23,10 @@ db_port=5432
 
 if [ "$plain_text" = true ]; then
     schema_file=tpch-schema.sql
+    data_dir=tools
 else 
     schema_file=tpch-schema-encrypted.sql
+    data_dir=tools/tmp
 fi
 psql -U $db_user -h $db_host -p $db_port -d $db_name -f $schema_dir/$schema_file
 chmod a+rw tools/*.tbl
