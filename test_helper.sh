@@ -92,7 +92,7 @@ fi
 set -x
 
 psql -U postgres -d test -c "\o ${out_file}" \
-                        -c "SET max_parallel_workers_per_gather = 0;" \
+                        -c "SET max_parallel_workers = 0;" \
                         -c "\timing" \
                         -f $file
 

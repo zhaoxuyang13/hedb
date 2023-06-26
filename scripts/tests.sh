@@ -120,13 +120,32 @@ run_enc(){
 
 run_benchmark(){
     # ./test_helper.sh -l -p
-    out_dir=tmp/plain-udf-enc-size
+    out_dir=tmp/udf-kv-2
     execute_all_sqls origin-sqls
 
 }
 
-run_native
-run_plaintext_udf
-run_enc
+run_udf_kv(){
+    echo "======================" >> ${outputfile}
+    echo "udf_kv" >> ${outputfile}
+
+    for scale_factor in 0.1 0.2 0.5 1 2 ; do
+        echo "scale_factor: ${scale_factor}"
+
+        git stash
+
+        git checkout udf-kv
+
+        make prepare-tpch WAREHOUSE=${scale_factor}
+        
+        git checkout main
+        git stash pop 
+        
+        out_dir=tmp/udf-kv-${scale_factor}
+        execute_all_sqls origin-sqls
+    done
+}
+
+run_udf_kv
 
 # run_benchmark
