@@ -205,7 +205,7 @@ int main(){
         }
     }
     
-    managed_mapped_file segment(open_or_create, MMAP_FILENAME, 4 * GB);
+    managed_mapped_file segment(open_or_create, MMAP_FILENAME, 8 * GB);
     void_allocator void_alloc_inst(segment.get_segment_manager());
     segment.destroy<KVStore>("kv");
     KVStore *kv = segment.construct<KVStore>("kv")(num[EncInt], num[EncFloat], num[EncTimestamp], num[EncString], void_alloc_inst);
