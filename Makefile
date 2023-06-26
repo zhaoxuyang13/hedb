@@ -14,10 +14,21 @@ install:
 
 BENCHMARK_DIR=benchmark
 
+
+WAREHOUSE=1
+
+prepare-tpch:
+	cd $(BENCHMARK_DIR)/tools && ./dbgen -vf -s $(WAREHOUSE)
+	make clean && make && make install 
+	./build/kv-builder/kv-builder 
+	cd $(BENCHMARK_DIR) && bash load_db.sh 
+
 load-tpch: 
 	cd $(BENCHMARK_DIR) && bash load_db.sh
+
 load-tpch-native:
 	cd $(BENCHMARK_DIR) && bash load_db.sh -p
+
 load-tpcc-native: 
 	echo "not impl"
 
