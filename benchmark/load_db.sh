@@ -48,3 +48,4 @@ cat $data_dir/lineitem.tbl | sed 's/.$//' | psql -U $db_user -h $db_host -p $db_
 # load index file 
 psql -U $db_user -h $db_host -p $db_port -d $db_name -f $schema_dir/tpch-index.sql
 
+psql -U $db_user -h $db_host -p $db_port -d $db_name -c "vacuum full;"
