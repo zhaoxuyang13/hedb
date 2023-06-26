@@ -46,6 +46,6 @@ cat $data_dir/orders.tbl | sed 's/.$//' | psql -U $db_user -h $db_host -p $db_po
 cat $data_dir/lineitem.tbl | sed 's/.$//' | psql -U $db_user -h $db_host -p $db_port -d $db_name -c "copy lineitem (l_orderkey, l_partkey, l_suppkey, l_linenumber, l_quantity, l_extendedprice, l_discount, l_tax, l_returnflag, l_linestatus, l_shipdate, l_commitdate, l_receiptdate, l_shipinstruct, l_shipmode, l_comment) from stdin with delimiter '|';"
 
 # load index file 
-psql -U $db_user -h $db_host -p $db_port -d $db_name -f $schema_dir/tpch-index.sql
+# psql -U $db_user -h $db_host -p $db_port -d $db_name -f $schema_dir/tpch-index.sql
 
 psql -U $db_user -h $db_host -p $db_port -d $db_name -c "vacuum full;"
